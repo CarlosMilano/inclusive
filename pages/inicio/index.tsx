@@ -4,9 +4,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Log in</title>
+        <title>Inicio</title>
       </Head>
-      <main>hola</main>
+      <main>Inicio</main>
     </>
   );
 }
