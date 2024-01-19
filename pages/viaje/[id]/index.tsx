@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ViajeForm from '@/components/ViajeForm';
 import { useRouter } from 'next/router';
 import supabase from '@/pages/api/supabase';
-//TODO: Hacer que puedas seleccionar el cliente
+
 interface ViajeData {
   origen: string;
   destino: string;
@@ -19,19 +19,30 @@ interface ViajeData {
 };
 
 interface Cliente {
-    id: number;
+    id: string;
     nombre: string;
 };
+
+interface ViajeProveedorData { 
+    proveedor_tarifa: number;
+    proveedor_abonado: number;
+    proveedor_origen: string;
+    proveedor_destino: string;
+ }
+
 
 export default function Viaje() {
   const [viaje, setViaje] = useState<ViajeData[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [viajeProveedor, setViajeProveedor] = useState<ViajeProveedorData[]>([]);
   const router = useRouter();
+  const { id } = router.query;
 
   useEffect(() => {
     const fetchData = async () => {
       const { data: viajeData, error: viajeError } = await supabase.from('viaje').select('*');
       const { data: clientesData, error: clientesError } = await supabase.from('cliente').select('*');
+      const { data: viajeProveedorData, error: viajeProveedorError } = await supabase.from('viajeproveedor').select('*');
 
       if (viajeError) {
         console.error('Error al obtener los datos de viaje', viajeError);
@@ -44,8 +55,12 @@ export default function Viaje() {
       } else {
         setClientes(clientesData || []);
       }
+      if (viajeProveedorError) {
+        console.error('Error al obtener los datos de viajeProveedor', viajeProveedorError);
+      }else {
+        setViajeProveedor(viajeProveedorData || []);
+      }
     };
-
     fetchData();
 }, []);
 
@@ -97,18 +112,50 @@ export default function Viaje() {
     }
   };  
 
-  const handleViajeSubmit = (viajeData: ViajeData) => {
+  const addViajeProveedor = async (viajeProveedorData: ViajeProveedorData) => {
+    const { 
+        proveedor_tarifa, 
+        proveedor_abonado, 
+        proveedor_origen, 
+        proveedor_destino, 
+     } = viajeProveedorData;
+
+    if (
+        proveedor_tarifa <= 0 || 
+        proveedor_abonado <= 0 || 
+        proveedor_origen.trim() === "" || 
+        proveedor_destino.trim() === "" 
+        ){
+      return;
+    }
+
+    const { data, error } = await supabase
+    .from('viajeproveedor')
+    .insert([{ ...viajeProveedorData, }]);
+
+    if (error) {
+      console.error("Error al obtener los datos", error);
+    } else {
+      if (data) {
+        setViajeProveedor([...viajeProveedor, ...data]);
+      }
+      router.reload();
+    }
+  }
+
+  const handleViajeSubmit = (viajeData: ViajeData, viajeProveedorData: ViajeProveedorData) => {
     addViaje(viajeData);
+    addViajeProveedor(viajeProveedorData);
     console.log(viajeData);
+    console.log(viajeProveedorData);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-md shadow-md w-[600px]">
-        <h1 className="text-3xl font-bold mb-6">Añadir Nuevo Viaje</h1>
-        <h2 className="text-xl font-semibold mb-4">Detalles del Viaje</h2>
-        <ViajeForm onSubmit={handleViajeSubmit} clientes={clientes}/>
-      </div>
-    </div>
+    <main>
+        <ViajeForm 
+        onSubmit={handleViajeSubmit} 
+        clientes={clientes} 
+        />
+    </main>
   );
 }
