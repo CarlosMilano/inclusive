@@ -3,6 +3,7 @@ import { MouseEventHandler } from "react";
 interface ButtonProps {
   title: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  type: "button" | "submit" | "reset" | undefined;
 }
 
 export default function Button(props: ButtonProps) {

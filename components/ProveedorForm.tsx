@@ -1,54 +1,81 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { InputField } from './InputField';
 
 interface ProveedorFormData {
-  proveedor_tarifa: number;
-  proveedor_abonado: number;
-  proveedor_origen: string;
-  proveedor_destino: string;
+  tarifa: number;
+  abonado: number;
+  origen: string;
+  destino: string;
+  proveedor_id: string;
 }
 
 interface ProveedorFormProps {
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (formData: ProveedorFormData) => void;
   data: ProveedorFormData;
+  proveedores : { id: string; nombre: string }[];
 }
 
-const ProveedorForm: React.FC<ProveedorFormProps> = ({ onChange, data }) => {
+export const ProveedorForm=(props: ProveedorFormProps) => {
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        const selectedValue = type === 'select-one' ? value : type === 'number' ? parseFloat(value) : value;
+        props.onChange({
+          ...props.data,
+          [name]: selectedValue,
+        });
+    };
+
   return (
     <section>
-      <label className="block text-gray-700 text-sm font-bold mb-2">Proveedor Tarifa:</label>
-      <InputField
-        label="Proveedor Tarifa"
-        name="proveedor_tarifa"
-        value={data.proveedor_tarifa}
-        onChange={onChange}
-        type="number"
-      />
 
-      <label className="block text-gray-700 text-sm font-bold mb-2">Proveedor Abonado:</label>
       <InputField
-        label="Proveedor Abonado"
-        name="proveedor_abonado"
-        value={data.proveedor_abonado}
-        onChange={onChange}
-        type="number"
+      label=" Proveedor Tarifa:"
+      name="tarifa"
+      value={props.data.tarifa}
+      onChange={handleChange}
+      type="number"
       />
 
       <InputField
-        label="Proveedor Origen"
-        name="proveedor_origen"
-        value={data.proveedor_origen}
-        onChange={onChange}
+      label="Proveedor Abonado:"
+      name="abonado"
+      value={props.data.abonado}
+      onChange={handleChange}
+      type="number"
       />
 
       <InputField
-        label="Proveedor Destino"
-        name="proveedor_destino"
-        value={data.proveedor_destino}
-        onChange={onChange}
+      label="Proveedor Origen:"
+      name="origen"
+      value={props.data.origen}
+      onChange={handleChange}
       />
+
+      <InputField
+      label="Proveedor Destino:"
+      name="destino"
+      value={props.data.destino}
+      onChange={handleChange}
+      />
+
+      <section className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">Proveedor:</label>
+            <select
+            name="proveedor_id"
+            value={props.data.proveedor_id || ''}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            >
+                <option value="">Selecciona un proveedor</option>
+                {props.proveedores.map((proveedor: any) => (
+                <option key={proveedor.id} value={proveedor.id}>
+                {proveedor.nombre}
+                </option>
+                    ))}
+            </select>
+        </section>
+
     </section>
   );
 };
-
-export default ProveedorForm;
