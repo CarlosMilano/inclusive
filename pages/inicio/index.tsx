@@ -5,6 +5,8 @@ import Card from "@/components/Card";
 import Button from "@/components/Button";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
+import { auth } from "@/config/firebase";
+import { signOut } from "firebase/auth";
 
 interface Cliente {
   id: string;
@@ -171,12 +173,18 @@ export default function Home() {
     setOpenProveedor(!openProveedor);
   };
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/");
+  };
+
   return (
     <>
       <Head>
         <title>Inicio</title>
       </Head>
       <main className="min-h-screen flex flex-col items-center p-5">
+        <button onClick={handleLogout}>Cerrar Sesión</button>
         <section className="flex flex-wrap items-start justify-center">
           <article className="flex flex-col justify-center">
             <Button title="Añadir Viaje" onClick={handleClick} />
@@ -245,7 +253,7 @@ export default function Home() {
             </div>
           </article>
         </section>
-        <section className="flex flex-wrap justify-center">
+        <section className="flex flex-wrap justify-center gap-10">
           <Card
             title="CXC"
             subtitle="Cliente"
@@ -276,6 +284,9 @@ export default function Home() {
               id: resultado.proveedor.id,
             }))}
             loading={loading}
+            onClick={(rowData) => {
+              router.push(`/proveedor/${rowData.id}`);
+            }}
           />
           <Card
             title="Comisión"

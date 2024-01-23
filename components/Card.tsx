@@ -21,24 +21,10 @@ export default function Card(props: CardProps) {
     code: "MXN",
     precision: 0,
   });
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 6;
-
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
-  };
 
   const filteredData = props.clientData.filter((data) => data.monto !== 0);
 
   filteredData.sort((a, b) => b.monto - a.monto);
-
-  const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-
-  const displayedData = filteredData.slice(startIndex, endIndex);
 
   const handleRowClick = (rowData: {
     cliente: string;
@@ -51,7 +37,7 @@ export default function Card(props: CardProps) {
   };
 
   return (
-    <main className="flex flex-col bg-white  m-5 w-[320px] h-[510px] justify-center shadow-xl rounded-md p-3">
+    <main className="flex flex-col bg-white w-[320px] h-[510px] m-2 shadow-xl rounded-md p-3">
       <section className="flex flex-col items-center">
         <h1 className="text-4xl font-semibold p-5">
           {props.title || "Titulo"}
@@ -81,7 +67,7 @@ export default function Card(props: CardProps) {
               </tr>
             </thead>
             <tbody>
-              {displayedData.map((data, index) => (
+              {filteredData.map((data, index) => (
                 <tr
                   key={index}
                   className=" border-b-2 border-zinc-300 cursor-pointer hover:bg-gray-300 transition duration-300 ease-in-out"
@@ -99,13 +85,6 @@ export default function Card(props: CardProps) {
             </tbody>
           </table>
         )}
-      </section>
-      <section className="flex justify-center items-end h-full">
-        <Pagination
-          count={Math.ceil(displayedData.length / itemsPerPage)}
-          page={page}
-          onChange={handlePageChange}
-        />
       </section>
     </main>
   );
