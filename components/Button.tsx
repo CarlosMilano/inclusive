@@ -10,7 +10,7 @@ export default function Button(props: ButtonProps) {
     <>
       <button
         onClick={props.onClick}
-        className="py-4 bg-blue-600 text-xl m-3 text-white shadow-xl rounded-lg w-[230px] md:w-[210px]"
+        className="py-4 bg-blue-600 text-xl m-3 text-white shadow-xl rounded-lg w-[230px] md:w-[210px] "
       >
         {props.title}
       </button>
