@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import {InputField} from './InputField';
 import {ProveedorForm} from './ProveedorForm';
 import Button from './Button';
@@ -34,6 +34,7 @@ interface ViajeFormProps {
   onSubmit: (viajeData: ViajeData, viajeProveedorData: ViajeProveedorData[]) => void;
   clientes: { id: string; nombre: string }[];
   proveedores: { id: string; nombre: string }[];
+  existeViaje?: boolean;
 }
 
 export const ViajeForm= (props: ViajeFormProps) => {
@@ -92,6 +93,37 @@ export const ViajeForm= (props: ViajeFormProps) => {
 
   return (
     <section className="mx-auto my-10 max-w-md p-6 rounded-md">
+      {props.existeViaje ? (
+        <div>
+          <h1 className="text-3xl font-bold mb-6">Información del Viaje</h1>
+          <p>Origen: {viajeData.origen}</p>
+          <p>Destino: {viajeData.destino}</p>
+          <p>Tarifa: {viajeData.tarifa}</p>
+          <p>Factura: {viajeData.factura}</p>
+          <p>Comisión: {viajeData.comision}</p>
+          <p>Tipo de unidad: {viajeData.tipodeunidad}</p>
+          <p>Referencia: {viajeData.referencia}</p>
+          <p>Fecha de Factura: {viajeData.fechafactura || 'N/A'}</p>
+          <p>Abonado: {viajeData.abonado}</p>
+          <p>ID del Cliente: {viajeData.cliente_id || 'N/A'}</p>
+          <p>Dólares: {viajeData.dolares ? 'Sí' : 'No'}</p>
+          {viajeData.dolares && <p>Tipo de Cambio: {viajeData.tipodecambio}</p>}
+          <p>Abono Comisión: {viajeData.abonocomision}</p>
+
+          <h2 className="text-xl font-semibold mb-4">Información de Proveedores</h2>
+          {viajeProveedorData.map((proveedor, index) => (
+            <div key={index}>
+              <h3 className="text-lg font-semibold mb-2">{`Proveedor ${index + 1}`}</h3>
+              <p>Origen: {proveedor.origen}</p>
+              <p>Destino: {proveedor.destino}</p>
+              <p>Tarifa: {proveedor.tarifa}</p>
+              <p>Abonado: {proveedor.abonado}</p>
+              <p>ID del Proveedor: {proveedor.proveedor_id}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+
         <form onSubmit={handleSubmit}>
           <section className="mx-auto my-10 max-w-md bg-white p-6 rounded-md shadow-md">
             <h1 className="text-3xl font-bold mb-6">Añadir Nuevo Viaje</h1>
@@ -242,6 +274,7 @@ export const ViajeForm= (props: ViajeFormProps) => {
           </section>
 
         </form>
+      )}
     </section>
   );
 };
