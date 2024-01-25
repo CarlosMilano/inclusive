@@ -152,7 +152,7 @@ export default function Viaje() {
   
 
   return (
-    <main>
+    <main className="mt-[60px]">
         <ViajeForm 
         onSubmit={handleViajeSubmit} 
         clientes={clientes} 
