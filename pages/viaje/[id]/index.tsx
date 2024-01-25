@@ -139,12 +139,11 @@ export default function Viaje() {
       // Agregar los proveedores con el mismo ID del viaje
       for (const proveedor of proveedoresArray) {
         proveedor.viaje_id = viajeIdFromRoute;
-        proveedor.id = uuidv4(); // Generar un nuevo ID para cada proveedor (si se desea)
+        proveedor.id = uuidv4(); // Generar un nuevo ID para cada proveedor 
   
         await addViajeProveedor(proveedor);
       }
   
-      // Redireccionar al usuario a la página de detalles del nuevo viaje (o a donde sea necesario)
       router.reload();
     } catch (error) {
       console.error('Error al procesar el formulario:', error);

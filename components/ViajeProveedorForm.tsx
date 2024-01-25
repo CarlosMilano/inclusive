@@ -3,7 +3,7 @@ import {InputField} from './InputField';
 import {ProveedorForm} from './ProveedorForm';
 import Button from './Button';
 import supabase from '@/pages/api/supabase';
-import { Skeleton } from '@mui/material';
+import { Box, CircularProgress, Skeleton } from '@mui/material';
 import router from 'next/router';
 import currencyFormatter from "currency-formatter";
 
@@ -89,6 +89,7 @@ export const ViajeForm= (props: ViajeFormProps) => {
     const fetchViajeData = async () => {
       try {
         const viajeIdFromRoute = props.viajeIdFromRoute;
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         const { data: viajeData, error: viajeError } = await supabase
           .from('viaje')
@@ -382,7 +383,7 @@ export const ViajeForm= (props: ViajeFormProps) => {
   };
 
   //Para pagar por abonos la tarifa del proveedor y que se sume al abono anterior
-  const abonoTarifaProveedor = async (proveedorIndex: number) => {
+  const abonoTarifaProveedor = async () => {
     if (proveedorSeleccionadoIndex === -1) {
       console.error('No se ha seleccionado un proveedor para el abono.');
       return;
@@ -435,6 +436,13 @@ export const ViajeForm= (props: ViajeFormProps) => {
   };
 
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <section>
@@ -956,7 +964,7 @@ export const ViajeForm= (props: ViajeFormProps) => {
                           <Button
                           title="Guardar Abono"
                           type="button"
-                          onClick={() => {abonoTarifaProveedor(index)}}
+                          onClick={() => {abonoTarifaProveedor}}
                           />
                         </section>
                       </section>

@@ -10,7 +10,7 @@ interface ProveedorFormData {
 }
 
 interface ProveedorFormProps {
-  onChange: (formData: ProveedorFormData) => void;
+  onChange: (formData: ProveedorFormData) => void; //Recibe el onchangeviajeproveedor en viajeproveedorform y lo utiliza en este onchange
   data: ProveedorFormData;
   proveedores : { id: string; nombre: string }[];
 }
