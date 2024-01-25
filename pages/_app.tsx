@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { User } from "firebase/auth";
 import { auth } from "@/config/firebase";
+import Header from "@/components/Header";
 
 dotenv.config();
 
@@ -28,8 +29,13 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [user]);
 
   return router.pathname === "/" || user ? (
-    <Component {...pageProps} />
+    <>
+      {user && <Header />}
+      <Component {...pageProps} />
+    </>
   ) : (
-    <p>Cargando...</p>
+    <div className="flex justify-center items-center min-h-screen min-w-screen bg-white transition-opacity">
+      <div className="w-16 h-16 border-t-4 border-primary border-solid rounded-full animate-spin"></div>
+    </div>
   );
 }

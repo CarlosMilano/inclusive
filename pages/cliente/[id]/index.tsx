@@ -63,6 +63,7 @@ export default function Home() {
           console.error(clienteError);
         } else {
           setCliente(clienteData);
+          setLoading(false);
         }
       } catch (error) {
         console.error(error);
@@ -96,9 +97,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Viajes Cliente</title>
+        <title>Viajes {cliente?.nombre}</title>
       </Head>
-      <main className="flex flex-col h-screen">
+      <main className="flex flex-col h-screen mt-[60px]">
         <section className="p-8">
           <h1 className="text-4xl font-bold">Viajes {cliente?.nombre}</h1>
         </section>

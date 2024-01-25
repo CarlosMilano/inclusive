@@ -35,7 +35,11 @@ export default function Table(props: TableProps) {
     >
       <article className="flex flex-col text-sm w-[20%]">
         <h2 className="text-gray-400 text-xs">Origen</h2>
-        <p>{props.origen}</p>
+        {props.loading ? (
+          <Skeleton width="20%" height={40} animation="wave" />
+        ) : (
+          <p>{props.origen}</p>
+        )}
         <h2 className="text-gray-400 text-xs">Destino</h2>
         <p>{props.destino}</p>
       </article>

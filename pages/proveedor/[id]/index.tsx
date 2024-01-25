@@ -46,6 +46,7 @@ export default function Home() {
           console.error(clienteError);
         } else {
           setProveedor(clienteData);
+          setLoading(false);
         }
       } catch (error) {
         console.error(error);
@@ -74,9 +75,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Viajes Proveedor</title>
+        <title>Viajes {proveedor?.nombre}</title>
       </Head>
-      <main className="flex flex-col h-screen">
+      <main className="flex flex-col h-screen mt-[60px]">
         <section className="p-8">
           <h1 className="text-4xl font-bold">Viajes {proveedor?.nombre}</h1>
         </section>

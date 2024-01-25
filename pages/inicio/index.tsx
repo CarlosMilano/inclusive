@@ -5,8 +5,6 @@ import Card from "@/components/Card";
 import Button from "@/components/Button";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
-import { auth } from "@/config/firebase";
-import { signOut } from "firebase/auth";
 
 interface Cliente {
   id: string;
@@ -173,18 +171,12 @@ export default function Home() {
     setOpenProveedor(!openProveedor);
   };
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    router.push("/");
-  };
-
   return (
     <>
       <Head>
         <title>Inicio</title>
       </Head>
-      <main className="min-h-screen flex flex-col items-center p-5">
-        <button onClick={handleLogout}>Cerrar Sesión</button>
+      <main className="min-h-screen flex flex-col items-center p-5 mt-[60px]">
         <section className="flex flex-wrap items-start justify-center">
           <article className="flex flex-col justify-center">
             <Button title="Añadir Viaje" onClick={handleClick} />
