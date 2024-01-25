@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { User } from "firebase/auth";
 import { auth } from "@/config/firebase";
 import Header from "@/components/Header";
+import { Box, CircularProgress } from "@mui/material";
 
 dotenv.config();
 
@@ -34,8 +35,15 @@ export default function App({ Component, pageProps }: AppProps) {
       <Component {...pageProps} />
     </>
   ) : (
-    <div className="flex justify-center items-center min-h-screen min-w-screen bg-white transition-opacity">
-      <div className="w-16 h-16 border-t-4 border-primary border-solid rounded-full animate-spin"></div>
-    </div>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <CircularProgress />
+    </Box>
   );
 }
