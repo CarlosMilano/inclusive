@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {ViajeForm} from '@/components/ViajeForm';
+import {ViajeForm} from '@/components/ViajeProveedorForm';
 import { useRouter } from 'next/router';
 import supabase from '@/pages/api/supabase';
 import { v4 as uuidv4 } from "uuid";
@@ -16,8 +16,10 @@ interface ViajeData {
   referencia: string;
   fechafactura: string | null;
   abonado: number;
-  cliente_id: number | null;
+  cliente_id: string | null;
   dolares: boolean;
+  abonocomision: number;
+  folio: number;
 };
 
 interface Cliente {
@@ -47,7 +49,7 @@ export default function Viaje() {
   const [viajeProveedor, setViajeProveedor] = useState<ViajeProveedorData[]>([]);
   const [proveedores, setProveedor] = useState<Proveedor[]>([]);
   const router = useRouter();
-  const [formularioEnviado, setFormularioEnviado] = useState(false);
+  const [existeViaje, setExisteViaje] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,28 +64,47 @@ export default function Viaje() {
             clientesError ? console.error('Error al obtener los datos de clientes', clientesError) : setClientes(clientesData || []);
             viajeProveedorError ? console.error('Error al obtener los datos de viajeProveedor', viajeProveedorError) : setViajeProveedor(viajeProveedorData || []);
             proveedorError ? console.error('Error al obtener los datos de proveedor', proveedorError) : setProveedor(proveedorData || []);
-        } catch (error) {
-            console.error('Error al obtener los datos', error);
+
+            // Verificar la existencia del ID de viaje en la URL
+        const viajeIdFromRoute = router.query.id as string;
+        const existeViaje = viajeData && viajeData.some((viaje) => viaje.id === viajeIdFromRoute);
+
+        // Verificar nulabilidad antes de asignar al estado
+        if (existeViaje !== null) {
+             console.log('Valor de existeViaje:', existeViaje);
+          setExisteViaje(existeViaje);
         }
+      } catch (error) {
+        console.error('Error al obtener los datos', error);
+      }
+    };
+
+    fetchData();
+  }, [router.query.id]);
+
+  
+
+  const addViaje = async (viajeData: ViajeData) => {
+    // Verificar y modificar valores antes de insertar en la base de datos para mandarlos null
+    const dataToInsert = {
+      ...viajeData,
+      origen: viajeData.origen || null, 
+      destino: viajeData.destino || null,
+      factura: viajeData.factura || null,
+      tipodeunidad: viajeData.tipodeunidad || null, 
+      referencia: viajeData.referencia || null,
     };
   
-    fetchData();
-  }, [router.query.id]); // Agregamos router.query.id como dependencia para que se vuelva a ejecutar si cambia
-  
-
-  const addViaje = async (viajeData: ViajeData ) => {
     const { data, error } = await supabase
-    .from('viaje')
-    .insert([{ ...viajeData, cliente_id: viajeData.cliente_id
-    }]);
-
+      .from('viaje')
+      .insert([dataToInsert]);
+  
     if (error) {
       console.error("Error al obtener los datos", error);
     } else {
       if (data) {
         setViaje([...viaje, ...data]);
       }
-    //  router.reload();
     }
   };  
 
@@ -123,10 +144,8 @@ export default function Viaje() {
         await addViajeProveedor(proveedor);
       }
   
-      console.log(viajeData);
-      console.log(viajeProveedorData);
       // Redireccionar al usuario a la página de detalles del nuevo viaje (o a donde sea necesario)
-      // router.push(`/viaje/${viajeIdFromRoute}`);
+      router.reload();
     } catch (error) {
       console.error('Error al procesar el formulario:', error);
     }
@@ -139,6 +158,8 @@ export default function Viaje() {
         onSubmit={handleViajeSubmit} 
         clientes={clientes} 
         proveedores={proveedores}
+        existeViaje={existeViaje}
+        viajeIdFromRoute={router.query.id as string}
         />
     </main>
   );
