@@ -147,6 +147,32 @@ export const ViajeForm = (props: ViajeFormProps) => {
     fetchViajeProveedorData();
   }, [props.viajeIdFromRoute]);
 
+  //Para obtener el folio maximo y sumarle uno en base al maximo
+  useEffect(() => {
+    const fetchMaxFolio = async () => {
+      try {
+        const { data: maxFolioData, error: maxFolioError } = await supabase
+          .from("viaje")
+          .select("folio")
+          .order("folio", { ascending: false })
+          .limit(1);
+  
+        if (maxFolioError) {
+          console.error("Error al obtener el folio máximo", maxFolioError);
+        } else if (maxFolioData && maxFolioData.length > 0) {
+          setViajeData((prevData) => ({
+            ...prevData,
+            folio: maxFolioData[0].folio + 1,
+          }));
+        }
+      } catch (error) {
+        console.error("Error al obtener el folio máximo", error);
+      }
+    };
+  
+    fetchMaxFolio();
+  }, []);  
+  
   //Funcion para eiminar viaje completo y sus proveedores
   const eliminarViaje = async (ViajeData: ViajeData) => {
     try {
@@ -723,7 +749,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                           </label>{" "}
                           {currencyFormatter.format(viajeData.tipodecambio, {
                             code: "MXN",
-                            precision: 0,
+                            precision: 2,
                           })}
                         </section>
                       )}
@@ -1284,6 +1310,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   value={viajeData.folio}
                   onChange={handleChangeViaje}
                   type="number"
+                  disabled={true}
                 />
               </section>
             ) : (
