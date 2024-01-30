@@ -6,6 +6,9 @@ import supabase from "@/pages/api/supabase";
 import { Skeleton } from "@mui/material";
 import router from "next/router";
 import currencyFormatter from "currency-formatter";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
+import PaidIcon from "@mui/icons-material/Paid";
 
 interface ViajeData {
   id: string;
@@ -506,367 +509,542 @@ export const ViajeForm = (props: ViajeFormProps) => {
   return (
     <section>
       {props.existeViaje ? (
-        <section className="min-h-screen flex flex-col items-center p-5">
-          <section className="flex flex-wrap justify-center gap-10">
-            {!loading ? (
-              <section>
-                {editModeViaje ? (
-                  <section className="mx-auto my-10 max-w-md bg-white p-6 rounded-md shadow-md">
-                    <h1 className="text-4xl font-semibold p-5">
-                      {obtenerNombreClientePorId(viajeData.cliente_id)}
-                    </h1>
-                    <h2 className="text-xl text-gray-600 font-semibold mb-5 ml-5">
-                      Detalle Viaje
-                    </h2>
-                    <InputField
-                      label="Origen:"
-                      name="origen"
-                      value={viajeData.origen}
-                      onChange={handleChangeViaje}
+        <section className="flex flex-col p-3 gap-5">
+          {editModeViaje ? (
+            <section className="bg-white p-3 rounded-md shadow-md">
+              <h1 className="text-4xl font-semibold p-5">
+                {obtenerNombreClientePorId(viajeData.cliente_id)}
+              </h1>
+              <h2 className="text-xl text-gray-600 font-semibold mb-5 ml-5">
+                Detalle Viaje
+              </h2>
+              <InputField
+                label="Origen:"
+                name="origen"
+                value={viajeData.origen}
+                onChange={handleChangeViaje}
+              />
+
+              <InputField
+                label="Destino:"
+                name="destino"
+                value={viajeData.destino}
+                onChange={handleChangeViaje}
+              />
+
+              <InputField
+                label="Tarifa:"
+                name="tarifa"
+                value={viajeData.tarifa}
+                onChange={handleChangeViaje}
+                type="number"
+              />
+
+              <InputField
+                label="Factura:"
+                name="factura"
+                value={viajeData.factura}
+                onChange={handleChangeViaje}
+              />
+
+              <InputField
+                label="Comision:"
+                name="comision"
+                value={viajeData.comision}
+                onChange={handleChangeViaje}
+                type="number"
+              />
+
+              <InputField
+                label="Tipo de unidad:"
+                name="tipodeunidad"
+                value={viajeData.tipodeunidad}
+                onChange={handleChangeViaje}
+              />
+
+              <InputField
+                label="Referencia:"
+                name="referencia"
+                value={viajeData.referencia}
+                onChange={handleChangeViaje}
+              />
+
+              <section className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Fecha factura:
+                </label>
+                <input
+                  name="fechafactura"
+                  value={viajeData.fechafactura || ""}
+                  onChange={handleChangeViaje}
+                  type="date"
+                  className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                />
+              </section>
+
+              <InputField
+                label="Abonado:"
+                name="abonado"
+                value={viajeData.abonado}
+                onChange={handleChangeViaje}
+                type="number"
+              />
+
+              <section className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Cliente:
+                </label>
+                <select
+                  name="cliente_id"
+                  value={viajeData.cliente_id || ""}
+                  onChange={handleChangeViaje}
+                  className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                >
+                  <option value="">Selecciona un cliente</option>
+                  {props.clientes.map((cliente: any) => (
+                    <option key={cliente.id} value={cliente.id}>
+                      {cliente.nombre}
+                    </option>
+                  ))}
+                </select>
+              </section>
+
+              <section className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Dolares:{" "}
+                </label>
+                <input
+                  type="checkbox"
+                  name="dolares"
+                  checked={viajeData.dolares}
+                  onChange={handleChangeViaje}
+                  className="form-checkbox h-5 w-5 text-blue-500 focus:outline-none focus:ring focus:border-blue-300"
+                />
+              </section>
+
+              {viajeData.dolares && (
+                <InputField
+                  label="Tipo de cambio:"
+                  name="tipodecambio"
+                  value={viajeData.tipodecambio}
+                  onChange={handleChangeViaje}
+                  type="number"
+                />
+              )}
+
+              <InputField
+                label="Abono comision:"
+                name="abonocomision"
+                value={viajeData.abonocomision}
+                onChange={handleChangeViaje}
+                type="number"
+              />
+
+              <Button
+                title="Guardar Cambios"
+                type="button"
+                onClick={async () => {
+                  const exito = await guardarCambiosViaje(viajeData);
+                  if (exito) {
+                    setEditModeViaje(false);
+                    router.reload();
+                  }
+                }}
+              />
+            </section>
+          ) : (
+            <section className="bg-white p-4 rounded-md shadow-xl">
+              <section className="flex items-center space-x-3 relative">
+                <h1 className="text-4xl font-semibold p-2">
+                  {obtenerNombreClientePorId(viajeData.cliente_id)}
+                </h1>
+                <DeleteForeverIcon
+                  onClick={() => {
+                    const confirmacion = window.confirm(
+                      "¿Estás seguro que quieres eliminar el viaje y los proveedores?"
+                    );
+
+                    if (confirmacion) {
+                      eliminarViaje(viajeData);
+                    }
+                  }}
+                  sx={{ color: "#e03131", cursor: "pointer" }}
+                />
+
+                <EditIcon
+                  onClick={() => setEditModeViaje(true)}
+                  sx={{ color: "#1971c2", cursor: "pointer" }}
+                />
+                <article className="absolute top-4 right-5 text-gray-400">
+                  <p>{viajeData.folio || "N/A"}</p>
+                </article>
+                <section className="flex flex-col space-y-8 items-center">
+                  {viajeData.abonado !== viajeData.tarifa && (
+                    <PaidIcon
+                      onClick={clickCobradoTarifaViaje}
+                      sx={{ color: "#2f9e44", cursor: "pointer" }}
                     />
+                  )}
 
-                    <InputField
-                      label="Destino:"
-                      name="destino"
-                      value={viajeData.destino}
-                      onChange={handleChangeViaje}
-                    />
-
-                    <InputField
-                      label="Tarifa:"
-                      name="tarifa"
-                      value={viajeData.tarifa}
-                      onChange={handleChangeViaje}
-                      type="number"
-                    />
-
-                    <InputField
-                      label="Factura:"
-                      name="factura"
-                      value={viajeData.factura}
-                      onChange={handleChangeViaje}
-                    />
-
-                    <InputField
-                      label="Comision:"
-                      name="comision"
-                      value={viajeData.comision}
-                      onChange={handleChangeViaje}
-                      type="number"
-                    />
-
-                    <InputField
-                      label="Tipo de unidad:"
-                      name="tipodeunidad"
-                      value={viajeData.tipodeunidad}
-                      onChange={handleChangeViaje}
-                    />
-
-                    <InputField
-                      label="Referencia:"
-                      name="referencia"
-                      value={viajeData.referencia}
-                      onChange={handleChangeViaje}
-                    />
-
-                    <section className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Fecha factura:
-                      </label>
-                      <input
-                        name="fechafactura"
-                        value={viajeData.fechafactura || ""}
-                        onChange={handleChangeViaje}
-                        type="date"
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                      />
-                    </section>
-
-                    <InputField
-                      label="Abonado:"
-                      name="abonado"
-                      value={viajeData.abonado}
-                      onChange={handleChangeViaje}
-                      type="number"
-                    />
-
-                    <section className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Cliente:
-                      </label>
-                      <select
-                        name="cliente_id"
-                        value={viajeData.cliente_id || ""}
-                        onChange={handleChangeViaje}
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  <section
+                    className={`flex flex-col z-20 rounded-2xl shadow-large bg-white  fixed transition-all duration-300${
+                      openCobradoTarifaViaje
+                        ? " scale-100 opacity-100 ease-out"
+                        : " scale-50 opacity-0 ease-in"
+                    }`}
+                    style={{
+                      visibility: openCobradoTarifaViaje ? "visible" : "hidden",
+                    }}
+                  >
+                    <article className="flex">
+                      <button
+                        className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                        onClick={contadoTarifaViaje}
                       >
-                        <option value="">Selecciona un cliente</option>
-                        {props.clientes.map((cliente: any) => (
-                          <option key={cliente.id} value={cliente.id}>
-                            {cliente.nombre}
-                          </option>
-                        ))}
-                      </select>
-                    </section>
+                        Contado
+                      </button>
+                      <button
+                        className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                        onClick={clickAbonadoTarifaViaje}
+                      >
+                        Abono
+                      </button>
+                    </article>
 
-                    <section className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Dolares:{" "}
-                      </label>
-                      <input
-                        type="checkbox"
-                        name="dolares"
-                        checked={viajeData.dolares}
-                        onChange={handleChangeViaje}
-                        className="form-checkbox h-5 w-5 text-blue-500 focus:outline-none focus:ring focus:border-blue-300"
-                      />
-                    </section>
-
-                    {viajeData.dolares && (
+                    <section
+                      className={`transition-all duration-300 overflow-hidden${
+                        openAbonadoTarifaViaje
+                          ? " max-h-[500px] opacity-100 translate-y-0"
+                          : " max-h-0 opacity-0 translate-y-[100%]"
+                      }`}
+                      style={{
+                        visibility: openAbonadoTarifaViaje
+                          ? "visible"
+                          : "hidden",
+                      }}
+                    >
                       <InputField
-                        label="Tipo de cambio:"
-                        name="tipodecambio"
-                        value={viajeData.tipodecambio}
-                        onChange={handleChangeViaje}
+                        label="Abonado:"
+                        name="abonado"
+                        value={nuevoAbonoTarifaViaje}
+                        onChange={handleAbonoTarifaViajeChange}
                         type="number"
                       />
-                    )}
 
-                    <InputField
-                      label="Abono comision:"
-                      name="abonocomision"
-                      value={viajeData.abonocomision}
-                      onChange={handleChangeViaje}
-                      type="number"
-                    />
-
-                    <Button
-                      title="Guardar Cambios"
-                      type="button"
-                      onClick={async () => {
-                        const exito = await guardarCambiosViaje(viajeData);
-                        if (exito) {
-                          setEditModeViaje(false);
-                          router.reload();
-                        }
-                      }}
-                    />
+                      <button
+                        className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                        onClick={abonoTarifaViaje}
+                      >
+                        Guardar
+                      </button>
+                    </section>
                   </section>
-                ) : (
-                  <section className="bg-white p-4 rounded-md shadow-xl border border-gray-300 mb-5">
-                    <h1 className="text-4xl font-semibold">
-                      {obtenerNombreClientePorId(viajeData.cliente_id)}
-                    </h1>
+                </section>
+              </section>
+              <section className="space-y-3 p-2">
+                <h2 className="text-xl text-gray-600 font-semibold">
+                  Detalle Viaje
+                </h2>
+                <section className="flex flex-wrap">
+                  <section className="flex flex-wrap">
+                    <article className="p-2 w-full md:w-[25%]">
+                      <h3 className="font-bold text-gray-400">Origen:</h3>
+                      <p>{viajeData.origen}</p>
+                    </article>
+                    <article className="p-2 w-full md:w-[25%]">
+                      <h3 className="font-bold text-gray-400">Destino:</h3>
+                      <p>{viajeData.destino}</p>
+                    </article>
+                    <article className="p-2 w-full md:w-[25%]">
+                      <h3 className="font-bold text-gray-400">
+                        Fecha de Factura:
+                      </h3>
+                      <p>{viajeData.fechafactura || "N/A"}</p>
+                    </article>
+                    <article className="p-2 w-full md:w-[25%]">
+                      <h3 className="font-bold text-gray-400">Factura:</h3>
+                      <p>{viajeData.factura || "N/A"}</p>
+                    </article>
+                    <article className="p-2 w-full md:w-[25%]">
+                      <h3 className="font-bold text-gray-400">Referencia:</h3>
+                      <p>{viajeData.referencia || "N/A"}</p>
+                    </article>
+                    <article className="p-2 w-full md:w-[25%]">
+                      <h3 className="font-bold text-gray-400">
+                        Tipo de unidad:
+                      </h3>
+                      <p>{viajeData.tipodeunidad || "N/A"}</p>
+                    </article>
+                    <article className="p-2 w-full md:w-[25%]">
+                      <h3 className="font-bold text-gray-400">Tarifa:</h3>
+                      {currencyFormatter.format(viajeData.tarifa, {
+                        code: "MXN",
+                        precision: 0,
+                      })}
+                    </article>
+                    <article className="p-2 w-full md:w-[25%]">
+                      <h3 className="font-bold text-gray-400">Abono:</h3>
+                      {currencyFormatter.format(viajeData.abonado, {
+                        code: "MXN",
+                        precision: 0,
+                      })}
+                    </article>
+                    {viajeData.dolares && (
+                      <section>
+                        <article className="p-2 w-full md:w-[30%]">
+                          <h3 className="font-bold text-gray-400">Dólares:</h3>
+                          <p>Si</p>
+                        </article>
+                        <article className="p-2 w-full md:w-[30%]">
+                          <h3 className="font-bold text-gray-400">
+                            Tipo de Cambio:
+                          </h3>
+                          <p>
+                            {currencyFormatter.format(viajeData.tipodecambio, {
+                              code: "MXN",
+                              precision: 0,
+                            })}
+                          </p>
+                        </article>
+                      </section>
+                    )}
+                  </section>
 
-                    <section>
+                  <section className="flex flex-col">
+                    <section className="flex items-center space-x-3">
+                      <h2 className="text-xl text-gray-600 font-semibold">
+                        Comisión
+                      </h2>
+                      <section className="flex flex-col space-y-8 items-center">
+                        {viajeData.abonocomision !== viajeData.comision && (
+                          <PaidIcon
+                            onClick={clickCobradoComisionViaje}
+                            sx={{ color: "#2f9e44", cursor: "pointer" }}
+                          />
+                        )}
+
+                        <section
+                          className={`flex flex-col z-20 rounded-2xl shadow-large bg-white  fixed transition-all duration-300${
+                            openCobradoComisionViaje
+                              ? " scale-100 opacity-100 ease-out"
+                              : " scale-50 opacity-0 ease-in"
+                          }`}
+                          style={{
+                            visibility: openCobradoComisionViaje
+                              ? "visible"
+                              : "hidden",
+                          }}
+                        >
+                          <article className="flex">
+                            <button
+                              className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                              onClick={contadoComisionViaje}
+                            >
+                              Contado
+                            </button>
+                            <button
+                              className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                              onClick={clickAbonadoComisionViaje}
+                            >
+                              Abono
+                            </button>
+                          </article>
+
+                          <section
+                            className={`transition-all duration-300 overflow-hidden${
+                              openAbonadoComisionViaje
+                                ? " max-h-[500px] opacity-100 translate-y-0"
+                                : " max-h-0 opacity-0 translate-y-[100%]"
+                            }`}
+                            style={{
+                              visibility: openAbonadoComisionViaje
+                                ? "visible"
+                                : "hidden",
+                            }}
+                          >
+                            <InputField
+                              label="Abono comision:"
+                              name="abonocomision"
+                              value={nuevoAbonoComisionViaje}
+                              onChange={handleAbonoComisionViajeChange}
+                              type="number"
+                            />
+
+                            <button
+                              className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                              onClick={abonoComisionViaje}
+                            >
+                              Guardar
+                            </button>
+                          </section>
+                        </section>
+                      </section>
+                    </section>
+
+                    <article className="p-2">
+                      <h3 className="font-bold text-gray-400">Comisión:</h3>
+                      {currencyFormatter.format(viajeData.comision, {
+                        code: "MXN",
+                        precision: 0,
+                      })}
+                    </article>
+                    <article className="p-2">
+                      <h3 className="font-bold text-gray-400">Abono:</h3>
+                      {currencyFormatter.format(viajeData.abonocomision, {
+                        code: "MXN",
+                        precision: 0,
+                      })}
+                    </article>
+                  </section>
+                </section>
+              </section>
+            </section>
+          )}
+          {!loading ? (
+            <section className="flex flex-wrap gap-5 justify-center">
+              {viajeProveedorData.map((proveedor, index) => (
+                <section key={index}>
+                  {editModeProveedor && index === proveedorEditandoIndex ? (
+                    <section className="flex flex-col bg-white m-2 shadow-xl rounded-md p-3">
+                      <h1 className="text-4xl font-semibold p-5">{`${obtenerNombreProveedorPorId(
+                        proveedor.proveedor_id
+                      )}`}</h1>
+                      <section>
+                        <InputField
+                          label=" Proveedor Tarifa:"
+                          name="tarifa"
+                          value={viajeProveedorData[index].tarifa}
+                          onChange={handleChangeViajeProveedorEdit}
+                          type="number"
+                        />
+
+                        <InputField
+                          label="Proveedor Abonado:"
+                          name="abonado"
+                          value={viajeProveedorData[index].abonado}
+                          onChange={handleChangeViajeProveedorEdit}
+                          type="number"
+                        />
+
+                        <InputField
+                          label="Proveedor Origen:"
+                          name="origen"
+                          value={viajeProveedorData[index].origen}
+                          onChange={handleChangeViajeProveedorEdit}
+                        />
+
+                        <InputField
+                          label="Proveedor Destino:"
+                          name="destino"
+                          value={viajeProveedorData[index].destino}
+                          onChange={handleChangeViajeProveedorEdit}
+                        />
+
+                        <section className="mb-4">
+                          <label className="block text-gray-700 text-sm font-bold mb-2">
+                            Proveedor:
+                          </label>
+                          <select
+                            name="proveedor_id"
+                            value={viajeProveedorData[index].proveedor_id || ""}
+                            onChange={handleChangeViajeProveedorEdit}
+                            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                          >
+                            <option value="">Selecciona un proveedor</option>
+                            {props.proveedores.map((proveedor: any) => (
+                              <option key={proveedor.id} value={proveedor.id}>
+                                {proveedor.nombre}
+                              </option>
+                            ))}
+                          </select>
+                        </section>
+                      </section>
+
                       <Button
-                        title="Borrar Viaje"
+                        title="Guardar Cambios"
                         type="button"
-                        onClick={() => {
-                          const confirmacion = window.confirm(
-                            "¿Estás seguro que quieres eliminar el viaje y los proveedores?"
+                        onClick={async () => {
+                          const exito = await guardarCambiosProveedor(
+                            proveedor
                           );
-
-                          if (confirmacion) {
-                            eliminarViaje(viajeData);
+                          if (exito) {
+                            setEditModeProveedor(false);
+                            setProveedorEditandoIndex(-1);
+                            router.reload();
                           }
                         }}
                       />
-
-                      <Button
-                        title="Editar Viaje"
-                        type="button"
-                        onClick={() => setEditModeViaje(true)}
-                      />
                     </section>
-
-                    <section className="bg-white p-4 rounded-md shadow-xl border border-gray-300 mb-5">
-                      <h2 className="text-xl text-gray-600 font-semibold mb-5 ml-5">
-                        Detalle Viaje
-                      </h2>
-                      <section className="text-gray-500 border p-2 rounded mb-2">
-                        <label className="font-bold">Origen:</label>{" "}
-                        {viajeData.origen}
-                      </section>
-
-                      <section className="text-gray-500 border p-2 rounded mb-2">
-                        <label className="font-bold">Destino:</label>{" "}
-                        {viajeData.destino}
-                      </section>
-
-                      <section className="text-gray-500 border p-2 rounded mb-2">
-                        <label className="font-bold">Factura:</label>{" "}
-                        {viajeData.factura || "N/A"}
-                      </section>
-
-                      <section className="text-gray-500 border p-2 rounded mb-2">
-                        <label className="font-bold">Tipo de unidad:</label>{" "}
-                        {viajeData.tipodeunidad || "N/A"}
-                      </section>
-
-                      <section className="text-gray-500 border p-2 rounded mb-2">
-                        <label className="font-bold">Referencia:</label>{" "}
-                        {viajeData.referencia || "N/A"}
-                      </section>
-
-                      <section className="text-gray-500 border p-2 rounded mb-2">
-                        <label className="font-bold">Fecha de Factura:</label>{" "}
-                        {viajeData.fechafactura || "N/A"}
-                      </section>
-
-                      {viajeData.dolares && (
-                        <section className="text-gray-500 border p-2 rounded mb-2">
-                          <label className="font-bold">Dólares:</label> Sí
-                          <br />
-                          <label className="font-bold">
-                            Tipo de Cambio:
-                          </label>{" "}
-                          {currencyFormatter.format(viajeData.tipodecambio, {
-                            code: "MXN",
-                            precision: 0,
-                          })}
-                        </section>
-                      )}
-
-                      <section>
-                        <article>
-                          <h2 className="text-xl text-gray-600 font-semibold p-5">
-                            Comisión
-                          </h2>
-                          <section className="text-gray-500 border p-2 rounded mb-2">
-                            <label className="font-bold">Comisión:</label>{" "}
-                            {currencyFormatter.format(viajeData.comision, {
-                              code: "MXN",
-                              precision: 0,
-                            })}
-                          </section>
-
-                          <section className="text-gray-500 border p-2 rounded mb-2">
-                            <label className="font-bold">Abono:</label>{" "}
-                            {currencyFormatter.format(viajeData.abonocomision, {
-                              code: "MXN",
-                              precision: 0,
-                            })}
-                          </section>
-
-                          {viajeData.abonocomision !== viajeData.comision && (
-                            <Button
-                              title="Pagar"
-                              onClick={clickCobradoComisionViaje}
+                  ) : (
+                    <section className="bg-white p-4 rounded-md shadow-xl ">
+                      <section className="flex items-center space-x-3">
+                        <h1 className="text-4xl font-semibold p-2">{`${obtenerNombreProveedorPorId(
+                          proveedor.proveedor_id
+                        )}`}</h1>
+                        <DeleteForeverIcon
+                          onClick={() => {
+                            const confirmacion = window.confirm(
+                              "¿Estás seguro que quieres eliminar este proveedor?"
+                            );
+                            if (confirmacion) {
+                              eliminarProveedor(proveedor.id);
+                            }
+                          }}
+                          sx={{ color: "#e03131", cursor: "pointer" }}
+                        />
+                        <EditIcon
+                          onClick={() => {
+                            setEditModeProveedor(true);
+                            setProveedorEditandoIndex(index);
+                          }}
+                          sx={{ color: "#1971c2", cursor: "pointer" }}
+                        />
+                        <section className="flex flex-col space-y-8 items-center">
+                          {proveedor.abonado !== proveedor.tarifa && (
+                            <PaidIcon
+                              onClick={() => clickCobradoTarifaProveedor(index)}
+                              sx={{ color: "#2f9e44", cursor: "pointer" }}
                             />
                           )}
 
                           <section
-                            className={`z-10 transition-all duration-300 overflow-hidden${
-                              openCobradoComisionViaje
-                                ? " max-h-[500px] opacity-100 translate-y-0"
-                                : " max-h-0 opacity-0 translate-y-[100%]"
+                            className={`flex flex-col z-20 rounded-2xl shadow-large bg-white  fixed transition-all duration-300${
+                              openCobradoTarifaProveedor &&
+                              proveedorSeleccionadoIndex === index
+                                ? " scale-100 opacity-100 ease-out"
+                                : " scale-50 opacity-0 ease-in"
                             }`}
                             style={{
-                              visibility: openCobradoComisionViaje
+                              visibility: openCobradoTarifaProveedor
                                 ? "visible"
                                 : "hidden",
                             }}
                           >
-                            <Button
-                              title="Contado"
-                              type="button"
-                              onClick={contadoComisionViaje}
-                            />
-
-                            <Button
-                              title="Abono"
-                              type="button"
-                              onClick={clickAbonadoComisionViaje}
-                            />
+                            <article className="flex">
+                              <button
+                                className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                                onClick={() => contadoTarifaProveedor(index)}
+                              >
+                                Contado
+                              </button>
+                              <button
+                                className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                                onClick={() => {
+                                  clickAbonadoTarifaProveedor(index);
+                                }}
+                              >
+                                Abono
+                              </button>
+                            </article>
                             <section
-                              className={`z-10 transition-all duration-300 overflow-hidden${
-                                openAbonadoComisionViaje
+                              className={`transition-all duration-300 overflow-hidden${
+                                openAbonadoTarifaProveedor &&
+                                proveedorSeleccionadoIndex === index
                                   ? " max-h-[500px] opacity-100 translate-y-0"
                                   : " max-h-0 opacity-0 translate-y-[100%]"
                               }`}
                               style={{
-                                visibility: openAbonadoComisionViaje
-                                  ? "visible"
-                                  : "hidden",
-                              }}
-                            >
-                              <InputField
-                                label="Abono comision:"
-                                name="abonocomision"
-                                value={nuevoAbonoComisionViaje}
-                                onChange={handleAbonoComisionViajeChange}
-                                type="number"
-                              />
-                              <Button
-                                title="Guardar Abono"
-                                type="button"
-                                onClick={abonoComisionViaje}
-                              />
-                            </section>
-                          </section>
-                        </article>
-                      </section>
-
-                      <section>
-                        <article>
-                          <h2 className="text-xl text-gray-600 font-semibold p-5">
-                            Tarifa
-                          </h2>
-                          <section className="text-gray-500 border p-2 rounded mb-2">
-                            <label className="font-bold">Tarifa:</label>{" "}
-                            {currencyFormatter.format(viajeData.tarifa, {
-                              code: "MXN",
-                              precision: 0,
-                            })}
-                          </section>
-
-                          <section className="text-gray-500 border p-2 rounded mb-2">
-                            <label className="font-bold">Abono:</label>{" "}
-                            {currencyFormatter.format(viajeData.abonado, {
-                              code: "MXN",
-                              precision: 0,
-                            })}
-                          </section>
-
-                          {viajeData.abonado !== viajeData.tarifa && (
-                            <Button
-                              title="Pagar"
-                              onClick={clickCobradoTarifaViaje}
-                            />
-                          )}
-
-                          <section
-                            className={`z-10 transition-all duration-300 overflow-hidden${
-                              openCobradoTarifaViaje
-                                ? " max-h-[500px] opacity-100 translate-y-0"
-                                : " max-h-0 opacity-0 translate-y-[100%]"
-                            }`}
-                            style={{
-                              visibility: openCobradoTarifaViaje
-                                ? "visible"
-                                : "hidden",
-                            }}
-                          >
-                            <Button
-                              title="Contado"
-                              type="button"
-                              onClick={contadoTarifaViaje}
-                            />
-
-                            <Button
-                              title="Abono"
-                              type="button"
-                              onClick={clickAbonadoTarifaViaje}
-                            />
-                            <section
-                              className={`z-10 transition-all duration-300 overflow-hidden${
-                                openAbonadoTarifaViaje
-                                  ? " max-h-[500px] opacity-100 translate-y-0"
-                                  : " max-h-0 opacity-0 translate-y-[100%]"
-                              }`}
-                              style={{
-                                visibility: openAbonadoTarifaViaje
+                                visibility: openAbonadoTarifaProveedor
                                   ? "visible"
                                   : "hidden",
                               }}
@@ -874,279 +1052,76 @@ export const ViajeForm = (props: ViajeFormProps) => {
                               <InputField
                                 label="Abonado:"
                                 name="abonado"
-                                value={nuevoAbonoTarifaViaje}
-                                onChange={handleAbonoTarifaViajeChange}
+                                value={nuevoAbonoTarifaProveedor}
+                                onChange={handleAbonoTarifaProveedorChange}
                                 type="number"
                               />
-                              <Button
-                                title="Guardar Abono"
-                                type="button"
-                                onClick={abonoTarifaViaje}
-                              />
+
+                              <button
+                                className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                                onClick={abonoTarifaProveedor}
+                              >
+                                Guardar
+                              </button>
                             </section>
                           </section>
-                        </article>
-                      </section>
-                    </section>
-                  </section>
-                )}
-              </section>
-            ) : (
-              <section className="flex flex-col bg-white w-[320px] h-[650px] m-2 shadow-xl rounded-md p-3">
-                <Skeleton height={100} animation="wave" />
-              </section>
-            )}
-
-            {!loading ? (
-              <section className="flex flex-wrap justify-center gap-10">
-                {viajeProveedorData.map((proveedor, index) => (
-                  <section key={index}>
-                    {editModeProveedor && index === proveedorEditandoIndex ? (
-                      <section className="flex flex-col bg-white w-[320px] h-[700px] m-2 shadow-xl rounded-md p-3">
-                        <h1 className="text-4xl font-semibold p-5">{`${obtenerNombreProveedorPorId(
-                          proveedor.proveedor_id
-                        )}`}</h1>
-                        <section>
-                          <InputField
-                            label=" Proveedor Tarifa:"
-                            name="tarifa"
-                            value={viajeProveedorData[index].tarifa}
-                            onChange={handleChangeViajeProveedorEdit}
-                            type="number"
-                          />
-
-                          <InputField
-                            label="Proveedor Abonado:"
-                            name="abonado"
-                            value={viajeProveedorData[index].abonado}
-                            onChange={handleChangeViajeProveedorEdit}
-                            type="number"
-                          />
-
-                          <InputField
-                            label="Proveedor Origen:"
-                            name="origen"
-                            value={viajeProveedorData[index].origen}
-                            onChange={handleChangeViajeProveedorEdit}
-                          />
-
-                          <InputField
-                            label="Proveedor Destino:"
-                            name="destino"
-                            value={viajeProveedorData[index].destino}
-                            onChange={handleChangeViajeProveedorEdit}
-                          />
-
-                          <section className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">
-                              Proveedor:
-                            </label>
-                            <select
-                              name="proveedor_id"
-                              value={
-                                viajeProveedorData[index].proveedor_id || ""
-                              }
-                              onChange={handleChangeViajeProveedorEdit}
-                              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                            >
-                              <option value="">Selecciona un proveedor</option>
-                              {props.proveedores.map((proveedor: any) => (
-                                <option key={proveedor.id} value={proveedor.id}>
-                                  {proveedor.nombre}
-                                </option>
-                              ))}
-                            </select>
-                          </section>
                         </section>
-
-                        <Button
-                          title="Guardar Cambios"
-                          type="button"
-                          onClick={async () => {
-                            const exito = await guardarCambiosProveedor(
-                              proveedor
-                            );
-                            if (exito) {
-                              setEditModeProveedor(false);
-                              setProveedorEditandoIndex(-1);
-                              router.reload();
-                            }
-                          }}
-                        />
                       </section>
-                    ) : (
-                      <section className="bg-white p-5 rounded-md shadow-xl border border-gray-300">
-                        <h1 className="text-4xl font-semibold ">{`${obtenerNombreProveedorPorId(
-                          proveedor.proveedor_id
-                        )}`}</h1>
 
-                        <section>
-                          <Button
-                            title="Borrar Proveedor"
-                            type="button"
-                            onClick={() => {
-                              const confirmacion = window.confirm(
-                                "¿Estás seguro que quieres eliminar este proveedor?"
-                              );
-                              if (confirmacion) {
-                                eliminarProveedor(proveedor.id);
-                              }
-                            }}
-                          />
-                          <Button
-                            title="Editar Proveedor"
-                            type="button"
-                            onClick={() => {
-                              setEditModeProveedor(true);
-                              setProveedorEditandoIndex(index);
-                            }}
-                          />
-                        </section>
-
-                        <section className="bg-white p-4 rounded-md shadow-xl border border-gray-300 mb-5">
-                          <h2 className="text-xl text-gray-600 font-semibold mb-5 ml-5">
-                            Detalle Proveedor
-                          </h2>
-                          <section className="text-gray-500 border p-2 rounded mb-2">
-                            <label className="font-bold">Origen:</label>{" "}
-                            {proveedor.origen}
-                          </section>
-
-                          <section className="text-gray-500 border p-2 rounded mb-2">
-                            <label className="font-bold">Destino:</label>{" "}
-                            {proveedor.destino}
-                          </section>
-
-                          <section className="text-gray-500 border p-2 rounded mb-2">
-                            <label className="font-bold">Tarifa:</label>{" "}
+                      <section className="space-y-3 p-2">
+                        <h2 className="text-xl text-gray-600 font-semibold">
+                          Detalle Proveedor
+                        </h2>
+                        <section className="flex flex-col">
+                          <article className="p-2">
+                            <h3 className="font-bold text-gray-400">Origen:</h3>
+                            <p>{proveedor.origen}</p>
+                          </article>
+                          <article className="p-2">
+                            <h3 className="font-bold text-gray-400">
+                              Destino:
+                            </h3>
+                            <p>{proveedor.destino}</p>
+                          </article>
+                          <article className="p-2">
+                            <h3 className="font-bold text-gray-400">Tarifa:</h3>
                             {currencyFormatter.format(proveedor.tarifa, {
                               code: "MXN",
                               precision: 0,
                             })}
-                          </section>
-
-                          <section className="text-gray-500 border p-2 rounded mb-2">
-                            <label className="font-bold">Abonado:</label>{" "}
+                          </article>
+                          <article className="p-2">
+                            <h3 className="font-bold text-gray-400">Abono:</h3>
                             {currencyFormatter.format(proveedor.abonado, {
                               code: "MXN",
                               precision: 0,
                             })}
-                          </section>
-
-                          <section>
-                            <article>
-                              <h2 className="text-xl text-gray-600 font-semibold p-5">
-                                Tarifa
-                              </h2>
-                              <section className="text-gray-500 border p-2 rounded mb-2">
-                                <label className="font-bold">Tarifa:</label>{" "}
-                                {currencyFormatter.format(proveedor.tarifa, {
-                                  code: "MXN",
-                                  precision: 0,
-                                })}
-                              </section>
-
-                              <section className="text-gray-500 border p-2 rounded mb-2">
-                                <label className="font-bold">Abono:</label>{" "}
-                                {currencyFormatter.format(proveedor.abonado, {
-                                  code: "MXN",
-                                  precision: 0,
-                                })}
-                              </section>
-
-                              {proveedor.abonado !== proveedor.tarifa && (
-                                <Button
-                                  title="Pagar"
-                                  onClick={() =>
-                                    clickCobradoTarifaProveedor(index)
-                                  }
-                                />
-                              )}
-
-                              <section
-                                className={`z-10 transition-all duration-300 overflow-hidden${
-                                  openCobradoTarifaProveedor &&
-                                  proveedorSeleccionadoIndex === index
-                                    ? " max-h-[500px] opacity-100 translate-y-0"
-                                    : " max-h-0 opacity-0 translate-y-[100%]"
-                                }`}
-                                style={{
-                                  visibility: openCobradoTarifaProveedor
-                                    ? "visible"
-                                    : "hidden",
-                                }}
-                              >
-                                <Button
-                                  title="Contado"
-                                  type="button"
-                                  onClick={() => contadoTarifaProveedor(index)}
-                                />
-
-                                <Button
-                                  title="Abono"
-                                  type="button"
-                                  onClick={() => {
-                                    clickAbonadoTarifaProveedor(index);
-                                  }}
-                                />
-                                <section
-                                  className={`z-10 transition-all duration-300 overflow-hidden${
-                                    openAbonadoTarifaProveedor &&
-                                    proveedorSeleccionadoIndex === index
-                                      ? " max-h-[500px] opacity-100 translate-y-0"
-                                      : " max-h-0 opacity-0 translate-y-[100%]"
-                                  }`}
-                                  style={{
-                                    visibility: openAbonadoTarifaProveedor
-                                      ? "visible"
-                                      : "hidden",
-                                  }}
-                                >
-                                  <InputField
-                                    label="Abonado:"
-                                    name="abonado"
-                                    value={nuevoAbonoTarifaProveedor}
-                                    onChange={handleAbonoTarifaProveedorChange}
-                                    type="number"
-                                  />
-                                  <Button
-                                    title="Guardar Abono"
-                                    type="button"
-                                    onClick={() => {
-                                      abonoTarifaProveedor;
-                                    }}
-                                  />
-                                </section>
-                              </section>
-                            </article>
-                          </section>
+                          </article>
                         </section>
                       </section>
-                    )}
-                  </section>
-                ))}
-              </section>
-            ) : (
-              <section className="flex flex-wrap justify-center gap-10">
-                {Array.from({
-                  length:
-                    viajeProveedorData.length > 0
-                      ? viajeProveedorData.length
-                      : 3,
-                }).map((_, index) => (
-                  <section
-                    key={index}
-                    className="flex flex-col bg-white w-[320px] h-[450px] m-2 shadow-xl rounded-md p-3"
-                  >
-                    <Skeleton height={100} animation="wave" />
-                  </section>
-                ))}
-              </section>
-            )}
-          </section>
+                    </section>
+                  )}
+                </section>
+              ))}
+            </section>
+          ) : (
+            <section className="flex flex-wrap justify-center gap-10">
+              {Array.from({
+                length:
+                  viajeProveedorData.length > 0 ? viajeProveedorData.length : 3,
+              }).map((_, index) => (
+                <section
+                  key={index}
+                  className="flex flex-col bg-white w-[320px] h-[450px] m-2 shadow-xl rounded-md p-3"
+                >
+                  <Skeleton height={100} animation="wave" />
+                </section>
+              ))}
+            </section>
+          )}
         </section>
       ) : (
-        <section className="min-h-screen flex flex-col items-center p-5 flex flex-wrap justify-center gap-10">
+        <section className="min-h-screen flex flex-col items-center p-5 flex-wrap justify-center gap-10">
           <form onSubmit={handleSubmit}>
             {!loading ? (
               <section className="mx-auto my-10 max-w-md bg-white p-6 rounded-md shadow-md">

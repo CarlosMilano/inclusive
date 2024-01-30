@@ -141,7 +141,6 @@ export default function Home() {
         setNombreCliente("");
         setDiasCredito(0);
         setOpenCliente(false);
-        router.reload();
       }
     } catch (error) {
       console.error(error);
@@ -156,7 +155,6 @@ export default function Home() {
       else {
         setNombreProveedor("");
         setOpenProveedor(false);
-        router.reload();
       }
     } catch (error) {
       console.error(error);
