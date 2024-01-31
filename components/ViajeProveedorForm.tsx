@@ -9,6 +9,7 @@ import currencyFormatter from "currency-formatter";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
+import { v4 as uuidv4 } from "uuid";
 
 interface ViajeData {
   id: string;
@@ -257,26 +258,53 @@ export const ViajeForm = (props: ViajeFormProps) => {
     }
   };
 
-  // Función para actualizar proveedor por proveedor
-  const guardarCambiosProveedor = async (
-    proveedorActualizado: ViajeProveedorData
-  ) => {
+  // Función para actualizar proveedor por proveedor y para añadir nuevos proveedores en la vista donde se muestran los datos
+  const guardarCambiosProveedor = async (proveedorActualizado: ViajeProveedorData) => {
     try {
-      const { data, error } = await supabase
-        .from("viajeproveedor")
-        .update(proveedorActualizado)
-        .eq("id", proveedorActualizado.id);
+      if (proveedorActualizado.id) {
+        // Si el proveedor tiene un ID, entonces existe y se debe actualizar
+        const { data, error } = await supabase
+          .from("viajeproveedor")
+          .update(proveedorActualizado)
+          .eq("id", proveedorActualizado.id);
+  
+        if (error) {
+          console.error("Error al actualizar el proveedor del viaje", error);
+          return false;
+        }
+  
+        console.log("Proveedor del viaje actualizado con éxito:", data);
+      } else {
 
-      if (error) {
-        console.error("Error al actualizar el proveedor del viaje", error);
-        return false;
+        // Si el proveedor no tiene un ID, entonces no existe y se debe crear
+
+        proveedorActualizado.id = uuidv4();
+        proveedorActualizado.viaje_id = viajeData.id;
+
+        const { data, error } = await supabase
+          .from("viajeproveedor")
+          .insert([
+            {
+              ...proveedorActualizado,
+              proveedor_id: proveedorActualizado.proveedor_id,
+            },
+          ]);
+  
+        if (error) {
+          console.error("Error al crear el proveedor del viaje", error);
+          return false;
+        }
+  
+        console.log("Proveedor del viaje creado con éxito:", data);
+        if (data) {
+          setViajeProveedorData([...viajeProveedorData, ...data]);
+        }
       }
-
-      console.log("Proveedor del viaje actualizado con éxito:", data);
+  
       return true;
     } catch (error) {
       console.error(
-        "Error en la solicitud PUT para el proveedor del viaje",
+        "Error en la solicitud para el proveedor del viaje",
         error
       );
       return false;
@@ -1129,6 +1157,15 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   )}
                 </section>
               ))}
+              <Button
+                title="Agregar Proveedor"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleAgregarProveedor();
+                }}
+                >
+              </Button>
             </section>
           ) : (
             <section className="flex flex-wrap justify-center gap-10">
@@ -1277,15 +1314,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   value={viajeData.abonocomision}
                   onChange={handleChangeViaje}
                   type="number"
-                />
-
-                <InputField
-                  label="Folio:"
-                  name="folio"
-                  value={viajeData.folio}
-                  onChange={handleChangeViaje}
-                  type="number"
-                  disabled={true}
                 />
               </section>
             ) : (

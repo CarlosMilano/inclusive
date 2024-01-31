@@ -6,7 +6,6 @@ interface InputFieldProps {
   value: string | number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   type?: 'text' | 'number';
-  disabled?: boolean;
 
 }
 
@@ -26,7 +25,6 @@ export const InputField = (props: InputFieldProps) => {
       onChange={props.onChange}
       className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
       id={props.name}
-      disabled={props.disabled}
       />
     </section>
   );
