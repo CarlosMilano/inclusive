@@ -4,6 +4,7 @@ import supabase from "../../api/supabase";
 import { useRouter } from "next/router";
 import { addDays, differenceInDays, parseISO } from "date-fns";
 import CardProveedor from "@/components/CardProveedor";
+import { Box, CircularProgress } from "@mui/material";
 
 interface Viaje {
   id: string;
@@ -29,6 +30,7 @@ export default function Home() {
   const [proveedor, setProveedor] = useState<Proveedor>();
   const router = useRouter();
   const { id } = router.query;
+  const [loading, setLoading] = useState(true);
 
   const filterViajes = viajes.filter((viaje) => viaje.tarifa !== viaje.abonado);
 
@@ -64,6 +66,9 @@ export default function Home() {
         console.error(error);
       }
     };
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
     fetchClienteData();
     fetchData();
   }, [id]);
@@ -73,30 +78,43 @@ export default function Home() {
       <Head>
         <title>Viajes {proveedor?.nombre}</title>
       </Head>
-      <main className="flex flex-col h-screen mt-[60px]">
-        <section className="p-8">
-          <h1 className="text-4xl font-bold">Viajes {proveedor?.nombre}</h1>
-        </section>
-        <section className="flex flex-wrap justify-center">
-          {filterViajes.slice().map((viaje) => {
-            return (
-              <CardProveedor
-                key={viaje.id}
-                origen={viaje.origen || ""}
-                destino={viaje.destino || ""}
-                monto={viaje.tarifa || 0}
-                factura={viaje.factura || ""}
-                abonado={viaje.abonado || 0}
-                referencia={viaje.referencia || ""}
-                id={viaje.viaje_id || ""}
-                onClick={(rowData) => {
-                  router.push(`/viaje/${rowData.id}`);
-                }}
-              />
-            );
-          })}
-        </section>
-      </main>
+      {loading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <main className="flex flex-col h-screen mt-[60px]">
+          <section className="p-8">
+            <h1 className="text-4xl font-bold">Viajes {proveedor?.nombre}</h1>
+          </section>
+          <section className="flex flex-wrap justify-center">
+            {filterViajes.slice().map((viaje) => {
+              return (
+                <CardProveedor
+                  key={viaje.id}
+                  origen={viaje.origen || ""}
+                  destino={viaje.destino || ""}
+                  monto={viaje.tarifa || 0}
+                  factura={viaje.factura || ""}
+                  abonado={viaje.abonado || 0}
+                  referencia={viaje.referencia || ""}
+                  id={viaje.viaje_id || ""}
+                  onClick={(rowData) => {
+                    router.push(`/viaje/${rowData.id}`);
+                  }}
+                />
+              );
+            })}
+          </section>
+        </main>
+      )}
     </>
   );
 }
