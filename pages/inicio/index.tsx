@@ -174,8 +174,8 @@ export default function Home() {
       <Head>
         <title>Inicio</title>
       </Head>
-      <main className="min-h-screen flex flex-col items-center p-5 mt-[60px]">
-        <section className="flex flex-wrap items-start justify-center">
+      <main className="min-h-screen flex flex-col items-center gap-5 p-5 mt-[60px]">
+        <section className="flex flex-wrap items-start justify-center gap-5">
           <article className="flex flex-col justify-center">
             <Button title="Añadir Viaje" onClick={handleClick} />
           </article>
