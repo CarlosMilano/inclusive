@@ -69,6 +69,15 @@ export const ViajeForm = (props: ViajeFormProps) => {
     folio: 0,
   });
 
+  //Para manejar los campos del proveedorform en la vista de solo mostrar los datos
+  const [proveedorformValues, ProveedorsetFormValues] = useState({
+    tarifa: 0,
+    abonado: 0,
+    origen: '',
+    destino: '',
+    proveedor_id: '',
+  });
+
   const [viajeProveedorData, setViajeProveedorData] = useState<
     ViajeProveedorData[]
   >([]);
@@ -78,6 +87,11 @@ export const ViajeForm = (props: ViajeFormProps) => {
   const [editModeViaje, setEditModeViaje] = useState(false);
   const [editModeProveedor, setEditModeProveedor] = useState(false);
   const [proveedorEditandoIndex, setProveedorEditandoIndex] = useState(-1);
+
+  //Para mostrar el formulario de proveedor en la vista de solo mostrar los datos
+  const [mostrarFormularioProveedorVistaMode, setMostrarFormularioProveedorVistaMode] = useState(false);
+  //Para ocultar boton de proveedor en la vista de solo mostrar los datos cuando se este agregando un nuevo proveedor
+  const [isButtonProveedorVisible, setButtonProveedorVisible] = useState(false);
 
   const [openCobradoComisionViaje, setOpenCobradoComisionViaje] =
     useState(false);
@@ -362,6 +376,41 @@ export const ViajeForm = (props: ViajeFormProps) => {
       };
       return newData;
     });
+  };
+
+
+  //Para manejar los campos del proveedorform en la vista de solo mostrar los datos
+  const handleAgregarNuevoProveedorVistaMode = (e: any) => {
+    ProveedorsetFormValues({
+      ...proveedorformValues,
+      [e.target.name]: e.target.value,
+    });
+  };  
+
+  //Para hacer el post de un nuevo proveedor en la vista de solo mostrar los datos
+  const handleAgregarProveedorVistaMode = async (e: any) => {
+    e.preventDefault();
+  
+    const { data, error } = await supabase
+      .from('viajeproveedor')
+      .insert([
+        { 
+          id: uuidv4(),
+          tarifa: proveedorformValues.tarifa,
+          abonado: proveedorformValues.abonado,
+          origen: proveedorformValues.origen,
+          destino: proveedorformValues.destino,
+          proveedor_id: proveedorformValues.proveedor_id,
+          viaje_id: viajeData.id
+        },
+      ]);
+  
+    if (error) {
+      console.error('Hubo un error al agregar el proveedor:', error);
+    } else {
+      console.log('Proveedor agregado exitosamente:', data);
+    }
+    router.reload();
   };
 
   //Para no usar el mismo handle que los demas campos ya que actualiza el valor en tiempo real y no se suman los abonos
@@ -1153,14 +1202,74 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   )}
                 </section>
               ))}
-              <Button
-                title="Agregar Proveedor"
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleAgregarProveedor();
-                }}
-              ></Button>
+              
+              {!isButtonProveedorVisible && (
+                <Button
+                  title="Agregar Proveedor"
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMostrarFormularioProveedorVistaMode(true);
+                    setButtonProveedorVisible(true)
+                  }}
+                >
+                </Button>
+              )}
+
+              {mostrarFormularioProveedorVistaMode && isButtonProveedorVisible && (
+                <section className="mx-auto my-10 max-w-md bg-white p-6 rounded-md shadow-md">
+                  <form onSubmit={handleAgregarProveedorVistaMode}>
+                    <InputField
+                      label=" Proveedor Tarifa:"
+                      name="tarifa"
+                      value={proveedorformValues.tarifa}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                      type="number"
+                    />
+
+                    <InputField
+                      label="Proveedor Abonado:"
+                      name="abonado"
+                      value={proveedorformValues.abonado}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                      type="number"
+                    />
+
+                    <InputField
+                      label="Proveedor Origen:"
+                      name="origen"
+                      value={proveedorformValues.origen}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                    />
+
+                    <InputField
+                      label="Proveedor Destino:"
+                      name="destino"
+                      value={proveedorformValues.destino}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                    />
+                    <section className="mb-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Proveedor:
+                      </label>
+                      <select
+                        name="proveedor_id"
+                        value={proveedorformValues.proveedor_id}
+                        onChange={handleAgregarNuevoProveedorVistaMode}
+                        className="p-3 border rounded-md focus:outline-none focus:border-blue-500"
+                      >
+                        <option value="">Selecciona un proveedor</option>
+                        {props.proveedores.map((proveedor: any) => (
+                          <option key={proveedor.id} value={proveedor.id}>
+                            {proveedor.nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </section>
+                    <Button title="Guardar Proveedor" type="submit" />
+                  </form>
+                </section>
+              )}
             </section>
           ) : (
             <section className="flex flex-wrap justify-center gap-10">
