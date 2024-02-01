@@ -328,7 +328,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
 
   //handle para viaje
   const handleChangeViaje = (e: any) => {
-    const { name, value, type } = e.target;
+    const { name, value, type } = e.target || e;
     const selectedValue =
       type === "select-one"
         ? value
@@ -608,7 +608,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
       {props.existeViaje ? (
         <section className="flex flex-col p-3 gap-5 items-center">
           {editModeViaje ? (
-            <section className="bg-white p-4 rounded-md shadow-xl max-w-[900px]">
+            <section className="bg-white p-4 rounded-md shadow-xl max-w-[1000px]">
               <h2 className="text-xl font-semibold p-2 text-gray-600">
                 Detalle Viaje
               </h2>
@@ -667,7 +667,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     value={viajeData.fechafactura || ""}
                     onChange={handleChangeViaje}
                     type="date"
-                    className="p-3 border-[1px] border-gray-300 rounded-sm focus:outline-none focus:border-blue-500"
                   />
                 </article>
                 <article className="p-2 w-full md:w-[25%]">
@@ -705,7 +704,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 </article>
                 <article className="p-2 w-full md:w-[25%]">
                   <InputField
-                    label="Abono comision:"
+                    label="Abono comision"
                     name="abonocomision"
                     value={viajeData.abonocomision}
                     onChange={handleChangeViaje}
@@ -726,7 +725,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 <article className="p-2 w-full md:w-[25%]">
                   {viajeData.dolares && (
                     <InputField
-                      label="Tipo de cambio:"
+                      label="Tipo de cambio"
                       name="tipodecambio"
                       value={viajeData.tipodecambio}
                       onChange={handleChangeViaje}
@@ -750,7 +749,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
               </button>
             </section>
           ) : (
-            <section className="bg-white p-4 rounded-md shadow-xl max-w-[900px]">
+            <section className="bg-white p-4 rounded-md shadow-xl">
               <section className="flex items-center space-x-3 relative">
                 <h1 className="text-4xl font-semibold p-2">
                   {obtenerNombreClientePorId(viajeData.cliente_id)}
@@ -821,7 +820,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       }}
                     >
                       <InputField
-                        label="Abonado:"
+                        label="Abonado"
                         name="abonado"
                         value={nuevoAbonoTarifaViaje}
                         onChange={handleAbonoTarifaViajeChange}
@@ -838,7 +837,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   </section>
                 </section>
               </section>
-              <section className=" p-2">
+              <section className="p-2">
                 <h2 className="text-xl text-gray-600 font-semibold">
                   Detalle Viaje
                 </h2>
@@ -997,7 +996,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
             {viajeProveedorData.map((proveedor, index) => (
               <section key={index}>
                 {editModeProveedor && index === proveedorEditandoIndex ? (
-                  <section className="bg-white p-4 rounded-md shadow-md min-w-[340px] max-h-[400px]">
+                  <section className="bg-white p-4 rounded-md shadow-md min-w-[340px] h-[420px]">
                     <section className="flex flex-col gap-3 items-center">
                       <Select
                         name="proveedor_id"
@@ -1016,7 +1015,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         name="origen"
                         value={viajeProveedorData[index].origen}
                         onChange={handleChangeViajeProveedorEdit}
-                        sx={{ width: "100%" }}
                       />
 
                       <InputField
@@ -1024,7 +1022,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         name="destino"
                         value={viajeProveedorData[index].destino}
                         onChange={handleChangeViajeProveedorEdit}
-                        sx={{ width: "100%" }}
                       />
                       <InputField
                         label="Tarifa"
@@ -1032,7 +1029,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         value={viajeProveedorData[index].tarifa}
                         onChange={handleChangeViajeProveedorEdit}
                         type="number"
-                        sx={{ width: "100%" }}
                       />
 
                       <InputField
@@ -1041,7 +1037,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         value={viajeProveedorData[index].abonado}
                         onChange={handleChangeViajeProveedorEdit}
                         type="number"
-                        sx={{ width: "100%" }}
                       />
 
                       <button
@@ -1063,7 +1058,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     </section>
                   </section>
                 ) : (
-                  <section className="bg-white p-4 rounded-md shadow-xl min-w-[340px]">
+                  <section className="bg-white p-4 rounded-md shadow-xl min-w-[340px] h-[420px]">
                     <section className="flex items-center space-x-3">
                       <h1 className="text-4xl font-semibold p-2">{`${obtenerNombreProveedorPorId(
                         proveedor.proveedor_id
@@ -1203,32 +1198,28 @@ export const ViajeForm = (props: ViajeFormProps) => {
 
             {mostrarFormularioProveedorVistaMode &&
               isButtonProveedorVisible && (
-                <section className=" bg-white p-4 rounded-md shadow-md min-w-[340px] max-h-[400px]">
+                <section className=" bg-white p-4 rounded-md shadow-md min-w-[340px] h-[420px]">
                   <form
                     onSubmit={handleAgregarProveedorVistaMode}
                     className="flex flex-col gap-3 items-center"
                   >
-                    <article className="flex items-center space-x-3 w-full">
-                      <label>Proveedor</label>
-                      <Select
-                        name="proveedor_id"
-                        value={proveedorformValues.proveedor_id}
-                        onChange={handleAgregarNuevoProveedorVistaMode}
-                        fullWidth
-                      >
-                        {props.proveedores.map((proveedor: any) => (
-                          <MenuItem key={proveedor.id} value={proveedor.id}>
-                            {proveedor.nombre}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </article>
+                    <Select
+                      name="proveedor_id"
+                      value={proveedorformValues.proveedor_id}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                      fullWidth
+                    >
+                      {props.proveedores.map((proveedor: any) => (
+                        <MenuItem key={proveedor.id} value={proveedor.id}>
+                          {proveedor.nombre}
+                        </MenuItem>
+                      ))}
+                    </Select>
                     <InputField
                       label="Origen"
                       name="origen"
                       value={proveedorformValues.origen}
                       onChange={handleAgregarNuevoProveedorVistaMode}
-                      sx={{ width: "100%" }}
                     />
 
                     <InputField
@@ -1236,7 +1227,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       name="destino"
                       value={proveedorformValues.destino}
                       onChange={handleAgregarNuevoProveedorVistaMode}
-                      sx={{ width: "100%" }}
                     />
                     <InputField
                       label="Tarifa"
@@ -1244,7 +1234,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       value={proveedorformValues.tarifa}
                       onChange={handleAgregarNuevoProveedorVistaMode}
                       type="number"
-                      sx={{ width: "100%" }}
                     />
 
                     <InputField
@@ -1253,7 +1242,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       value={proveedorformValues.abonado}
                       onChange={handleAgregarNuevoProveedorVistaMode}
                       type="number"
-                      sx={{ width: "100%" }}
                     />
 
                     <button
@@ -1272,19 +1260,18 @@ export const ViajeForm = (props: ViajeFormProps) => {
           onSubmit={handleSubmit}
           className="flex flex-col p-3 gap-5 items-center"
         >
-          <section className="bg-white p-4 rounded-md shadow-xl max-w-[900px]">
+          <section className="bg-white p-4 rounded-md shadow-xl max-w-[1000px]">
             <h1 className="text-4xl font-semibold p-2">Añadir Nuevo Viaje</h1>
             <h2 className="text-xl font-semibold p-2 text-gray-600">
               Detalle Viaje
             </h2>
             <section className="flex flex-wrap">
-              <article className="p-2 w-full md:w-[25%] space-x-3">
-                <label>Cliente</label>
+              <article className="p-2 w-full md:w-[25%]">
                 <Select
                   name="cliente_id"
                   value={viajeData.cliente_id || ""}
                   onChange={handleChangeViaje}
-                  sx={{ width: "132.5px" }}
+                  fullWidth
                 >
                   {props.clientes.map((cliente: any) => (
                     <MenuItem key={cliente.id} value={cliente.id}>
@@ -1333,7 +1320,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   value={viajeData.fechafactura || ""}
                   onChange={handleChangeViaje}
                   type="date"
-                  className="w-[194px] p-3 border-[1px] border-gray-300 rounded-sm focus:outline-none focus:border-blue-500"
                 />
               </article>
               <article className="p-2 w-full md:w-[25%]">
@@ -1405,60 +1391,21 @@ export const ViajeForm = (props: ViajeFormProps) => {
           <section className="flex flex-wrap gap-5 items-start justify-center">
             {viajeProveedorData.map((proveedor, index) => (
               <section key={index}>
-                <section className="bg-white p-4 rounded-md  shadow-md min-w-[340px] max-h-[400px]">
-                  <h1 className="text-3xl font-bold p-2">{`Añadir Proveedor ${
+                <section className="bg-white p-4 rounded-md shadow-md min-w-[340px] h-[420px]">
+                  <h1 className="text-2xl font-bold p-2">{`Añadir Proveedor ${
                     index + 1
                   }`}</h1>
-                  <section className="flex flex-col gap-3 items-center">
-                    <article className="flex items-center space-x-3 w-full">
-                      <label>Proveedor</label>
-                      <Select
-                        name="proveedor_id"
-                        value={viajeProveedorData[index].proveedor_id || ""}
-                        onChange={handleChangeViajeProveedorEdit}
-                        fullWidth
-                      >
-                        {props.proveedores.map((proveedor: any) => (
-                          <MenuItem key={proveedor.id} value={proveedor.id}>
-                            {proveedor.nombre}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </article>
-
-                    <InputField
-                      label="Origen"
-                      name="origen"
-                      value={viajeProveedorData[index].origen}
-                      onChange={handleChangeViajeProveedorEdit}
-                      sx={{ width: "100%" }}
-                    />
-
-                    <InputField
-                      label="Destino"
-                      name="destino"
-                      value={viajeProveedorData[index].destino}
-                      onChange={handleChangeViajeProveedorEdit}
-                      sx={{ width: "100%" }}
-                    />
-                    <InputField
-                      label="Tarifa"
-                      name="tarifa"
-                      value={viajeProveedorData[index].tarifa}
-                      onChange={handleChangeViajeProveedorEdit}
-                      type="number"
-                      sx={{ width: "100%" }}
-                    />
-
-                    <InputField
-                      label="Abonado"
-                      name="abonado"
-                      value={viajeProveedorData[index].abonado}
-                      onChange={handleChangeViajeProveedorEdit}
-                      type="number"
-                      sx={{ width: "100%" }}
-                    />
-                  </section>
+                  <ProveedorForm
+                    onChange={(formData: any) =>
+                      handleChangeViajeProveedor(index, {
+                        ...formData,
+                        id: "",
+                        viaje_id: "",
+                      })
+                    }
+                    data={proveedor}
+                    proveedores={props.proveedores}
+                  />
                 </section>
               </section>
             ))}
@@ -1471,9 +1418,9 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   handleAgregarProveedor();
                 }}
               />
-              <Button title="Guardar" type="submit" />
             </article>
           </section>
+          <Button title="Guardar" type="submit" />
         </form>
       )}
     </>

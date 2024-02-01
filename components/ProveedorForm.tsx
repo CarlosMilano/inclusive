@@ -32,7 +32,7 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
   };
 
   return (
-    <section className="flex flex-col gap-3 items-center">
+    <section className="flex flex-col gap-4 items-center">
       <Select
         name="proveedor_id"
         value={props.data.proveedor_id || ""}
@@ -46,12 +46,24 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
         ))}
       </Select>
       <InputField
+        label="Origen"
+        name="origen"
+        value={props.data.origen}
+        onChange={handleChange}
+      />
+
+      <InputField
+        label="Destino"
+        name="destino"
+        value={props.data.destino}
+        onChange={handleChange}
+      />
+      <InputField
         label="Tarifa"
         name="tarifa"
         value={props.data.tarifa}
         onChange={handleChange}
         type="number"
-        sx={{ width: "100%" }}
       />
 
       <InputField
@@ -60,23 +72,6 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
         value={props.data.abonado}
         onChange={handleChange}
         type="number"
-        sx={{ width: "100%" }}
-      />
-
-      <InputField
-        label="Origen"
-        name="origen"
-        value={props.data.origen}
-        onChange={handleChange}
-        sx={{ width: "100%" }}
-      />
-
-      <InputField
-        label="Destino"
-        name="destino"
-        value={props.data.destino}
-        onChange={handleChange}
-        sx={{ width: "100%" }}
       />
     </section>
   );
