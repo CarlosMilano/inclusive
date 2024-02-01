@@ -13,6 +13,7 @@ interface ProveedorFormProps {
   onChange: (formData: ProveedorFormData) => void; //Recibe el onchangeviajeproveedor en viajeproveedorform y lo utiliza en este onchange
   data: ProveedorFormData;
   proveedores: { id: string; nombre: string }[];
+  disableOrigenDestino?: boolean;
 }
 
 export const ProveedorForm = (props: ProveedorFormProps) => {
@@ -49,7 +50,8 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
         onChange={handleChange}
         type="number"
       />
-
+      {!props.disableOrigenDestino && (
+        <section>
       <InputField
         label="Proveedor Origen:"
         name="origen"
@@ -63,7 +65,8 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
         value={props.data.destino}
         onChange={handleChange}
       />
-
+      </section>
+      )}
       <section className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2">
           Proveedor:

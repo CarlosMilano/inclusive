@@ -88,6 +88,8 @@ export const ViajeForm = (props: ViajeFormProps) => {
   const [editModeProveedor, setEditModeProveedor] = useState(false);
   const [proveedorEditandoIndex, setProveedorEditandoIndex] = useState(-1);
 
+  const [hasMultipleProviders, setHasMultipleProviders] = useState(false);
+
   //Para mostrar el formulario de proveedor en la vista de solo mostrar los datos
   const [mostrarFormularioProveedorVistaMode, setMostrarFormularioProveedorVistaMode] = useState(false);
   //Para ocultar boton de proveedor en la vista de solo mostrar los datos cuando se este agregando un nuevo proveedor
@@ -349,6 +351,10 @@ export const ViajeForm = (props: ViajeFormProps) => {
     index: number,
     formData: ViajeProveedorData
   ) => {
+    if (index === 0 && !hasMultipleProviders) {
+      formData.origen = viajeData.origen;
+      formData.destino = viajeData.destino;
+    }
     setViajeProveedorData((prevData) => {
       const newData = [...prevData];
       newData[index] = { ...newData[index], ...formData };
@@ -436,6 +442,9 @@ export const ViajeForm = (props: ViajeFormProps) => {
 
   //Para agregar un nuevo proveedor vacio cuando se llena un nuevo viaje
   const handleAgregarProveedor = () => {
+    if (viajeProveedorData.length > 0) {
+      setHasMultipleProviders(true);
+    }
     setViajeProveedorData((prevForms) => [
       ...prevForms,
       {
@@ -1448,6 +1457,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     }
                     data={proveedor}
                     proveedores={props.proveedores}
+                    disableOrigenDestino={index === 0 && !hasMultipleProviders}
                   />
                 </section>
               ))}
