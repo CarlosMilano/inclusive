@@ -182,10 +182,10 @@ export default function Home() {
           <article className="flex flex-col justify-center items-center z-20">
             <Button title="Añadir Cliente" onClick={clickCliente} />
             <div
-              className={`flex flex-col justify-center items-center z-10 transition-all duration-300 overflow-hidden${
+              className={`flex flex-col justify-center items-center transition-all duration-300 overflow-hidden${
                 openCliente
                   ? " max-h-[180px] opacity-100 translate-y-0"
-                  : " max-h-0 opacity-0 translate-y-[100%]"
+                  : " max-h-0 opacity-0 translate-y-[-100%] z-0"
               }`}
               style={{
                 visibility: openCliente ? "visible" : "hidden",
@@ -216,10 +216,10 @@ export default function Home() {
           <article className="flex flex-col justify-center items-center">
             <Button title="Añadir Proveedor" onClick={clickProveedor} />
             <div
-              className={`flex flex-col justify-center items-center z-10 transition-all duration-300 overflow-hidden${
+              className={`flex flex-col justify-center items-center transition-all duration-300 overflow-hidden${
                 openProveedor
                   ? " max-h-[125px] opacity-100 translate-y-0"
-                  : " max-h-0 opacity-0 translate-y-[100%]"
+                  : " max-h-0 opacity-0 translate-y-[-100%] z-0"
               }`}
               style={{
                 visibility: openProveedor ? "visible" : "hidden",
@@ -292,7 +292,7 @@ export default function Home() {
             }))}
             loading={loading}
             onClick={(rowData) => {
-              router.push(`/cliente/${rowData.id}`);
+              router.push(`/comision/${rowData.id}`);
             }}
           />
         </section>

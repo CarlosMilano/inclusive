@@ -11,7 +11,7 @@ export default function Button(props: ButtonProps) {
     <>
       <button
         onClick={props.onClick}
-        className="py-4 bg-blue-600 text-xl text-white shadow-xl rounded-lg w-[230px] md:w-[210px] transition duration-300 hover:bg-blue-800"
+        className="py-4 bg-blue-600 text-xl text-white shadow-xl rounded-lg w-[230px] md:w-[210px] transition duration-300 hover:bg-blue-800 z-10"
       >
         {props.title}
       </button>
