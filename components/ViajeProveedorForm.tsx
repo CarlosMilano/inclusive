@@ -160,7 +160,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
           .select("folio")
           .order("folio", { ascending: false })
           .limit(1);
-  
+
         if (maxFolioError) {
           console.error("Error al obtener el folio máximo", maxFolioError);
         } else if (maxFolioData && maxFolioData.length > 0) {
@@ -173,10 +173,10 @@ export const ViajeForm = (props: ViajeFormProps) => {
         console.error("Error al obtener el folio máximo", error);
       }
     };
-  
+
     fetchMaxFolio();
-  }, []);  
-  
+  }, []);
+
   //Funcion para eiminar viaje completo y sus proveedores
   const eliminarViaje = async (ViajeData: ViajeData) => {
     try {
@@ -259,7 +259,9 @@ export const ViajeForm = (props: ViajeFormProps) => {
   };
 
   // Función para actualizar proveedor por proveedor y para añadir nuevos proveedores en la vista donde se muestran los datos
-  const guardarCambiosProveedor = async (proveedorActualizado: ViajeProveedorData) => {
+  const guardarCambiosProveedor = async (
+    proveedorActualizado: ViajeProveedorData
+  ) => {
     try {
       if (proveedorActualizado.id) {
         // Si el proveedor tiene un ID, entonces existe y se debe actualizar
@@ -267,46 +269,40 @@ export const ViajeForm = (props: ViajeFormProps) => {
           .from("viajeproveedor")
           .update(proveedorActualizado)
           .eq("id", proveedorActualizado.id);
-  
+
         if (error) {
           console.error("Error al actualizar el proveedor del viaje", error);
           return false;
         }
-  
+
         console.log("Proveedor del viaje actualizado con éxito:", data);
       } else {
-
         // Si el proveedor no tiene un ID, entonces no existe y se debe crear
 
         proveedorActualizado.id = uuidv4();
         proveedorActualizado.viaje_id = viajeData.id;
 
-        const { data, error } = await supabase
-          .from("viajeproveedor")
-          .insert([
-            {
-              ...proveedorActualizado,
-              proveedor_id: proveedorActualizado.proveedor_id,
-            },
-          ]);
-  
+        const { data, error } = await supabase.from("viajeproveedor").insert([
+          {
+            ...proveedorActualizado,
+            proveedor_id: proveedorActualizado.proveedor_id,
+          },
+        ]);
+
         if (error) {
           console.error("Error al crear el proveedor del viaje", error);
           return false;
         }
-  
+
         console.log("Proveedor del viaje creado con éxito:", data);
         if (data) {
           setViajeProveedorData([...viajeProveedorData, ...data]);
         }
       }
-  
+
       return true;
     } catch (error) {
-      console.error(
-        "Error en la solicitud para el proveedor del viaje",
-        error
-      );
+      console.error("Error en la solicitud para el proveedor del viaje", error);
       return false;
     }
   };
@@ -563,7 +559,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
   return (
     <section>
       {props.existeViaje ? (
-        <section className="flex flex-col p-3 gap-5">
+        <section className="flex flex-col p-3 gap-5 items-center">
           {editModeViaje ? (
             <section className="bg-white p-3 rounded-md shadow-md">
               <h1 className="text-4xl font-semibold p-5">
@@ -707,7 +703,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
               />
             </section>
           ) : (
-            <section className="bg-white p-4 rounded-md shadow-xl">
+            <section className="bg-white p-4 rounded-md shadow-xl max-w-[900px]">
               <section className="flex items-center space-x-3 relative">
                 <h1 className="text-4xl font-semibold p-2">
                   {obtenerNombreClientePorId(viajeData.cliente_id)}
@@ -729,7 +725,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   onClick={() => setEditModeViaje(true)}
                   sx={{ color: "#1971c2", cursor: "pointer" }}
                 />
-                <article className="absolute top-4 right-5 text-gray-400">
+                <article className="absolute top-4 right-5 text-lg text-gray-400">
                   <p>{viajeData.folio || "N/A"}</p>
                 </article>
                 <section className="flex flex-col space-y-8 items-center">
@@ -795,7 +791,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   </section>
                 </section>
               </section>
-              <section className="space-y-3 p-2">
+              <section className=" p-2">
                 <h2 className="text-xl text-gray-600 font-semibold">
                   Detalle Viaje
                 </h2>
@@ -863,8 +859,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       </section>
                     )}
                   </section>
-
-                  <section className="flex flex-col">
+                  <section className="flex flex-col w-[330px]">
                     <section className="flex items-center space-x-3">
                       <h2 className="text-xl text-gray-600 font-semibold">
                         Comisión
@@ -934,28 +929,29 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         </section>
                       </section>
                     </section>
-
-                    <article className="p-2">
-                      <h3 className="font-bold text-gray-400">Comisión:</h3>
-                      {currencyFormatter.format(viajeData.comision, {
-                        code: "MXN",
-                        precision: 0,
-                      })}
-                    </article>
-                    <article className="p-2">
-                      <h3 className="font-bold text-gray-400">Abono:</h3>
-                      {currencyFormatter.format(viajeData.abonocomision, {
-                        code: "MXN",
-                        precision: 0,
-                      })}
-                    </article>
+                    <section className="flex flex-wrap">
+                      <article className="p-2 w-full md:w-[35%]">
+                        <h3 className="font-bold text-gray-400">Comisión:</h3>
+                        {currencyFormatter.format(viajeData.comision, {
+                          code: "MXN",
+                          precision: 0,
+                        })}
+                      </article>
+                      <article className="p-2 w-full md:w-[65%]">
+                        <h3 className="font-bold text-gray-400">Abono:</h3>
+                        {currencyFormatter.format(viajeData.abonocomision, {
+                          code: "MXN",
+                          precision: 0,
+                        })}
+                      </article>
+                    </section>
                   </section>
                 </section>
               </section>
             </section>
           )}
           {!loading ? (
-            <section className="flex flex-wrap gap-5 justify-center">
+            <section>
               {viajeProveedorData.map((proveedor, index) => (
                 <section key={index}>
                   {editModeProveedor && index === proveedorEditandoIndex ? (
@@ -1030,7 +1026,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       />
                     </section>
                   ) : (
-                    <section className="bg-white p-4 rounded-md shadow-xl ">
+                    <section className="bg-white p-4 rounded-md shadow-xl min-w-[350px]">
                       <section className="flex items-center space-x-3">
                         <h1 className="text-4xl font-semibold p-2">{`${obtenerNombreProveedorPorId(
                           proveedor.proveedor_id
@@ -1164,8 +1160,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   e.preventDefault();
                   handleAgregarProveedor();
                 }}
-                >
-              </Button>
+              ></Button>
             </section>
           ) : (
             <section className="flex flex-wrap justify-center gap-10">

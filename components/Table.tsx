@@ -23,7 +23,7 @@ export default function Table(props: TableProps) {
 
   return (
     <main
-      className={`shadow-md rounded-lg p-4 w-[320px] flex flex-row bg-white m-2 gap-6 items-center hover:scale-105 transition-all cursor-pointer duration-300 focus:outline-none 
+      className={`shadow-md rounded-lg p-5 w-[355px] flex flex-row bg-white m-2 justify-between items-center hover:scale-105 transition-all cursor-pointer duration-300 focus:outline-none 
                     ${
                       props.diasRestantes < 0
                         ? "hover:border-red-500"
@@ -33,27 +33,27 @@ export default function Table(props: TableProps) {
                         `}
       onClick={() => handleRowClick(props)}
     >
-      <article className="flex flex-col text-sm w-[20%]">
+      <article className="flex flex-col text-sm">
         <h2 className="text-gray-400 text-xs">Origen</h2>
         {props.loading ? (
           <Skeleton width="20%" height={40} animation="wave" />
         ) : (
-          <p>{props.origen}</p>
+          <p>{props.origen || "N/A"}</p>
         )}
         <h2 className="text-gray-400 text-xs">Destino</h2>
-        <p>{props.destino}</p>
+        <p>{props.destino || "N/A"}</p>
       </article>
-      <article className="flex flex-row text-sm w-[60%] items-center justify-center">
+      <article className="flex flex-row text-sm items-center justify-center">
         <article className="p-2">
           <h2 className="text-gray-400 text-xs">Factura</h2>
-          <p>{props.factura}</p>
+          <p>{props.factura || "N/A"}</p>
         </article>
         <article className="p-2">
           <h2 className="text-gray-400 text-xs">Referencia</h2>
-          <p>{props.referencia}</p>
+          <p>{props.referencia || "N/A"}</p>
         </article>
       </article>
-      <article className="text-sm w-[20%] flex flex-col justify-center items-end space-y-1">
+      <article className="text-sm flex flex-col justify-center items-end space-y-1">
         <div
           className={`bg-green-500 rounded-full w-8 h-8 flex justify-center items-center ${
             props.diasRestantes < 0 ? "bg-red-500" : ""
