@@ -51,9 +51,7 @@ export default function Home() {
       ? differenceInDays(fechaLimiteB, today)
       : null;
 
-    // Maneja los casos en los que días restantes son nulos
     if (diasRestantesA === null || diasRestantesB === null) {
-      // Puedes decidir qué hacer en estos casos, por ejemplo, poner esos elementos al final
       return diasRestantesA === null ? 1 : -1;
     }
 
