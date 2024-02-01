@@ -10,6 +10,9 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
 import { v4 as uuidv4 } from "uuid";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
 
 interface ViajeData {
   id: string;
@@ -73,9 +76,9 @@ export const ViajeForm = (props: ViajeFormProps) => {
   const [proveedorformValues, ProveedorsetFormValues] = useState({
     tarifa: 0,
     abonado: 0,
-    origen: '',
-    destino: '',
-    proveedor_id: '',
+    origen: "",
+    destino: "",
+    proveedor_id: "",
   });
 
   const [viajeProveedorData, setViajeProveedorData] = useState<
@@ -89,7 +92,10 @@ export const ViajeForm = (props: ViajeFormProps) => {
   const [proveedorEditandoIndex, setProveedorEditandoIndex] = useState(-1);
 
   //Para mostrar el formulario de proveedor en la vista de solo mostrar los datos
-  const [mostrarFormularioProveedorVistaMode, setMostrarFormularioProveedorVistaMode] = useState(false);
+  const [
+    mostrarFormularioProveedorVistaMode,
+    setMostrarFormularioProveedorVistaMode,
+  ] = useState(false);
   //Para ocultar boton de proveedor en la vista de solo mostrar los datos cuando se este agregando un nuevo proveedor
   const [isButtonProveedorVisible, setButtonProveedorVisible] = useState(false);
 
@@ -378,37 +384,34 @@ export const ViajeForm = (props: ViajeFormProps) => {
     });
   };
 
-
   //Para manejar los campos del proveedorform en la vista de solo mostrar los datos
   const handleAgregarNuevoProveedorVistaMode = (e: any) => {
     ProveedorsetFormValues({
       ...proveedorformValues,
       [e.target.name]: e.target.value,
     });
-  };  
+  };
 
   //Para hacer el post de un nuevo proveedor en la vista de solo mostrar los datos
   const handleAgregarProveedorVistaMode = async (e: any) => {
     e.preventDefault();
-  
-    const { data, error } = await supabase
-      .from('viajeproveedor')
-      .insert([
-        { 
-          id: uuidv4(),
-          tarifa: proveedorformValues.tarifa,
-          abonado: proveedorformValues.abonado,
-          origen: proveedorformValues.origen,
-          destino: proveedorformValues.destino,
-          proveedor_id: proveedorformValues.proveedor_id,
-          viaje_id: viajeData.id
-        },
-      ]);
-  
+
+    const { data, error } = await supabase.from("viajeproveedor").insert([
+      {
+        id: uuidv4(),
+        tarifa: proveedorformValues.tarifa,
+        abonado: proveedorformValues.abonado,
+        origen: proveedorformValues.origen,
+        destino: proveedorformValues.destino,
+        proveedor_id: proveedorformValues.proveedor_id,
+        viaje_id: viajeData.id,
+      },
+    ]);
+
     if (error) {
-      console.error('Hubo un error al agregar el proveedor:', error);
+      console.error("Hubo un error al agregar el proveedor:", error);
     } else {
-      console.log('Proveedor agregado exitosamente:', data);
+      console.log("Proveedor agregado exitosamente:", data);
     }
     router.reload();
   };
@@ -1000,7 +1003,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
             </section>
           )}
           {!loading ? (
-            <section>
+            <section className="flex flex-wrap gap-5 items-start justify-center">
               {viajeProveedorData.map((proveedor, index) => (
                 <section key={index}>
                   {editModeProveedor && index === proveedorEditandoIndex ? (
@@ -1010,7 +1013,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       )}`}</h1>
                       <section>
                         <InputField
-                          label=" Proveedor Tarifa:"
+                          label="Tarifa"
                           name="tarifa"
                           value={viajeProveedorData[index].tarifa}
                           onChange={handleChangeViajeProveedorEdit}
@@ -1018,7 +1021,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         />
 
                         <InputField
-                          label="Proveedor Abonado:"
+                          label="Abonado"
                           name="abonado"
                           value={viajeProveedorData[index].abonado}
                           onChange={handleChangeViajeProveedorEdit}
@@ -1026,14 +1029,14 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         />
 
                         <InputField
-                          label="Proveedor Origen:"
+                          label="Origen"
                           name="origen"
                           value={viajeProveedorData[index].origen}
                           onChange={handleChangeViajeProveedorEdit}
                         />
 
                         <InputField
-                          label="Proveedor Destino:"
+                          label="Destino"
                           name="destino"
                           value={viajeProveedorData[index].destino}
                           onChange={handleChangeViajeProveedorEdit}
@@ -1075,7 +1078,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       />
                     </section>
                   ) : (
-                    <section className="bg-white p-4 rounded-md shadow-xl min-w-[350px]">
+                    <section className="bg-white p-4 rounded-md shadow-xl min-w-[340px]">
                       <section className="flex items-center space-x-3">
                         <h1 className="text-4xl font-semibold p-2">{`${obtenerNombreProveedorPorId(
                           proveedor.proveedor_id
@@ -1202,7 +1205,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   )}
                 </section>
               ))}
-              
+
               {!isButtonProveedorVisible && (
                 <Button
                   title="Agregar Proveedor"
@@ -1210,66 +1213,68 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   onClick={(e) => {
                     e.preventDefault();
                     setMostrarFormularioProveedorVistaMode(true);
-                    setButtonProveedorVisible(true)
+                    setButtonProveedorVisible(true);
                   }}
-                >
-                </Button>
+                ></Button>
               )}
 
-              {mostrarFormularioProveedorVistaMode && isButtonProveedorVisible && (
-                <section className="mx-auto my-10 max-w-md bg-white p-6 rounded-md shadow-md">
-                  <form onSubmit={handleAgregarProveedorVistaMode}>
-                    <InputField
-                      label=" Proveedor Tarifa:"
-                      name="tarifa"
-                      value={proveedorformValues.tarifa}
-                      onChange={handleAgregarNuevoProveedorVistaMode}
-                      type="number"
-                    />
+              {mostrarFormularioProveedorVistaMode &&
+                isButtonProveedorVisible && (
+                  <section className=" bg-white p-3 rounded-md shadow-md min-w-[340px] max-h-[400px]">
+                    <form
+                      onSubmit={handleAgregarProveedorVistaMode}
+                      className="flex flex-col gap-3 items-center"
+                    >
+                      <InputField
+                        label="Origen"
+                        name="origen"
+                        value={proveedorformValues.origen}
+                        onChange={handleAgregarNuevoProveedorVistaMode}
+                      />
 
-                    <InputField
-                      label="Proveedor Abonado:"
-                      name="abonado"
-                      value={proveedorformValues.abonado}
-                      onChange={handleAgregarNuevoProveedorVistaMode}
-                      type="number"
-                    />
+                      <InputField
+                        label="Destino"
+                        name="destino"
+                        value={proveedorformValues.destino}
+                        onChange={handleAgregarNuevoProveedorVistaMode}
+                      />
+                      <InputField
+                        label="Tarifa"
+                        name="tarifa"
+                        value={proveedorformValues.tarifa}
+                        onChange={handleAgregarNuevoProveedorVistaMode}
+                        type="number"
+                      />
 
-                    <InputField
-                      label="Proveedor Origen:"
-                      name="origen"
-                      value={proveedorformValues.origen}
-                      onChange={handleAgregarNuevoProveedorVistaMode}
-                    />
-
-                    <InputField
-                      label="Proveedor Destino:"
-                      name="destino"
-                      value={proveedorformValues.destino}
-                      onChange={handleAgregarNuevoProveedorVistaMode}
-                    />
-                    <section className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Proveedor:
-                      </label>
-                      <select
+                      <InputField
+                        label="Abonado"
+                        name="abonado"
+                        value={proveedorformValues.abonado}
+                        onChange={handleAgregarNuevoProveedorVistaMode}
+                        type="number"
+                      />
+                      <Select
                         name="proveedor_id"
                         value={proveedorformValues.proveedor_id}
                         onChange={handleAgregarNuevoProveedorVistaMode}
-                        className="p-3 border rounded-md focus:outline-none focus:border-blue-500"
+                        label="Proveedor"
+                        fullWidth
                       >
-                        <option value="">Selecciona un proveedor</option>
                         {props.proveedores.map((proveedor: any) => (
-                          <option key={proveedor.id} value={proveedor.id}>
+                          <MenuItem key={proveedor.id} value={proveedor.id}>
                             {proveedor.nombre}
-                          </option>
+                          </MenuItem>
                         ))}
-                      </select>
-                    </section>
-                    <Button title="Guardar Proveedor" type="submit" />
-                  </form>
-                </section>
-              )}
+                      </Select>
+                      <button
+                        type="submit"
+                        className="py-2 bg-blue-600 w-[120px] text-white shadow-xl rounded-lg"
+                      >
+                        Agregar
+                      </button>
+                    </form>
+                  </section>
+                )}
             </section>
           ) : (
             <section className="flex flex-wrap justify-center gap-10">
