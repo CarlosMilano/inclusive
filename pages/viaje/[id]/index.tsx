@@ -165,6 +165,11 @@ export default function Viaje() {
       // Asignar el id del viaje desde la ruta al viajeData
       viajeData.id = viajeIdFromRoute;
 
+      // Multiplicar la tarifa por el tipo de cambio si está en dólares y asi pasar a pesos (solo para viaje y cuando esta en modo formulario)
+      if (viajeData.dolares && viajeData.tipodecambio) {
+        viajeData.tarifa *= viajeData.tipodecambio;
+      }
+  
       // Agregar el viaje
       await addViaje(viajeData);
 
