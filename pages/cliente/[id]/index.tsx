@@ -35,17 +35,27 @@ export default function Home() {
   const filterViajes = viajes.filter((viaje) => viaje.tarifa !== viaje.abonado);
 
   const sortedViajes = filterViajes.sort((viajeA, viajeB) => {
-    const fechaLimiteA = addDays(
-      parseISO(viajeA.fechafactura),
-      cliente?.diascredito || 0
-    );
-    const diasRestantesA = differenceInDays(fechaLimiteA, today);
+    const fechaLimiteA = viajeA.fechafactura
+      ? addDays(parseISO(viajeA.fechafactura), cliente?.diascredito || 0)
+      : null;
 
-    const fechaLimiteB = addDays(
-      parseISO(viajeB.fechafactura),
-      cliente?.diascredito || 0
-    );
-    const diasRestantesB = differenceInDays(fechaLimiteB, today);
+    const diasRestantesA = fechaLimiteA
+      ? differenceInDays(fechaLimiteA, today)
+      : null;
+
+    const fechaLimiteB = viajeB.fechafactura
+      ? addDays(parseISO(viajeB.fechafactura), cliente?.diascredito || 0)
+      : null;
+
+    const diasRestantesB = fechaLimiteB
+      ? differenceInDays(fechaLimiteB, today)
+      : null;
+
+    // Maneja los casos en los que días restantes son nulos
+    if (diasRestantesA === null || diasRestantesB === null) {
+      // Puedes decidir qué hacer en estos casos, por ejemplo, poner esos elementos al final
+      return diasRestantesA === null ? 1 : -1;
+    }
 
     return diasRestantesA - diasRestantesB;
   });
@@ -105,12 +115,13 @@ export default function Home() {
         </section>
         <section className="flex flex-wrap justify-center">
           {sortedViajes.slice().map((viaje) => {
-            const fechaLimite = addDays(
-              parseISO(viaje.fechafactura),
-              cliente?.diascredito || 0
-            );
+            const fechaLimite = viaje.fechafactura
+              ? addDays(parseISO(viaje.fechafactura), cliente?.diascredito || 0)
+              : null;
 
-            const diasRestantes = differenceInDays(fechaLimite, today);
+            const diasRestantes = fechaLimite
+              ? differenceInDays(fechaLimite, today)
+              : 0;
 
             return (
               <Table
