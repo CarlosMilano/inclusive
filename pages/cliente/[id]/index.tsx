@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import Table from "@/components/Table";
 import { addDays, differenceInDays, parseISO } from "date-fns";
 import Pagination from "@mui/material/Pagination";
+import { Box, CircularProgress } from "@mui/material";
 
 interface Viaje {
   id: string;
@@ -71,7 +72,9 @@ export default function Home() {
           console.error(clienteError);
         } else {
           setCliente(clienteData);
-          setLoading(false);
+          setTimeout(() => {
+            setLoading(false);
+          }, 1500);
         }
       } catch (error) {
         console.error(error);
@@ -92,10 +95,11 @@ export default function Home() {
           }));
           setViajes(viajesConDiasCredito || []);
         }
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       } catch (error) {
         console.error(error);
-        setLoading(false);
       }
     };
     fetchClienteData();
@@ -107,40 +111,55 @@ export default function Home() {
       <Head>
         <title>Viajes {cliente?.nombre}</title>
       </Head>
-      <main className="flex flex-col h-screen mt-[60px]">
-        <section className="p-8">
-          <h1 className="text-4xl font-bold">Viajes {cliente?.nombre}</h1>
-        </section>
-        <section className="flex flex-wrap justify-center">
-          {sortedViajes.slice().map((viaje) => {
-            const fechaLimite = viaje.fechafactura
-              ? addDays(parseISO(viaje.fechafactura), cliente?.diascredito || 0)
-              : null;
+      {loading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <main className="flex flex-col h-screen mt-[60px]">
+          <section className="p-8">
+            <h1 className="text-4xl font-bold">Viajes {cliente?.nombre}</h1>
+          </section>
+          <section className="flex flex-wrap justify-center">
+            {sortedViajes.slice().map((viaje) => {
+              const fechaLimite = viaje.fechafactura
+                ? addDays(
+                    parseISO(viaje.fechafactura),
+                    cliente?.diascredito || 0
+                  )
+                : null;
 
-            const diasRestantes = fechaLimite
-              ? differenceInDays(fechaLimite, today)
-              : 0;
+              const diasRestantes = fechaLimite
+                ? differenceInDays(fechaLimite, today)
+                : 0;
 
-            return (
-              <Table
-                key={viaje.id}
-                origen={viaje.origen || ""}
-                destino={viaje.destino || ""}
-                monto={viaje.tarifa || 0}
-                factura={viaje.factura || ""}
-                referencia={viaje.referencia || ""}
-                id={viaje.id || ""}
-                fechafactura={viaje.fechafactura || ""}
-                diasRestantes={diasRestantes}
-                onClick={(rowData) => {
-                  router.push(`/viaje/${rowData.id}`);
-                }}
-                loading={loading}
-              />
-            );
-          })}
-        </section>
-      </main>
+              return (
+                <Table
+                  key={viaje.id}
+                  origen={viaje.origen || ""}
+                  destino={viaje.destino || ""}
+                  monto={viaje.tarifa || 0}
+                  factura={viaje.factura || ""}
+                  referencia={viaje.referencia || ""}
+                  id={viaje.id || ""}
+                  fechafactura={viaje.fechafactura || ""}
+                  diasRestantes={diasRestantes}
+                  onClick={(rowData) => {
+                    router.push(`/viaje/${rowData.id}`);
+                  }}
+                />
+              );
+            })}
+          </section>
+        </main>
+      )}
     </>
   );
 }

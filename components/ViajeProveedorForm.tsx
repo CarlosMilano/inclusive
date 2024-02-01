@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { InputField } from "./InputField";
 import { ProveedorForm } from "./ProveedorForm";
 import Button from "./Button";
@@ -12,6 +12,7 @@ import PaidIcon from "@mui/icons-material/Paid";
 import { v4 as uuidv4 } from "uuid";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import { set } from "date-fns";
 
 interface ViajeData {
   id: string;
@@ -84,8 +85,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
     ViajeProveedorData[]
   >([]);
 
-  const [loading, setLoading] = useState(true);
-
   const [editModeViaje, setEditModeViaje] = useState(false);
   const [editModeProveedor, setEditModeProveedor] = useState(false);
   const [proveedorEditandoIndex, setProveedorEditandoIndex] = useState(-1);
@@ -115,6 +114,8 @@ export const ViajeForm = (props: ViajeFormProps) => {
   const [proveedorSeleccionadoIndex, setProveedorSeleccionadoIndex] =
     useState(-1);
 
+  const [loading, setLoading] = useState(true);
+
   //Para volver a jalar la info del componente cuando se pasa a modo de solo mostrar los datos
   useEffect(() => {
     const fetchViajeData = async () => {
@@ -132,11 +133,13 @@ export const ViajeForm = (props: ViajeFormProps) => {
           console.error("Error al obtener los datos del viaje", viajeError);
         } else if (viajeData) {
           setViajeData(viajeData);
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
         }
       } catch (error) {
         console.error("Error al obtener los datos del viaje", error);
       } finally {
-        setLoading(false);
       }
     };
 
@@ -157,6 +160,9 @@ export const ViajeForm = (props: ViajeFormProps) => {
           );
         } else if (viajeProveedorData) {
           setViajeProveedorData(viajeProveedorData);
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
         }
       } catch (error) {
         console.error(
@@ -752,11 +758,15 @@ export const ViajeForm = (props: ViajeFormProps) => {
               </button>
             </section>
           ) : (
-            <section className="bg-white p-4 rounded-md shadow-xl">
-              <section className="flex items-center space-x-3 relative">
-                <h1 className="text-4xl font-semibold p-2">
-                  {obtenerNombreClientePorId(viajeData.cliente_id)}
-                </h1>
+            <section className="bg-white p-4 rounded-md shadow-xl relative">
+              <section className="flex items-center space-x-3">
+                {loading ? (
+                  <Skeleton variant="rectangular" width={160} height={55} />
+                ) : (
+                  <h1 className="text-4xl font-semibold p-2">
+                    {obtenerNombreClientePorId(viajeData.cliente_id)}
+                  </h1>
+                )}
                 <DeleteForeverIcon
                   onClick={() => {
                     const confirmacion = window.confirm(
@@ -774,19 +784,22 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   onClick={() => setEditModeViaje(true)}
                   sx={{ color: "#1971c2", cursor: "pointer" }}
                 />
-                <article className="absolute top-4 right-5 text-lg text-gray-400">
-                  <p>{viajeData.folio || "N/A"}</p>
+                <article className="absolute font-semibold top-8 right-8 text-lg text-gray-400">
+                  {loading ? (
+                    <Skeleton variant="rectangular" width={35} height={25} />
+                  ) : (
+                    <p>{viajeData.folio || "N/A"}</p>
+                  )}
                 </article>
-                <section className="flex flex-col space-y-8 items-center">
+                <section className="flex flex-col items-center justify-center absolute top-[82px] left-10">
                   {viajeData.abonado !== viajeData.tarifa && (
                     <PaidIcon
                       onClick={clickCobradoTarifaViaje}
                       sx={{ color: "#2f9e44", cursor: "pointer" }}
                     />
                   )}
-
                   <section
-                    className={`flex flex-col z-20 rounded-2xl shadow-large bg-white  fixed transition-all duration-300${
+                    className={`flex flex-col z-20 rounded-2xl shadow-md w-[210px] p-3 bg-white transition-all duration-300${
                       openCobradoTarifaViaje
                         ? " scale-100 opacity-100 ease-out"
                         : " scale-50 opacity-0 ease-in"
@@ -795,15 +808,15 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       visibility: openCobradoTarifaViaje ? "visible" : "hidden",
                     }}
                   >
-                    <article className="flex">
+                    <article className="flex space-x-3">
                       <button
-                        className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                        className="py-2 bg-blue-600 text-lg  text-white shadow-md rounded-lg w-[90px]"
                         onClick={contadoTarifaViaje}
                       >
                         Contado
                       </button>
                       <button
-                        className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                        className="py-2 bg-blue-600 text-lg text-white shadow-md rounded-lg w-[90px]"
                         onClick={clickAbonadoTarifaViaje}
                       >
                         Abono
@@ -811,10 +824,10 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     </article>
 
                     <section
-                      className={`transition-all duration-300 overflow-hidden${
+                      className={`transition-all flex flex-col items-center duration-300 overflow-hidden${
                         openAbonadoTarifaViaje
-                          ? " max-h-[500px] opacity-100 translate-y-0"
-                          : " max-h-0 opacity-0 translate-y-[100%]"
+                          ? " max-h-[500px] opacity-100 p-2"
+                          : " max-h-0 opacity-50"
                       }`}
                       style={{
                         visibility: openAbonadoTarifaViaje
@@ -823,7 +836,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       }}
                     >
                       <InputField
-                        label="Abonado"
                         name="abonado"
                         value={nuevoAbonoTarifaViaje}
                         onChange={handleAbonoTarifaViajeChange}
@@ -831,7 +843,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       />
 
                       <button
-                        className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                        className="py-2 bg-blue-600 m-2 text-white shadow-md rounded-lg w-[90px]"
                         onClick={abonoTarifaViaje}
                       >
                         Guardar
@@ -847,43 +859,79 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 <section className="flex flex-wrap">
                   <article className="p-2 w-full md:w-[25%]">
                     <h3 className="font-bold text-gray-400">Origen</h3>
-                    <p>{viajeData.origen}</p>
+                    {loading ? (
+                      <Skeleton variant="rectangular" width={85} height={25} />
+                    ) : (
+                      <p>{viajeData.origen}</p>
+                    )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">
                     <h3 className="font-bold text-gray-400">Destino</h3>
-                    <p>{viajeData.destino}</p>
+                    {loading ? (
+                      <Skeleton variant="rectangular" width={85} height={25} />
+                    ) : (
+                      <p>{viajeData.destino}</p>
+                    )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">
                     <h3 className="font-bold text-gray-400">
                       Fecha de Factura
                     </h3>
-                    <p>{viajeData.fechafactura || "N/A"}</p>
+                    {loading ? (
+                      <Skeleton variant="rectangular" width={95} height={25} />
+                    ) : (
+                      <p>{viajeData.fechafactura || "N/A"}</p>
+                    )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">
                     <h3 className="font-bold text-gray-400">Factura</h3>
-                    <p>{viajeData.factura || "N/A"}</p>
+                    {loading ? (
+                      <Skeleton variant="rectangular" width={85} height={25} />
+                    ) : (
+                      <p>{viajeData.factura || "N/A"}</p>
+                    )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">
                     <h3 className="font-bold text-gray-400">Referencia</h3>
-                    <p>{viajeData.referencia || "N/A"}</p>
+                    {loading ? (
+                      <Skeleton variant="rectangular" width={85} height={25} />
+                    ) : (
+                      <p>{viajeData.referencia || "N/A"}</p>
+                    )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">
                     <h3 className="font-bold text-gray-400">Tipo de unidad</h3>
-                    <p>{viajeData.tipodeunidad || "N/A"}</p>
+                    {loading ? (
+                      <Skeleton variant="rectangular" width={85} height={25} />
+                    ) : (
+                      <p>{viajeData.tipodeunidad || "N/A"}</p>
+                    )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">
                     <h3 className="font-bold text-gray-400">Tarifa</h3>
-                    {currencyFormatter.format(viajeData.tarifa, {
-                      code: "MXN",
-                      precision: 0,
-                    })}
+                    {loading ? (
+                      <Skeleton variant="rectangular" width={85} height={25} />
+                    ) : (
+                      <p>
+                        {currencyFormatter.format(viajeData.tarifa, {
+                          code: "MXN",
+                          precision: 0,
+                        })}
+                      </p>
+                    )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">
                     <h3 className="font-bold text-gray-400">Abono</h3>
-                    {currencyFormatter.format(viajeData.abonado, {
-                      code: "MXN",
-                      precision: 0,
-                    })}
+                    {loading ? (
+                      <Skeleton variant="rectangular" width={85} height={25} />
+                    ) : (
+                      <p>
+                        {currencyFormatter.format(viajeData.abonado, {
+                          code: "MXN",
+                          precision: 0,
+                        })}
+                      </p>
+                    )}
                   </article>
                   {viajeData.dolares && (
                     <section>
@@ -905,12 +953,12 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     </section>
                   )}
                 </section>
-                <section className="flex flex-col w-[330px]">
-                  <section className="flex items-center space-x-3">
+                <section className="flex flex-col w-[330px] relative">
+                  <section className="flex items-center">
                     <h2 className="text-xl text-gray-600 font-semibold">
                       Comisión
                     </h2>
-                    <section className="flex flex-col space-y-8 items-center">
+                    <section className="flex flex-col items-center justify-center absolute top-[2px]">
                       {viajeData.abonocomision !== viajeData.comision && (
                         <PaidIcon
                           onClick={clickCobradoComisionViaje}
@@ -919,7 +967,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       )}
 
                       <section
-                        className={`flex flex-col z-20 rounded-2xl shadow-large bg-white  fixed transition-all duration-300${
+                        className={`flex flex-col z-20 rounded-2xl shadow-md w-[210px] p-3 bg-white transition-all duration-300${
                           openCobradoComisionViaje
                             ? " scale-100 opacity-100 ease-out"
                             : " scale-50 opacity-0 ease-in"
@@ -930,15 +978,15 @@ export const ViajeForm = (props: ViajeFormProps) => {
                             : "hidden",
                         }}
                       >
-                        <article className="flex">
+                        <article className="flex space-x-3">
                           <button
-                            className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                            className="py-2 bg-blue-600 text-lg text-white shadow-md rounded-lg w-[90px]"
                             onClick={contadoComisionViaje}
                           >
                             Contado
                           </button>
                           <button
-                            className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                            className="py-2 bg-blue-600 text-lg text-white shadow-md rounded-lg w-[90px]"
                             onClick={clickAbonadoComisionViaje}
                           >
                             Abono
@@ -946,10 +994,10 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         </article>
 
                         <section
-                          className={`transition-all duration-300 overflow-hidden${
+                          className={`transition-all flex flex-col items-center duration-300 overflow-hidden${
                             openAbonadoComisionViaje
-                              ? " max-h-[500px] opacity-100 translate-y-0"
-                              : " max-h-0 opacity-0 translate-y-[100%]"
+                              ? " max-h-[500px] opacity-100 p-2"
+                              : " max-h-0 opacity-50"
                           }`}
                           style={{
                             visibility: openAbonadoComisionViaje
@@ -958,7 +1006,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                           }}
                         >
                           <InputField
-                            label="Abono comision:"
                             name="abonocomision"
                             value={nuevoAbonoComisionViaje}
                             onChange={handleAbonoComisionViajeChange}
@@ -966,7 +1013,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                           />
 
                           <button
-                            className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                            className="py-2 bg-blue-600 m-2 text-white shadow-md rounded-lg w-[90px]"
                             onClick={abonoComisionViaje}
                           >
                             Guardar
@@ -977,18 +1024,38 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   </section>
                   <section className="flex flex-wrap">
                     <article className="p-2 w-full md:w-[35%]">
-                      <h3 className="font-bold text-gray-400">Comisión:</h3>
-                      {currencyFormatter.format(viajeData.comision, {
-                        code: "MXN",
-                        precision: 0,
-                      })}
+                      <h3 className="font-bold text-gray-400">Comisión</h3>
+                      {loading ? (
+                        <Skeleton
+                          variant="rectangular"
+                          width={85}
+                          height={25}
+                        />
+                      ) : (
+                        <p>
+                          {currencyFormatter.format(viajeData.comision, {
+                            code: "MXN",
+                            precision: 0,
+                          })}
+                        </p>
+                      )}
                     </article>
                     <article className="p-2 w-full md:w-[65%]">
-                      <h3 className="font-bold text-gray-400">Abono:</h3>
-                      {currencyFormatter.format(viajeData.abonocomision, {
-                        code: "MXN",
-                        precision: 0,
-                      })}
+                      <h3 className="font-bold text-gray-400">Abono</h3>
+                      {loading ? (
+                        <Skeleton
+                          variant="rectangular"
+                          width={85}
+                          height={25}
+                        />
+                      ) : (
+                        <p>
+                          {currencyFormatter.format(viajeData.abonocomision, {
+                            code: "MXN",
+                            precision: 0,
+                          })}
+                        </p>
+                      )}
                     </article>
                   </section>
                 </section>
@@ -1062,10 +1129,19 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   </section>
                 ) : (
                   <section className="bg-white p-4 rounded-md shadow-xl min-w-[340px] h-[420px]">
-                    <section className="flex items-center space-x-3">
-                      <h1 className="text-4xl font-semibold p-2">{`${obtenerNombreProveedorPorId(
-                        proveedor.proveedor_id
-                      )}`}</h1>
+                    <section className="flex items-center space-x-3 relative">
+                      {loading ? (
+                        <Skeleton
+                          variant="rectangular"
+                          width={160}
+                          height={55}
+                        />
+                      ) : (
+                        <h1 className="text-4xl font-semibold p-2">{`${obtenerNombreProveedorPorId(
+                          proveedor.proveedor_id
+                        )}`}</h1>
+                      )}
+
                       <DeleteForeverIcon
                         onClick={() => {
                           const confirmacion = window.confirm(
@@ -1084,7 +1160,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         }}
                         sx={{ color: "#1971c2", cursor: "pointer" }}
                       />
-                      <section className="flex flex-col space-y-8 items-center">
+                      <section className="flex flex-col items-center justify-center absolute top-[67px] left-[74px]">
                         {proveedor.abonado !== proveedor.tarifa && (
                           <PaidIcon
                             onClick={() => clickCobradoTarifaProveedor(index)}
@@ -1093,7 +1169,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         )}
 
                         <section
-                          className={`flex flex-col z-20 rounded-2xl shadow-large bg-white  fixed transition-all duration-300${
+                          className={`flex flex-col z-20 rounded-2xl shadow-md w-[210px] p-3 bg-white transition-all duration-300${
                             openCobradoTarifaProveedor &&
                             proveedorSeleccionadoIndex === index
                               ? " scale-100 opacity-100 ease-out"
@@ -1105,15 +1181,15 @@ export const ViajeForm = (props: ViajeFormProps) => {
                               : "hidden",
                           }}
                         >
-                          <article className="flex">
+                          <article className="flex space-x-3">
                             <button
-                              className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                              className="py-2 bg-blue-600 text-lg  text-white shadow-md rounded-lg w-[90px]"
                               onClick={() => contadoTarifaProveedor(index)}
                             >
                               Contado
                             </button>
                             <button
-                              className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                              className="py-2 bg-blue-600 text-lg  text-white shadow-md rounded-lg w-[90px]"
                               onClick={() => {
                                 clickAbonadoTarifaProveedor(index);
                               }}
@@ -1122,11 +1198,11 @@ export const ViajeForm = (props: ViajeFormProps) => {
                             </button>
                           </article>
                           <section
-                            className={`transition-all duration-300 overflow-hidden${
+                            className={`transition-all flex flex-col items-center duration-300 overflow-hidden${
                               openAbonadoTarifaProveedor &&
                               proveedorSeleccionadoIndex === index
-                                ? " max-h-[500px] opacity-100 translate-y-0"
-                                : " max-h-0 opacity-0 translate-y-[100%]"
+                                ? " max-h-[500px] opacity-100 p-2"
+                                : " max-h-0 opacity-50"
                             }`}
                             style={{
                               visibility: openAbonadoTarifaProveedor
@@ -1135,7 +1211,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                             }}
                           >
                             <InputField
-                              label="Abonado:"
                               name="abonado"
                               value={nuevoAbonoTarifaProveedor}
                               onChange={handleAbonoTarifaProveedorChange}
@@ -1143,7 +1218,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                             />
 
                             <button
-                              className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                              className="py-2 bg-blue-600 m-2 text-white shadow-md rounded-lg w-[90px]"
                               onClick={abonoTarifaProveedor}
                             >
                               Guardar
@@ -1160,25 +1235,61 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       <section className="flex flex-col">
                         <article className="p-2">
                           <h3 className="font-bold text-gray-400">Origen</h3>
-                          <p>{proveedor.origen}</p>
+                          {loading ? (
+                            <Skeleton
+                              variant="rectangular"
+                              width={85}
+                              height={25}
+                            />
+                          ) : (
+                            <p>{proveedor.origen}</p>
+                          )}
                         </article>
                         <article className="p-2">
                           <h3 className="font-bold text-gray-400">Destino</h3>
-                          <p>{proveedor.destino}</p>
+                          {loading ? (
+                            <Skeleton
+                              variant="rectangular"
+                              width={85}
+                              height={25}
+                            />
+                          ) : (
+                            <p>{proveedor.destino}</p>
+                          )}
                         </article>
                         <article className="p-2">
                           <h3 className="font-bold text-gray-400">Tarifa</h3>
-                          {currencyFormatter.format(proveedor.tarifa, {
-                            code: "MXN",
-                            precision: 0,
-                          })}
+                          {loading ? (
+                            <Skeleton
+                              variant="rectangular"
+                              width={85}
+                              height={25}
+                            />
+                          ) : (
+                            <p>
+                              {currencyFormatter.format(proveedor.tarifa, {
+                                code: "MXN",
+                                precision: 0,
+                              })}
+                            </p>
+                          )}
                         </article>
                         <article className="p-2">
                           <h3 className="font-bold text-gray-400">Abono</h3>
-                          {currencyFormatter.format(proveedor.abonado, {
-                            code: "MXN",
-                            precision: 0,
-                          })}
+                          {loading ? (
+                            <Skeleton
+                              variant="rectangular"
+                              width={85}
+                              height={25}
+                            />
+                          ) : (
+                            <p>
+                              {currencyFormatter.format(proveedor.abonado, {
+                                code: "MXN",
+                                precision: 0,
+                              })}
+                            </p>
+                          )}
                         </article>
                       </section>
                     </section>
