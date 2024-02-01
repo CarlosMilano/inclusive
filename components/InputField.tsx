@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import TextField from '@mui/material/TextField';
 
 interface InputFieldProps {
   label?: string;
@@ -11,19 +12,15 @@ interface InputFieldProps {
 export const InputField = (props: InputFieldProps) => {
   return (
     <section className="mb-4">
-      {props.label && (
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          {props.label}
-        </label>
-      )}
-      
-      <input
-      type={props.type}
-      name={props.name}
-      value={props.value}
-      onChange={props.onChange}
-      className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-      id={props.name}
+      <TextField
+        id={props.name}
+        label={props.label}
+        type={props.type}
+        name={props.name}
+        value={props.value}
+        onChange={props.onChange}
+        variant="outlined"
+        fullWidth
       />
     </section>
   );

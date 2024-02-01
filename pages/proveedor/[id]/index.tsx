@@ -29,7 +29,6 @@ export default function Home() {
   const [proveedor, setProveedor] = useState<Proveedor>();
   const router = useRouter();
   const { id } = router.query;
-  const [loading, setLoading] = useState(true);
 
   const filterViajes = viajes.filter((viaje) => viaje.tarifa !== viaje.abonado);
 
@@ -46,7 +45,6 @@ export default function Home() {
           console.error(clienteError);
         } else {
           setProveedor(clienteData);
-          setLoading(false);
         }
       } catch (error) {
         console.error(error);
@@ -62,10 +60,8 @@ export default function Home() {
         else {
           setViajes(viajesData || []);
         }
-        setLoading(false);
       } catch (error) {
         console.error(error);
-        setLoading(false);
       }
     };
     fetchClienteData();
@@ -90,12 +86,12 @@ export default function Home() {
                 destino={viaje.destino || ""}
                 monto={viaje.tarifa || 0}
                 factura={viaje.factura || ""}
+                abonado={viaje.abonado || 0}
                 referencia={viaje.referencia || ""}
                 id={viaje.viaje_id || ""}
                 onClick={(rowData) => {
                   router.push(`/viaje/${rowData.id}`);
                 }}
-                loading={loading}
               />
             );
           })}

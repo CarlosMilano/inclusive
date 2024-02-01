@@ -7,9 +7,9 @@ interface CardProveedor {
   monto: number;
   factura: string;
   referencia: string;
+  abonado: number;
   id: string;
   onClick?: (rowData: { id: string }) => void;
-  loading: boolean;
 }
 
 export default function CardProveedor(props: CardProveedor) {
@@ -21,7 +21,7 @@ export default function CardProveedor(props: CardProveedor) {
 
   return (
     <main
-      className="shadow-md rounded-lg p-4 w-[320px] justify-between flex flex-row bg-white m-2 gap-6 items-center hover:scale-105 transition-all cursor-pointer duration-300 focus:outline-none"
+      className="shadow-md rounded-lg p-4 w-[340px] justify-between flex flex-row bg-white m-2 gap-6 items-center hover:scale-105 transition-all cursor-pointer duration-300 focus:outline-none"
       onClick={() => handleRowClick(props)}
     >
       <article className="flex flex-col text-sm">
@@ -36,6 +36,15 @@ export default function CardProveedor(props: CardProveedor) {
         <h2 className="text-gray-400 text-xs">Tarifa</h2>
         <p>
           {currencyFormatter.format(props.monto, {
+            code: "MXN",
+            precision: 0,
+          })}
+        </p>
+      </article>
+      <article className="text-sm flex flex-col">
+        <h2 className="text-gray-400 text-xs">Abonado</h2>
+        <p>
+          {currencyFormatter.format(props.abonado, {
             code: "MXN",
             precision: 0,
           })}
