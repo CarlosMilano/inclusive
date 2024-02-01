@@ -7,6 +7,7 @@ interface InputFieldProps {
   value: string | number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   type?: "text" | "number";
+  sx?: any;
 }
 
 export const InputField = (props: InputFieldProps) => {
@@ -19,7 +20,7 @@ export const InputField = (props: InputFieldProps) => {
       value={props.value}
       onChange={props.onChange}
       variant="outlined"
-      fullWidth
+      sx={props.sx}
     />
   );
 };

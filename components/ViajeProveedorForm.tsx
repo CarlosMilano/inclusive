@@ -12,7 +12,7 @@ import PaidIcon from "@mui/icons-material/Paid";
 import { v4 as uuidv4 } from "uuid";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
+import TextField from "@mui/material/TextField";
 
 interface ViajeData {
   id: string;
@@ -609,139 +609,137 @@ export const ViajeForm = (props: ViajeFormProps) => {
   };
 
   return (
-    <section>
+    <section className="flex flex-col items-center">
       {props.existeViaje ? (
         <section className="flex flex-col p-3 gap-5 items-center">
           {editModeViaje ? (
-            <section className="bg-white p-3 rounded-md shadow-md">
-              <h1 className="text-4xl font-semibold p-5">
-                {obtenerNombreClientePorId(viajeData.cliente_id)}
-              </h1>
-              <h2 className="text-xl text-gray-600 font-semibold mb-5 ml-5">
+            <section className="bg-white p-4 rounded-md shadow-xl max-w-[900px]">
+              <h1 className="text-4xl font-semibold p-2">Añadir Nuevo Viaje</h1>
+              <h2 className="text-xl font-semibold p-2 text-gray-600">
                 Detalle Viaje
               </h2>
-              <InputField
-                label="Origen:"
-                name="origen"
-                value={viajeData.origen}
-                onChange={handleChangeViaje}
-              />
-
-              <InputField
-                label="Destino:"
-                name="destino"
-                value={viajeData.destino}
-                onChange={handleChangeViaje}
-              />
-
-              <InputField
-                label="Tarifa:"
-                name="tarifa"
-                value={viajeData.tarifa}
-                onChange={handleChangeViaje}
-                type="number"
-              />
-
-              <InputField
-                label="Factura:"
-                name="factura"
-                value={viajeData.factura}
-                onChange={handleChangeViaje}
-              />
-
-              <InputField
-                label="Comision:"
-                name="comision"
-                value={viajeData.comision}
-                onChange={handleChangeViaje}
-                type="number"
-              />
-
-              <InputField
-                label="Tipo de unidad:"
-                name="tipodeunidad"
-                value={viajeData.tipodeunidad}
-                onChange={handleChangeViaje}
-              />
-
-              <InputField
-                label="Referencia:"
-                name="referencia"
-                value={viajeData.referencia}
-                onChange={handleChangeViaje}
-              />
-
-              <section className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Fecha factura:
-                </label>
-                <input
-                  name="fechafactura"
-                  value={viajeData.fechafactura || ""}
-                  onChange={handleChangeViaje}
-                  type="date"
-                  className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                />
+              <section className="flex flex-wrap">
+                <article className="p-2 w-full md:w-[25%]">
+                  <select
+                    name="cliente_id"
+                    value={viajeData.cliente_id || ""}
+                    onChange={handleChangeViaje}
+                  >
+                    <option value="">Selecciona un cliente</option>
+                    {props.clientes.map((cliente: any) => (
+                      <option key={cliente.id} value={cliente.id}>
+                        {cliente.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Origen"
+                    name="origen"
+                    value={viajeData.origen}
+                    onChange={handleChangeViaje}
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Destino"
+                    name="destino"
+                    value={viajeData.destino}
+                    onChange={handleChangeViaje}
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Tarifa"
+                    name="tarifa"
+                    value={viajeData.tarifa}
+                    onChange={handleChangeViaje}
+                    type="number"
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Abonado"
+                    name="abonado"
+                    value={viajeData.abonado}
+                    onChange={handleChangeViaje}
+                    type="number"
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <input
+                    name="fechafactura"
+                    value={viajeData.fechafactura || ""}
+                    onChange={handleChangeViaje}
+                    type="date"
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Factura"
+                    name="factura"
+                    value={viajeData.factura}
+                    onChange={handleChangeViaje}
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Referencia"
+                    name="referencia"
+                    value={viajeData.referencia}
+                    onChange={handleChangeViaje}
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Tipo de unidad"
+                    name="tipodeunidad"
+                    value={viajeData.tipodeunidad}
+                    onChange={handleChangeViaje}
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Comision"
+                    name="comision"
+                    value={viajeData.comision}
+                    onChange={handleChangeViaje}
+                    type="number"
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Abono comision:"
+                    name="abonocomision"
+                    value={viajeData.abonocomision}
+                    onChange={handleChangeViaje}
+                    type="number"
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <label className="block text-gray-700 text-sm font-bold">
+                    Dolares
+                  </label>
+                  <input
+                    type="checkbox"
+                    name="dolares"
+                    checked={viajeData.dolares}
+                    onChange={handleChangeViaje}
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  {viajeData.dolares && (
+                    <InputField
+                      label="Tipo de cambio:"
+                      name="tipodecambio"
+                      value={viajeData.tipodecambio}
+                      onChange={handleChangeViaje}
+                      type="number"
+                    />
+                  )}
+                </article>
               </section>
-
-              <InputField
-                label="Abonado:"
-                name="abonado"
-                value={viajeData.abonado}
-                onChange={handleChangeViaje}
-                type="number"
-              />
-
-              <section className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Cliente:
-                </label>
-                <select
-                  name="cliente_id"
-                  value={viajeData.cliente_id || ""}
-                  onChange={handleChangeViaje}
-                  className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                >
-                  <option value="">Selecciona un cliente</option>
-                  {props.clientes.map((cliente: any) => (
-                    <option key={cliente.id} value={cliente.id}>
-                      {cliente.nombre}
-                    </option>
-                  ))}
-                </select>
-              </section>
-
-              <section className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Dolares:{" "}
-                </label>
-                <input
-                  type="checkbox"
-                  name="dolares"
-                  checked={viajeData.dolares}
-                  onChange={handleChangeViaje}
-                  className="form-checkbox h-5 w-5 text-blue-500 focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </section>
-
-              {viajeData.dolares && (
-                <InputField
-                  label="Tipo de cambio:"
-                  name="tipodecambio"
-                  value={viajeData.tipodecambio}
-                  onChange={handleChangeViaje}
-                  type="number"
-                />
-              )}
-
-              <InputField
-                label="Abono comision:"
-                name="abonocomision"
-                value={viajeData.abonocomision}
-                onChange={handleChangeViaje}
-                type="number"
-              />
-
               <Button
                 title="Guardar Cambios"
                 type="button"
@@ -848,90 +846,268 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   Detalle Viaje
                 </h2>
                 <section className="flex flex-wrap">
-                  <section className="flex flex-wrap">
-                    <article className="p-2 w-full md:w-[25%]">
-                      <h3 className="font-bold text-gray-400">Origen:</h3>
-                      <p>{viajeData.origen}</p>
-                    </article>
-                    <article className="p-2 w-full md:w-[25%]">
-                      <h3 className="font-bold text-gray-400">Destino:</h3>
-                      <p>{viajeData.destino}</p>
-                    </article>
-                    <article className="p-2 w-full md:w-[25%]">
-                      <h3 className="font-bold text-gray-400">
-                        Fecha de Factura:
-                      </h3>
-                      <p>{viajeData.fechafactura || "N/A"}</p>
-                    </article>
-                    <article className="p-2 w-full md:w-[25%]">
-                      <h3 className="font-bold text-gray-400">Factura:</h3>
-                      <p>{viajeData.factura || "N/A"}</p>
-                    </article>
-                    <article className="p-2 w-full md:w-[25%]">
-                      <h3 className="font-bold text-gray-400">Referencia:</h3>
-                      <p>{viajeData.referencia || "N/A"}</p>
-                    </article>
-                    <article className="p-2 w-full md:w-[25%]">
-                      <h3 className="font-bold text-gray-400">
-                        Tipo de unidad:
-                      </h3>
-                      <p>{viajeData.tipodeunidad || "N/A"}</p>
-                    </article>
-                    <article className="p-2 w-full md:w-[25%]">
-                      <h3 className="font-bold text-gray-400">Tarifa:</h3>
-                      {currencyFormatter.format(viajeData.tarifa, {
-                        code: "MXN",
-                        precision: 0,
-                      })}
-                    </article>
-                    <article className="p-2 w-full md:w-[25%]">
-                      <h3 className="font-bold text-gray-400">Abono:</h3>
-                      {currencyFormatter.format(viajeData.abonado, {
-                        code: "MXN",
-                        precision: 0,
-                      })}
-                    </article>
-                    {viajeData.dolares && (
-                      <section>
-                        <article className="p-2 w-full md:w-[30%]">
-                          <h3 className="font-bold text-gray-400">Dólares:</h3>
-                          <p>Si</p>
+                  <article className="p-2 w-full md:w-[25%]">
+                    <h3 className="font-bold text-gray-400">Origen</h3>
+                    <p>{viajeData.origen}</p>
+                  </article>
+                  <article className="p-2 w-full md:w-[25%]">
+                    <h3 className="font-bold text-gray-400">Destino</h3>
+                    <p>{viajeData.destino}</p>
+                  </article>
+                  <article className="p-2 w-full md:w-[25%]">
+                    <h3 className="font-bold text-gray-400">
+                      Fecha de Factura
+                    </h3>
+                    <p>{viajeData.fechafactura || "N/A"}</p>
+                  </article>
+                  <article className="p-2 w-full md:w-[25%]">
+                    <h3 className="font-bold text-gray-400">Factura</h3>
+                    <p>{viajeData.factura || "N/A"}</p>
+                  </article>
+                  <article className="p-2 w-full md:w-[25%]">
+                    <h3 className="font-bold text-gray-400">Referencia</h3>
+                    <p>{viajeData.referencia || "N/A"}</p>
+                  </article>
+                  <article className="p-2 w-full md:w-[25%]">
+                    <h3 className="font-bold text-gray-400">Tipo de unidad</h3>
+                    <p>{viajeData.tipodeunidad || "N/A"}</p>
+                  </article>
+                  <article className="p-2 w-full md:w-[25%]">
+                    <h3 className="font-bold text-gray-400">Tarifa</h3>
+                    {currencyFormatter.format(viajeData.tarifa, {
+                      code: "MXN",
+                      precision: 0,
+                    })}
+                  </article>
+                  <article className="p-2 w-full md:w-[25%]">
+                    <h3 className="font-bold text-gray-400">Abono</h3>
+                    {currencyFormatter.format(viajeData.abonado, {
+                      code: "MXN",
+                      precision: 0,
+                    })}
+                  </article>
+                  {viajeData.dolares && (
+                    <section>
+                      <article className="p-2 w-full md:w-[30%]">
+                        <h3 className="font-bold text-gray-400">Dólares</h3>
+                        <p>Si</p>
+                      </article>
+                      <article className="p-2 w-full md:w-[30%]">
+                        <h3 className="font-bold text-gray-400">
+                          Tipo de Cambio
+                        </h3>
+                        <p>
+                          {currencyFormatter.format(viajeData.tipodecambio, {
+                            code: "MXN",
+                            precision: 0,
+                          })}
+                        </p>
+                      </article>
+                    </section>
+                  )}
+                </section>
+                <section className="flex flex-col w-[330px]">
+                  <section className="flex items-center space-x-3">
+                    <h2 className="text-xl text-gray-600 font-semibold">
+                      Comisión
+                    </h2>
+                    <section className="flex flex-col space-y-8 items-center">
+                      {viajeData.abonocomision !== viajeData.comision && (
+                        <PaidIcon
+                          onClick={clickCobradoComisionViaje}
+                          sx={{ color: "#2f9e44", cursor: "pointer" }}
+                        />
+                      )}
+
+                      <section
+                        className={`flex flex-col z-20 rounded-2xl shadow-large bg-white  fixed transition-all duration-300${
+                          openCobradoComisionViaje
+                            ? " scale-100 opacity-100 ease-out"
+                            : " scale-50 opacity-0 ease-in"
+                        }`}
+                        style={{
+                          visibility: openCobradoComisionViaje
+                            ? "visible"
+                            : "hidden",
+                        }}
+                      >
+                        <article className="flex">
+                          <button
+                            className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                            onClick={contadoComisionViaje}
+                          >
+                            Contado
+                          </button>
+                          <button
+                            className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                            onClick={clickAbonadoComisionViaje}
+                          >
+                            Abono
+                          </button>
                         </article>
-                        <article className="p-2 w-full md:w-[30%]">
-                          <h3 className="font-bold text-gray-400">
-                            Tipo de Cambio:
-                          </h3>
-                          <p>
-                            {currencyFormatter.format(viajeData.tipodecambio, {
-                              code: "MXN",
-                              precision: 0,
-                            })}
-                          </p>
-                        </article>
+
+                        <section
+                          className={`transition-all duration-300 overflow-hidden${
+                            openAbonadoComisionViaje
+                              ? " max-h-[500px] opacity-100 translate-y-0"
+                              : " max-h-0 opacity-0 translate-y-[100%]"
+                          }`}
+                          style={{
+                            visibility: openAbonadoComisionViaje
+                              ? "visible"
+                              : "hidden",
+                          }}
+                        >
+                          <InputField
+                            label="Abono comision:"
+                            name="abonocomision"
+                            value={nuevoAbonoComisionViaje}
+                            onChange={handleAbonoComisionViajeChange}
+                            type="number"
+                          />
+
+                          <button
+                            className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
+                            onClick={abonoComisionViaje}
+                          >
+                            Guardar
+                          </button>
+                        </section>
                       </section>
-                    )}
+                    </section>
                   </section>
-                  <section className="flex flex-col w-[330px]">
+                  <section className="flex flex-wrap">
+                    <article className="p-2 w-full md:w-[35%]">
+                      <h3 className="font-bold text-gray-400">Comisión:</h3>
+                      {currencyFormatter.format(viajeData.comision, {
+                        code: "MXN",
+                        precision: 0,
+                      })}
+                    </article>
+                    <article className="p-2 w-full md:w-[65%]">
+                      <h3 className="font-bold text-gray-400">Abono:</h3>
+                      {currencyFormatter.format(viajeData.abonocomision, {
+                        code: "MXN",
+                        precision: 0,
+                      })}
+                    </article>
+                  </section>
+                </section>
+              </section>
+            </section>
+          )}
+          <section className="flex flex-wrap gap-5 items-start justify-center">
+            {viajeProveedorData.map((proveedor, index) => (
+              <section key={index}>
+                {editModeProveedor && index === proveedorEditandoIndex ? (
+                  <section className="flex flex-col bg-white shadow-xl rounded-md p-3">
+                    <h1 className="text-4xl font-semibold p-5">{`${obtenerNombreProveedorPorId(
+                      proveedor.proveedor_id
+                    )}`}</h1>
+                    <section>
+                      <InputField
+                        label="Origen"
+                        name="origen"
+                        value={viajeProveedorData[index].origen}
+                        onChange={handleChangeViajeProveedorEdit}
+                      />
+
+                      <InputField
+                        label="Destino"
+                        name="destino"
+                        value={viajeProveedorData[index].destino}
+                        onChange={handleChangeViajeProveedorEdit}
+                      />
+                      <InputField
+                        label="Tarifa"
+                        name="tarifa"
+                        value={viajeProveedorData[index].tarifa}
+                        onChange={handleChangeViajeProveedorEdit}
+                        type="number"
+                      />
+
+                      <InputField
+                        label="Abonado"
+                        name="abonado"
+                        value={viajeProveedorData[index].abonado}
+                        onChange={handleChangeViajeProveedorEdit}
+                        type="number"
+                      />
+
+                      <section className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                          Proveedor:
+                        </label>
+                        <select
+                          name="proveedor_id"
+                          value={viajeProveedorData[index].proveedor_id || ""}
+                          onChange={handleChangeViajeProveedorEdit}
+                          className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                        >
+                          <option value="">Selecciona un proveedor</option>
+                          {props.proveedores.map((proveedor: any) => (
+                            <option key={proveedor.id} value={proveedor.id}>
+                              {proveedor.nombre}
+                            </option>
+                          ))}
+                        </select>
+                      </section>
+                    </section>
+
+                    <Button
+                      title="Guardar Cambios"
+                      type="button"
+                      onClick={async () => {
+                        const exito = await guardarCambiosProveedor(proveedor);
+                        if (exito) {
+                          setEditModeProveedor(false);
+                          setProveedorEditandoIndex(-1);
+                          router.reload();
+                        }
+                      }}
+                    />
+                  </section>
+                ) : (
+                  <section className="bg-white p-4 rounded-md shadow-xl min-w-[340px]">
                     <section className="flex items-center space-x-3">
-                      <h2 className="text-xl text-gray-600 font-semibold">
-                        Comisión
-                      </h2>
+                      <h1 className="text-4xl font-semibold p-2">{`${obtenerNombreProveedorPorId(
+                        proveedor.proveedor_id
+                      )}`}</h1>
+                      <DeleteForeverIcon
+                        onClick={() => {
+                          const confirmacion = window.confirm(
+                            "¿Estás seguro que quieres eliminar este proveedor?"
+                          );
+                          if (confirmacion) {
+                            eliminarProveedor(proveedor.id);
+                          }
+                        }}
+                        sx={{ color: "#e03131", cursor: "pointer" }}
+                      />
+                      <EditIcon
+                        onClick={() => {
+                          setEditModeProveedor(true);
+                          setProveedorEditandoIndex(index);
+                        }}
+                        sx={{ color: "#1971c2", cursor: "pointer" }}
+                      />
                       <section className="flex flex-col space-y-8 items-center">
-                        {viajeData.abonocomision !== viajeData.comision && (
+                        {proveedor.abonado !== proveedor.tarifa && (
                           <PaidIcon
-                            onClick={clickCobradoComisionViaje}
+                            onClick={() => clickCobradoTarifaProveedor(index)}
                             sx={{ color: "#2f9e44", cursor: "pointer" }}
                           />
                         )}
 
                         <section
                           className={`flex flex-col z-20 rounded-2xl shadow-large bg-white  fixed transition-all duration-300${
-                            openCobradoComisionViaje
+                            openCobradoTarifaProveedor &&
+                            proveedorSeleccionadoIndex === index
                               ? " scale-100 opacity-100 ease-out"
                               : " scale-50 opacity-0 ease-in"
                           }`}
                           style={{
-                            visibility: openCobradoComisionViaje
+                            visibility: openCobradoTarifaProveedor
                               ? "visible"
                               : "hidden",
                           }}
@@ -939,41 +1115,43 @@ export const ViajeForm = (props: ViajeFormProps) => {
                           <article className="flex">
                             <button
                               className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
-                              onClick={contadoComisionViaje}
+                              onClick={() => contadoTarifaProveedor(index)}
                             >
                               Contado
                             </button>
                             <button
                               className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
-                              onClick={clickAbonadoComisionViaje}
+                              onClick={() => {
+                                clickAbonadoTarifaProveedor(index);
+                              }}
                             >
                               Abono
                             </button>
                           </article>
-
                           <section
                             className={`transition-all duration-300 overflow-hidden${
-                              openAbonadoComisionViaje
+                              openAbonadoTarifaProveedor &&
+                              proveedorSeleccionadoIndex === index
                                 ? " max-h-[500px] opacity-100 translate-y-0"
                                 : " max-h-0 opacity-0 translate-y-[100%]"
                             }`}
                             style={{
-                              visibility: openAbonadoComisionViaje
+                              visibility: openAbonadoTarifaProveedor
                                 ? "visible"
                                 : "hidden",
                             }}
                           >
                             <InputField
-                              label="Abono comision:"
-                              name="abonocomision"
-                              value={nuevoAbonoComisionViaje}
-                              onChange={handleAbonoComisionViajeChange}
+                              label="Abonado:"
+                              name="abonado"
+                              value={nuevoAbonoTarifaProveedor}
+                              onChange={handleAbonoTarifaProveedorChange}
                               type="number"
                             />
 
                             <button
                               className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
-                              onClick={abonoComisionViaje}
+                              onClick={abonoTarifaProveedor}
                             >
                               Guardar
                             </button>
@@ -981,432 +1159,230 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         </section>
                       </section>
                     </section>
-                    <section className="flex flex-wrap">
-                      <article className="p-2 w-full md:w-[35%]">
-                        <h3 className="font-bold text-gray-400">Comisión:</h3>
-                        {currencyFormatter.format(viajeData.comision, {
-                          code: "MXN",
-                          precision: 0,
-                        })}
-                      </article>
-                      <article className="p-2 w-full md:w-[65%]">
-                        <h3 className="font-bold text-gray-400">Abono:</h3>
-                        {currencyFormatter.format(viajeData.abonocomision, {
-                          code: "MXN",
-                          precision: 0,
-                        })}
-                      </article>
-                    </section>
-                  </section>
-                </section>
-              </section>
-            </section>
-          )}
-          {!loading ? (
-            <section className="flex flex-wrap gap-5 items-start justify-center">
-              {viajeProveedorData.map((proveedor, index) => (
-                <section key={index}>
-                  {editModeProveedor && index === proveedorEditandoIndex ? (
-                    <section className="flex flex-col bg-white m-2 shadow-xl rounded-md p-3">
-                      <h1 className="text-4xl font-semibold p-5">{`${obtenerNombreProveedorPorId(
-                        proveedor.proveedor_id
-                      )}`}</h1>
-                      <section>
-                        <InputField
-                          label="Tarifa"
-                          name="tarifa"
-                          value={viajeProveedorData[index].tarifa}
-                          onChange={handleChangeViajeProveedorEdit}
-                          type="number"
-                        />
 
-                        <InputField
-                          label="Abonado"
-                          name="abonado"
-                          value={viajeProveedorData[index].abonado}
-                          onChange={handleChangeViajeProveedorEdit}
-                          type="number"
-                        />
-
-                        <InputField
-                          label="Origen"
-                          name="origen"
-                          value={viajeProveedorData[index].origen}
-                          onChange={handleChangeViajeProveedorEdit}
-                        />
-
-                        <InputField
-                          label="Destino"
-                          name="destino"
-                          value={viajeProveedorData[index].destino}
-                          onChange={handleChangeViajeProveedorEdit}
-                        />
-
-                        <section className="mb-4">
-                          <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Proveedor:
-                          </label>
-                          <select
-                            name="proveedor_id"
-                            value={viajeProveedorData[index].proveedor_id || ""}
-                            onChange={handleChangeViajeProveedorEdit}
-                            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                          >
-                            <option value="">Selecciona un proveedor</option>
-                            {props.proveedores.map((proveedor: any) => (
-                              <option key={proveedor.id} value={proveedor.id}>
-                                {proveedor.nombre}
-                              </option>
-                            ))}
-                          </select>
-                        </section>
-                      </section>
-
-                      <Button
-                        title="Guardar Cambios"
-                        type="button"
-                        onClick={async () => {
-                          const exito = await guardarCambiosProveedor(
-                            proveedor
-                          );
-                          if (exito) {
-                            setEditModeProveedor(false);
-                            setProveedorEditandoIndex(-1);
-                            router.reload();
-                          }
-                        }}
-                      />
-                    </section>
-                  ) : (
-                    <section className="bg-white p-4 rounded-md shadow-xl min-w-[340px]">
-                      <section className="flex items-center space-x-3">
-                        <h1 className="text-4xl font-semibold p-2">{`${obtenerNombreProveedorPorId(
-                          proveedor.proveedor_id
-                        )}`}</h1>
-                        <DeleteForeverIcon
-                          onClick={() => {
-                            const confirmacion = window.confirm(
-                              "¿Estás seguro que quieres eliminar este proveedor?"
-                            );
-                            if (confirmacion) {
-                              eliminarProveedor(proveedor.id);
-                            }
-                          }}
-                          sx={{ color: "#e03131", cursor: "pointer" }}
-                        />
-                        <EditIcon
-                          onClick={() => {
-                            setEditModeProveedor(true);
-                            setProveedorEditandoIndex(index);
-                          }}
-                          sx={{ color: "#1971c2", cursor: "pointer" }}
-                        />
-                        <section className="flex flex-col space-y-8 items-center">
-                          {proveedor.abonado !== proveedor.tarifa && (
-                            <PaidIcon
-                              onClick={() => clickCobradoTarifaProveedor(index)}
-                              sx={{ color: "#2f9e44", cursor: "pointer" }}
-                            />
-                          )}
-
-                          <section
-                            className={`flex flex-col z-20 rounded-2xl shadow-large bg-white  fixed transition-all duration-300${
-                              openCobradoTarifaProveedor &&
-                              proveedorSeleccionadoIndex === index
-                                ? " scale-100 opacity-100 ease-out"
-                                : " scale-50 opacity-0 ease-in"
-                            }`}
-                            style={{
-                              visibility: openCobradoTarifaProveedor
-                                ? "visible"
-                                : "hidden",
-                            }}
-                          >
-                            <article className="flex">
-                              <button
-                                className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
-                                onClick={() => contadoTarifaProveedor(index)}
-                              >
-                                Contado
-                              </button>
-                              <button
-                                className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
-                                onClick={() => {
-                                  clickAbonadoTarifaProveedor(index);
-                                }}
-                              >
-                                Abono
-                              </button>
-                            </article>
-                            <section
-                              className={`transition-all duration-300 overflow-hidden${
-                                openAbonadoTarifaProveedor &&
-                                proveedorSeleccionadoIndex === index
-                                  ? " max-h-[500px] opacity-100 translate-y-0"
-                                  : " max-h-0 opacity-0 translate-y-[100%]"
-                              }`}
-                              style={{
-                                visibility: openAbonadoTarifaProveedor
-                                  ? "visible"
-                                  : "hidden",
-                              }}
-                            >
-                              <InputField
-                                label="Abonado:"
-                                name="abonado"
-                                value={nuevoAbonoTarifaProveedor}
-                                onChange={handleAbonoTarifaProveedorChange}
-                                type="number"
-                              />
-
-                              <button
-                                className="py-2 bg-blue-600 text-lg m-2 text-white shadow-md rounded-lg w-[90px]"
-                                onClick={abonoTarifaProveedor}
-                              >
-                                Guardar
-                              </button>
-                            </section>
-                          </section>
-                        </section>
-                      </section>
-
-                      <section className="space-y-3 p-2">
-                        <h2 className="text-xl text-gray-600 font-semibold">
-                          Detalle Proveedor
-                        </h2>
-                        <section className="flex flex-col">
-                          <article className="p-2">
-                            <h3 className="font-bold text-gray-400">Origen:</h3>
-                            <p>{proveedor.origen}</p>
-                          </article>
-                          <article className="p-2">
-                            <h3 className="font-bold text-gray-400">
-                              Destino:
-                            </h3>
-                            <p>{proveedor.destino}</p>
-                          </article>
-                          <article className="p-2">
-                            <h3 className="font-bold text-gray-400">Tarifa:</h3>
-                            {currencyFormatter.format(proveedor.tarifa, {
-                              code: "MXN",
-                              precision: 0,
-                            })}
-                          </article>
-                          <article className="p-2">
-                            <h3 className="font-bold text-gray-400">Abono:</h3>
-                            {currencyFormatter.format(proveedor.abonado, {
-                              code: "MXN",
-                              precision: 0,
-                            })}
-                          </article>
-                        </section>
+                    <section className="space-y-3 p-2">
+                      <h2 className="text-xl text-gray-600 font-semibold">
+                        Detalle Proveedor
+                      </h2>
+                      <section className="flex flex-col">
+                        <article className="p-2">
+                          <h3 className="font-bold text-gray-400">Origen</h3>
+                          <p>{proveedor.origen}</p>
+                        </article>
+                        <article className="p-2">
+                          <h3 className="font-bold text-gray-400">Destino</h3>
+                          <p>{proveedor.destino}</p>
+                        </article>
+                        <article className="p-2">
+                          <h3 className="font-bold text-gray-400">Tarifa</h3>
+                          {currencyFormatter.format(proveedor.tarifa, {
+                            code: "MXN",
+                            precision: 0,
+                          })}
+                        </article>
+                        <article className="p-2">
+                          <h3 className="font-bold text-gray-400">Abono</h3>
+                          {currencyFormatter.format(proveedor.abonado, {
+                            code: "MXN",
+                            precision: 0,
+                          })}
+                        </article>
                       </section>
                     </section>
-                  )}
-                </section>
-              ))}
-
-              {!isButtonProveedorVisible && (
-                <Button
-                  title="Agregar Proveedor"
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setMostrarFormularioProveedorVistaMode(true);
-                    setButtonProveedorVisible(true);
-                  }}
-                ></Button>
-              )}
-
-              {mostrarFormularioProveedorVistaMode &&
-                isButtonProveedorVisible && (
-                  <section className=" bg-white p-3 rounded-md shadow-md min-w-[340px] max-h-[400px]">
-                    <form
-                      onSubmit={handleAgregarProveedorVistaMode}
-                      className="flex flex-col gap-3 items-center"
-                    >
-                      <InputField
-                        label="Origen"
-                        name="origen"
-                        value={proveedorformValues.origen}
-                        onChange={handleAgregarNuevoProveedorVistaMode}
-                      />
-
-                      <InputField
-                        label="Destino"
-                        name="destino"
-                        value={proveedorformValues.destino}
-                        onChange={handleAgregarNuevoProveedorVistaMode}
-                      />
-                      <InputField
-                        label="Tarifa"
-                        name="tarifa"
-                        value={proveedorformValues.tarifa}
-                        onChange={handleAgregarNuevoProveedorVistaMode}
-                        type="number"
-                      />
-
-                      <InputField
-                        label="Abonado"
-                        name="abonado"
-                        value={proveedorformValues.abonado}
-                        onChange={handleAgregarNuevoProveedorVistaMode}
-                        type="number"
-                      />
-                      <Select
-                        name="proveedor_id"
-                        value={proveedorformValues.proveedor_id}
-                        onChange={handleAgregarNuevoProveedorVistaMode}
-                        label="Proveedor"
-                        fullWidth
-                      >
-                        {props.proveedores.map((proveedor: any) => (
-                          <MenuItem key={proveedor.id} value={proveedor.id}>
-                            {proveedor.nombre}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <button
-                        type="submit"
-                        className="py-2 bg-blue-600 w-[120px] text-white shadow-xl rounded-lg"
-                      >
-                        Agregar
-                      </button>
-                    </form>
                   </section>
                 )}
-            </section>
-          ) : (
-            <section className="flex flex-wrap justify-center gap-10">
-              {Array.from({
-                length:
-                  viajeProveedorData.length > 0 ? viajeProveedorData.length : 3,
-              }).map((_, index) => (
-                <section
-                  key={index}
-                  className="flex flex-col bg-white w-[320px] h-[450px] m-2 shadow-xl rounded-md p-3"
-                >
-                  <Skeleton height={100} animation="wave" />
+              </section>
+            ))}
+
+            {!isButtonProveedorVisible && (
+              <Button
+                title="Agregar Proveedor"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMostrarFormularioProveedorVistaMode(true);
+                  setButtonProveedorVisible(true);
+                }}
+              ></Button>
+            )}
+
+            {mostrarFormularioProveedorVistaMode &&
+              isButtonProveedorVisible && (
+                <section className=" bg-white p-3 rounded-md shadow-md min-w-[340px] max-h-[400px]">
+                  <form
+                    onSubmit={handleAgregarProveedorVistaMode}
+                    className="flex flex-col gap-3 items-center"
+                  >
+                    <InputField
+                      label="Origen"
+                      name="origen"
+                      value={proveedorformValues.origen}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                    />
+
+                    <InputField
+                      label="Destino"
+                      name="destino"
+                      value={proveedorformValues.destino}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                    />
+                    <InputField
+                      label="Tarifa"
+                      name="tarifa"
+                      value={proveedorformValues.tarifa}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                      type="number"
+                    />
+
+                    <InputField
+                      label="Abonado"
+                      name="abonado"
+                      value={proveedorformValues.abonado}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                      type="number"
+                    />
+                    <Select
+                      name="proveedor_id"
+                      value={proveedorformValues.proveedor_id}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                      fullWidth
+                      label="Proveedor"
+                    >
+                      {props.proveedores.map((proveedor: any) => (
+                        <MenuItem key={proveedor.id} value={proveedor.id}>
+                          {proveedor.nombre}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <button
+                      type="submit"
+                      className="py-2 bg-blue-600 w-[120px] text-white shadow-xl rounded-lg"
+                    >
+                      Agregar
+                    </button>
+                  </form>
                 </section>
-              ))}
-            </section>
-          )}
+              )}
+          </section>
         </section>
       ) : (
-        <section className="min-h-screen flex flex-col items-center p-5 flex-wrap justify-center gap-10">
-          <form onSubmit={handleSubmit}>
-            {!loading ? (
-              <section className="mx-auto my-10 max-w-md bg-white p-6 rounded-md shadow-md">
-                <h1 className="text-4xl font-semibold p-5">
-                  Añadir Nuevo Viaje
-                </h1>
-                <h2 className="text-xl font-semibold p-5 text-gray-500">
-                  Detalles del Viaje
-                </h2>
+        <form onSubmit={handleSubmit}>
+          <section className="bg-white p-4 rounded-md shadow-xl max-w-[900px]">
+            <h1 className="text-4xl font-semibold p-2">Añadir Nuevo Viaje</h1>
+            <h2 className="text-xl font-semibold p-2 text-gray-600">
+              Detalle Viaje
+            </h2>
+            <section className="flex flex-wrap">
+              <article className="p-2 w-full md:w-[25%]">
+                <select
+                  name="cliente_id"
+                  value={viajeData.cliente_id || ""}
+                  onChange={handleChangeViaje}
+                >
+                  <option value="">Selecciona un cliente</option>
+                  {props.clientes.map((cliente: any) => (
+                    <option key={cliente.id} value={cliente.id}>
+                      {cliente.nombre}
+                    </option>
+                  ))}
+                </select>
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
                 <InputField
-                  label="Origen:"
+                  label="Origen"
                   name="origen"
                   value={viajeData.origen}
                   onChange={handleChangeViaje}
                 />
-
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
                 <InputField
-                  label="Destino:"
+                  label="Destino"
                   name="destino"
                   value={viajeData.destino}
                   onChange={handleChangeViaje}
                 />
-
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
                 <InputField
-                  label="Tarifa:"
+                  label="Tarifa"
                   name="tarifa"
                   value={viajeData.tarifa}
                   onChange={handleChangeViaje}
                   type="number"
                 />
-
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
                 <InputField
-                  label="Factura:"
-                  name="factura"
-                  value={viajeData.factura}
-                  onChange={handleChangeViaje}
-                />
-
-                <InputField
-                  label="Comision:"
-                  name="comision"
-                  value={viajeData.comision}
-                  onChange={handleChangeViaje}
-                  type="number"
-                />
-
-                <InputField
-                  label="Tipo de unidad:"
-                  name="tipodeunidad"
-                  value={viajeData.tipodeunidad}
-                  onChange={handleChangeViaje}
-                />
-
-                <InputField
-                  label="Referencia:"
-                  name="referencia"
-                  value={viajeData.referencia}
-                  onChange={handleChangeViaje}
-                />
-
-                <section className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Fecha factura:
-                  </label>
-                  <input
-                    name="fechafactura"
-                    value={viajeData.fechafactura || ""}
-                    onChange={handleChangeViaje}
-                    type="date"
-                    className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                  />
-                </section>
-
-                <InputField
-                  label="Abonado:"
+                  label="Abonado"
                   name="abonado"
                   value={viajeData.abonado}
                   onChange={handleChangeViaje}
                   type="number"
                 />
-
-                <section className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Cliente:
-                  </label>
-                  <select
-                    name="cliente_id"
-                    value={viajeData.cliente_id || ""}
-                    onChange={handleChangeViaje}
-                    className="p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="">Selecciona un cliente</option>
-                    {props.clientes.map((cliente: any) => (
-                      <option key={cliente.id} value={cliente.id}>
-                        {cliente.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </section>
-
-                <section className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Dolares:{" "}
-                  </label>
-                  <input
-                    type="checkbox"
-                    name="dolares"
-                    checked={viajeData.dolares}
-                    onChange={handleChangeViaje}
-                    className="form-checkbox h-5 w-5 text-blue-500 focus:outline-none focus:ring focus:border-blue-300"
-                  />
-                </section>
-
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <input
+                  name="fechafactura"
+                  value={viajeData.fechafactura || ""}
+                  onChange={handleChangeViaje}
+                  type="date"
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <InputField
+                  label="Factura"
+                  name="factura"
+                  value={viajeData.factura}
+                  onChange={handleChangeViaje}
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <InputField
+                  label="Referencia"
+                  name="referencia"
+                  value={viajeData.referencia}
+                  onChange={handleChangeViaje}
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <InputField
+                  label="Tipo de unidad"
+                  name="tipodeunidad"
+                  value={viajeData.tipodeunidad}
+                  onChange={handleChangeViaje}
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <InputField
+                  label="Comision"
+                  name="comision"
+                  value={viajeData.comision}
+                  onChange={handleChangeViaje}
+                  type="number"
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <InputField
+                  label="Abono comision:"
+                  name="abonocomision"
+                  value={viajeData.abonocomision}
+                  onChange={handleChangeViaje}
+                  type="number"
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <label className="block text-gray-700 text-sm font-bold">
+                  Dolares
+                </label>
+                <input
+                  type="checkbox"
+                  name="dolares"
+                  checked={viajeData.dolares}
+                  onChange={handleChangeViaje}
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
                 {viajeData.dolares && (
                   <InputField
                     label="Tipo de cambio:"
@@ -1416,62 +1392,49 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     type="number"
                   />
                 )}
-
-                <InputField
-                  label="Abono comision:"
-                  name="abonocomision"
-                  value={viajeData.abonocomision}
-                  onChange={handleChangeViaje}
-                  type="number"
+              </article>
+            </section>
+          </section>
+          <section>
+            {viajeProveedorData.map((proveedor, index) => (
+              <section
+                key={index}
+                className="mx-auto my-10 max-w-md bg-white p-6 rounded-md shadow-md"
+              >
+                <h1 className="text-3xl font-bold mb-6">{`Añadir Proveedor ${
+                  index + 1
+                } para este viaje`}</h1>
+                <h2 className="text-xl font-semibold mb-4">{`Detalles del Proveedor ${
+                  index + 1
+                }`}</h2>
+                <ProveedorForm
+                  onChange={(formData: any) =>
+                    handleChangeViajeProveedor(index, {
+                      ...formData,
+                      id: "",
+                      viaje_id: "",
+                    })
+                  }
+                  data={proveedor}
+                  proveedores={props.proveedores}
                 />
               </section>
-            ) : (
-              <section className="mx-auto my-10 max-w-md bg-white p-6 rounded-md shadow-md">
-                <Skeleton height={1000} animation="wave" />
-              </section>
-            )}
+            ))}
+          </section>
 
-            <section className="mb-4">
-              {viajeProveedorData.map((proveedor, index) => (
-                <section
-                  key={index}
-                  className="mx-auto my-10 max-w-md bg-white p-6 rounded-md shadow-md"
-                >
-                  <h1 className="text-3xl font-bold mb-6">{`Añadir Proveedor ${
-                    index + 1
-                  } para este viaje`}</h1>
-                  <h2 className="text-xl font-semibold mb-4">{`Detalles del Proveedor ${
-                    index + 1
-                  }`}</h2>
-                  <ProveedorForm
-                    onChange={(formData: any) =>
-                      handleChangeViajeProveedor(index, {
-                        ...formData,
-                        id: "",
-                        viaje_id: "",
-                      })
-                    }
-                    data={proveedor}
-                    proveedores={props.proveedores}
-                  />
-                </section>
-              ))}
-            </section>
+          <section>
+            <Button
+              title="Agregar Proveedor"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                handleAgregarProveedor();
+              }}
+            ></Button>
 
-            <section>
-              <Button
-                title="Agregar Proveedor"
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleAgregarProveedor();
-                }}
-              ></Button>
-
-              <Button title="Guardar" type="submit" />
-            </section>
-          </form>
-        </section>
+            <Button title="Guardar" type="submit" />
+          </section>
+        </form>
       )}
     </section>
   );

@@ -131,14 +131,12 @@ export default function Viaje() {
   };
 
   const addViajeProveedor = async (viajeProveedorData: ViajeProveedorData) => {
-    const { data, error } = await supabase
-      .from("viajeproveedor")
-      .insert([
-        {
-          ...viajeProveedorData,
-          proveedor_id: viajeProveedorData.proveedor_id,
-        },
-      ]);
+    const { data, error } = await supabase.from("viajeproveedor").insert([
+      {
+        ...viajeProveedorData,
+        proveedor_id: viajeProveedorData.proveedor_id,
+      },
+    ]);
 
     if (error) {
       console.error("Error al obtener los datos", error);
@@ -169,7 +167,7 @@ export default function Viaje() {
       if (viajeData.dolares && viajeData.tipodecambio) {
         viajeData.tarifa *= viajeData.tipodecambio;
       }
-  
+
       // Agregar el viaje
       await addViaje(viajeData);
 
@@ -188,7 +186,7 @@ export default function Viaje() {
   };
 
   return (
-    <main className="mt-[70px]">
+    <main className="mt-[80px]">
       <ViajeForm
         onSubmit={handleViajeSubmit}
         clientes={clientes}
