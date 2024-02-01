@@ -9,10 +9,3 @@ body {
   background-color: rgb(233, 233, 233);
 }
 
-input[type="date"] {
-  border: 2px;
-  border-color: rgb(209 213 219);
-  padding: 12px;
-  width: 100%;
-}
-

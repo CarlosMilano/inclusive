@@ -662,14 +662,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   />
                 </article>
                 <article className="p-2 w-full md:w-[25%]">
-                  <input
-                    name="fechafactura"
-                    value={viajeData.fechafactura || ""}
-                    onChange={handleChangeViaje}
-                    type="date"
-                  />
-                </article>
-                <article className="p-2 w-full md:w-[25%]">
                   <InputField
                     label="Factura"
                     name="factura"
@@ -711,7 +703,18 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     type="number"
                   />
                 </article>
-                <article className="p-2 w-full md:w-[25%]">
+                <article className="p-2 w-full md:w-[25%] flex-col flex space-y-2">
+                  <label className="text-sm font-semibold text-gray-600">
+                    Fecha de Factura
+                  </label>
+                  <input
+                    name="fechafactura"
+                    value={viajeData.fechafactura || ""}
+                    onChange={handleChangeViaje}
+                    type="date"
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%] space-y-2">
                   <label className="block text-gray-700 text-sm font-bold">
                     Dolares
                   </label>
@@ -1315,14 +1318,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 />
               </article>
               <article className="p-2 w-full md:w-[25%]">
-                <input
-                  name="fechafactura"
-                  value={viajeData.fechafactura || ""}
-                  onChange={handleChangeViaje}
-                  type="date"
-                />
-              </article>
-              <article className="p-2 w-full md:w-[25%]">
                 <InputField
                   label="Factura"
                   name="factura"
@@ -1364,7 +1359,18 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   type="number"
                 />
               </article>
-              <article className="p-2 w-full md:w-[25%]">
+              <article className="p-2 w-full md:w-[25%] flex-col flex space-y-2">
+                <label className="text-sm font-semibold text-gray-600">
+                  Fecha de Factura
+                </label>
+                <input
+                  name="fechafactura"
+                  value={viajeData.fechafactura || ""}
+                  onChange={handleChangeViaje}
+                  type="date"
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%] space-y-2">
                 <label className="block text-gray-700 text-sm font-bold">
                   Dolares
                 </label>
@@ -1418,9 +1424,9 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   handleAgregarProveedor();
                 }}
               />
+              <Button title="Guardar" type="submit" />
             </article>
           </section>
-          <Button title="Guardar" type="submit" />
         </form>
       )}
     </>
