@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import supabase from "../../api/supabase";
 import { useRouter } from "next/router";
 import { addDays, differenceInDays, parseISO } from "date-fns";
-import CardProveedor from "@/components/CardProveedor";
 import { Box, CircularProgress } from "@mui/material";
+import Table from "@/components/Table";
 
 interface Viaje {
   id: string;
@@ -12,8 +12,7 @@ interface Viaje {
   destino: string;
   tarifa: number;
   comision: number;
-  factura: string;
-  referencia: string;
+
   fechafactura: string;
   abonado: number;
   viaje_id: string;
@@ -21,7 +20,7 @@ interface Viaje {
 
 interface Proveedor {
   id: string;
-  diascredito: number;
+  diascredito?: number;
   nombre: string;
 }
 
@@ -31,13 +30,38 @@ export default function Home() {
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
+  const today = new Date();
 
   const filterViajes = viajes.filter((viaje) => viaje.tarifa !== viaje.abonado);
 
+  const sortedViajes = filterViajes.sort((viajeA, viajeB) => {
+    const fechaLimiteA = viajeA.fechafactura
+      ? addDays(parseISO(viajeA.fechafactura), proveedor?.diascredito || 0)
+      : null;
+
+    const diasRestantesA = fechaLimiteA
+      ? differenceInDays(fechaLimiteA, today)
+      : null;
+
+    const fechaLimiteB = viajeB.fechafactura
+      ? addDays(parseISO(viajeB.fechafactura), proveedor?.diascredito || 0)
+      : null;
+
+    const diasRestantesB = fechaLimiteB
+      ? differenceInDays(fechaLimiteB, today)
+      : null;
+
+    if (diasRestantesA === null || diasRestantesB === null) {
+      return diasRestantesA === null ? 1 : -1;
+    }
+
+    return diasRestantesA - diasRestantesB;
+  });
+
   useEffect(() => {
-    const fetchClienteData = async () => {
+    const fetchProveedorData = async () => {
       try {
-        const { data: clienteData, error: clienteError } = await supabase
+        const { data: proveedorData, error: clienteError } = await supabase
           .from("proveedor")
           .select("*")
           .eq("id", id)
@@ -46,7 +70,10 @@ export default function Home() {
         if (clienteError) {
           console.error(clienteError);
         } else {
-          setProveedor(clienteData);
+          setProveedor({
+            ...proveedorData,
+            diascredito: proveedorData.diascredito || 30,
+          });
         }
       } catch (error) {
         console.error(error);
@@ -69,7 +96,7 @@ export default function Home() {
     setTimeout(() => {
       setLoading(false);
     }, 1500);
-    fetchClienteData();
+    fetchProveedorData();
     fetchData();
   }, [id]);
 
@@ -95,17 +122,27 @@ export default function Home() {
             <h1 className="text-4xl font-bold">Viajes {proveedor?.nombre}</h1>
           </section>
           <section className="flex flex-wrap justify-center">
-            {filterViajes.slice().map((viaje) => {
+            {sortedViajes.slice().map((viaje) => {
+              const fechaLimite = viaje.fechafactura
+                ? addDays(
+                    parseISO(viaje.fechafactura),
+                    proveedor?.diascredito || 0
+                  )
+                : null;
+
+              const diasRestantes = fechaLimite
+                ? differenceInDays(fechaLimite, today)
+                : 0;
+
               return (
-                <CardProveedor
+                <Table
                   key={viaje.id}
                   origen={viaje.origen || ""}
                   destino={viaje.destino || ""}
                   monto={viaje.tarifa || 0}
-                  factura={viaje.factura || ""}
-                  abonado={viaje.abonado || 0}
-                  referencia={viaje.referencia || ""}
                   id={viaje.viaje_id || ""}
+                  fechafactura={viaje.fechafactura || ""}
+                  diasRestantes={diasRestantes}
                   onClick={(rowData) => {
                     router.push(`/viaje/${rowData.id}`);
                   }}

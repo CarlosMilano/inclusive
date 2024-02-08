@@ -40,6 +40,7 @@ interface ViajeProveedorData {
   destino: string;
   viaje_id: string;
   proveedor_id: string;
+  fechafactura: string | null;
 }
 
 interface ViajeFormProps {
@@ -79,6 +80,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
     origen: "",
     destino: "",
     proveedor_id: "",
+    fechafactura: null,
   });
 
   const [viajeProveedorData, setViajeProveedorData] = useState<
@@ -459,6 +461,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
         destino: "",
         viaje_id: "",
         proveedor_id: "",
+        fechafactura: null,
       },
     ]);
   };
@@ -1090,7 +1093,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
             {viajeProveedorData.map((proveedor, index) => (
               <section key={index}>
                 {editModeProveedor && index === proveedorEditandoIndex ? (
-                  <section className="bg-white p-4 rounded-md shadow-md min-w-[340px] h-[420px]">
+                  <section className="bg-white p-4 rounded-md shadow-md min-w-[340px]">
                     <section className="flex flex-col gap-3 items-center">
                       <Select
                         name="proveedor_id"
@@ -1132,6 +1135,17 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         onChange={handleChangeViajeProveedorEdit}
                         type="number"
                       />
+                      <article className="p-2 w-full flex-col flex space-y-2">
+                        <label className="text-sm font-semibold text-gray-600">
+                          Fecha de Factura
+                        </label>
+                        <input
+                          name="fechafactura"
+                          value={viajeProveedorData[index].fechafactura || ""}
+                          onChange={handleChangeViajeProveedorEdit}
+                          type="date"
+                        />
+                      </article>
 
                       <button
                         type="button"
@@ -1152,7 +1166,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     </section>
                   </section>
                 ) : (
-                  <section className="bg-white p-4 rounded-md shadow-md min-w-[340px] h-[420px]">
+                  <section className="bg-white p-4 rounded-md shadow-md min-w-[340px]">
                     <section className="flex items-center space-x-3 relative">
                       {loading ? (
                         <Skeleton
@@ -1266,7 +1280,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                               height={25}
                             />
                           ) : (
-                            <p>{proveedor.origen}</p>
+                            <p>{proveedor.origen || "N/A"}</p>
                           )}
                         </article>
                         <article className="p-2">
@@ -1278,7 +1292,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                               height={25}
                             />
                           ) : (
-                            <p>{proveedor.destino}</p>
+                            <p>{proveedor.destino || "N/A"}</p>
                           )}
                         </article>
                         <article className="p-2">
@@ -1313,6 +1327,20 @@ export const ViajeForm = (props: ViajeFormProps) => {
                                 precision: 0,
                               })}
                             </p>
+                          )}
+                        </article>
+                        <article className="p-2">
+                          <h3 className="font-bold text-gray-400">
+                            Fecha de Factura
+                          </h3>
+                          {loading ? (
+                            <Skeleton
+                              variant="rectangular"
+                              width={95}
+                              height={25}
+                            />
+                          ) : (
+                            <p>{proveedor.fechafactura || "N/A"}</p>
                           )}
                         </article>
                       </section>
@@ -1381,6 +1409,17 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       onChange={handleAgregarNuevoProveedorVistaMode}
                       type="number"
                     />
+                    <article className="p-2 w-full flex-col flex space-y-2">
+                      <label className="text-sm font-semibold text-gray-600">
+                        Fecha de Factura
+                      </label>
+                      <input
+                        name="fechafactura"
+                        value={proveedorformValues.fechafactura || ""}
+                        onChange={handleAgregarNuevoProveedorVistaMode}
+                        type="date"
+                      />
+                    </article>
 
                     <button
                       type="submit"
@@ -1532,7 +1571,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
           <section className="flex flex-wrap gap-5 items-start justify-center">
             {viajeProveedorData.map((proveedor, index) => (
               <section key={index}>
-                <section className="bg-white p-4 rounded-md shadow-md min-w-[340px] h-[420px]">
+                <section className="bg-white p-4 rounded-md shadow-md min-w-[340px]">
                   <h1 className="text-2xl font-bold p-2">{`Añadir Proveedor ${
                     index + 1
                   }`}</h1>

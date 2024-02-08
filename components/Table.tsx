@@ -1,12 +1,11 @@
 import currencyFormatter from "currency-formatter";
-import Skeleton from "@mui/material/Skeleton";
 
 interface TableProps {
   origen: string;
   destino: string;
   monto: number;
-  factura: string;
-  referencia: string;
+  factura?: string;
+  referencia?: string;
   id: string;
   fechafactura: string;
   diasRestantes: number;
@@ -23,11 +22,12 @@ export default function Table(props: TableProps) {
   return (
     <main
       className={`shadow-md rounded-lg p-5 w-[355px] flex flex-row bg-white m-2 justify-between items-center hover:scale-105 transition-all cursor-pointer duration-300 focus:outline-none 
+                    ${props.diasRestantes < 0 ? "hover:border-red-500" : ""} 
                     ${
-                      props.diasRestantes < 0
-                        ? "hover:border-red-500"
-                        : "hover:border-green-500"
-                    } 
+                      props.fechafactura
+                        ? "hover:border-green-500"
+                        : "hover:border-orange-400"
+                    }
                             hover:border-[1px]
                         `}
       onClick={() => handleRowClick(props)}
@@ -39,18 +39,24 @@ export default function Table(props: TableProps) {
         <p>{props.destino || "N/A"}</p>
       </article>
       <article className="flex flex-row text-sm items-center justify-center">
-        <article className="p-2">
-          <h2 className="text-gray-400 text-xs">Factura</h2>
-          <p>{props.factura || "N/A"}</p>
-        </article>
-        <article className="p-2">
-          <h2 className="text-gray-400 text-xs">Referencia</h2>
-          <p>{props.referencia || "N/A"}</p>
-        </article>
+        {props.factura && (
+          <article className="p-2">
+            <h2 className="text-gray-400 text-xs">Factura</h2>
+            <p>{props.factura || "N/A"}</p>
+          </article>
+        )}
+        {props.referencia && (
+          <article className="p-2">
+            <h2 className="text-gray-400 text-xs">Referencia</h2>
+            <p>{props.referencia || "N/A"}</p>
+          </article>
+        )}
       </article>
       <article className="text-sm flex flex-col justify-center items-end space-y-1">
         <div
-          className={`bg-green-500 rounded-full w-8 h-8 flex justify-center items-center ${
+          className={`${
+            props.fechafactura ? "bg-green-500" : "bg-orange-400"
+          } rounded-full w-8 h-8 flex justify-center items-center ${
             props.diasRestantes < 0 ? "bg-red-500" : ""
           }`}
         >

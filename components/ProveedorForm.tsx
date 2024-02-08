@@ -8,6 +8,7 @@ interface ProveedorFormData {
   origen: string;
   destino: string;
   proveedor_id: string;
+  fechafactura: string | null;
 }
 
 interface ProveedorFormProps {
@@ -82,6 +83,17 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
         onChange={handleChange}
         type="number"
       />
+      <article className="p-2 w-full flex-col flex space-y-2">
+        <label className="text-sm font-semibold text-gray-600">
+          Fecha de Factura
+        </label>
+        <input
+          name="fechafactura"
+          value={props.data.fechafactura || ""}
+          onChange={handleChange}
+          type="date"
+        />
+      </article>
     </section>
   );
 };

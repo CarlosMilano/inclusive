@@ -4,7 +4,6 @@ import supabase from "../../api/supabase";
 import { useRouter } from "next/router";
 import Table from "@/components/Table";
 import { addDays, differenceInDays, parseISO } from "date-fns";
-import Pagination from "@mui/material/Pagination";
 import { Box, CircularProgress } from "@mui/material";
 
 interface Viaje {
