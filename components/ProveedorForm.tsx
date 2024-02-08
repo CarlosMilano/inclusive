@@ -60,23 +60,23 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
         onChange={handleChange}
       />
       {!props.disableOrigenDestino && (
-        <section>
+        <>
+          <InputField
+            label="Tarifa"
+            name="tarifa"
+            value={props.data.tarifa}
+            onChange={handleChange}
+            type="number"
+          />
 
-      <InputField
-        label="Tarifa"
-        name="tarifa"
-        value={props.data.tarifa}
-        onChange={handleChange}
-        type="number"
-      />
-
-      <InputField
-        label="Abonado"
-        name="abonado"
-        value={props.data.abonado}
-        onChange={handleChange}
-        type="number"
-      />
+          <InputField
+            label="Abonado"
+            name="abonado"
+            value={props.data.abonado}
+            onChange={handleChange}
+            type="number"
+          />
+        </>
       )}
       <section className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2">
