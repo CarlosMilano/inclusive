@@ -618,12 +618,20 @@ export const ViajeForm = (props: ViajeFormProps) => {
     setOpenAbonadoTarifaProveedor(!openAbonadoTarifaProveedor);
   };
 
+  const clientesOdenados = props.clientes
+    .slice()
+    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+  const proveedorOrdenado = props.proveedores
+    .slice()
+    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+
   return (
     <>
       {props.existeViaje ? (
         <section className="flex flex-col p-3 gap-5 items-center">
           {editModeViaje ? (
-            <section className="bg-white p-4 rounded-md shadow-xl max-w-[1000px]">
+            <section className="bg-white p-4 rounded-md shadow-md w-[95%] max-w-[1000px]">
               <h2 className="text-xl font-semibold p-2 text-gray-600">
                 Detalle Viaje
               </h2>
@@ -635,7 +643,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     onChange={handleChangeViaje}
                     fullWidth
                   >
-                    {props.clientes.map((cliente: any) => (
+                    {clientesOdenados.map((cliente: any) => (
                       <MenuItem key={cliente.id} value={cliente.id}>
                         {cliente.nombre}
                       </MenuItem>
@@ -660,6 +668,14 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 </article>
                 <article className="p-2 w-full md:w-[25%]">
                   <InputField
+                    label="Tipo de unidad"
+                    name="tipodeunidad"
+                    value={viajeData.tipodeunidad}
+                    onChange={handleChangeViaje}
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
                     label="Tarifa"
                     name="tarifa"
                     value={viajeData.tarifa}
@@ -669,7 +685,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 </article>
                 <article className="p-2 w-full md:w-[25%]">
                   <InputField
-                    label="Abonado"
+                    label="Abono tarifa"
                     name="abonado"
                     value={viajeData.abonado}
                     onChange={handleChangeViaje}
@@ -678,10 +694,20 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 </article>
                 <article className="p-2 w-full md:w-[25%]">
                   <InputField
-                    label="Factura"
-                    name="factura"
-                    value={viajeData.factura}
+                    label="Comisión"
+                    name="comision"
+                    value={viajeData.comision}
                     onChange={handleChangeViaje}
+                    type="number"
+                  />
+                </article>
+                <article className="p-2 w-full md:w-[25%]">
+                  <InputField
+                    label="Abono comisión"
+                    name="abonocomision"
+                    value={viajeData.abonocomision}
+                    onChange={handleChangeViaje}
+                    type="number"
                   />
                 </article>
                 <article className="p-2 w-full md:w-[25%]">
@@ -694,28 +720,10 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 </article>
                 <article className="p-2 w-full md:w-[25%]">
                   <InputField
-                    label="Tipo de unidad"
-                    name="tipodeunidad"
-                    value={viajeData.tipodeunidad}
+                    label="Factura"
+                    name="factura"
+                    value={viajeData.factura}
                     onChange={handleChangeViaje}
-                  />
-                </article>
-                <article className="p-2 w-full md:w-[25%]">
-                  <InputField
-                    label="Comision"
-                    name="comision"
-                    value={viajeData.comision}
-                    onChange={handleChangeViaje}
-                    type="number"
-                  />
-                </article>
-                <article className="p-2 w-full md:w-[25%]">
-                  <InputField
-                    label="Abono comision"
-                    name="abonocomision"
-                    value={viajeData.abonocomision}
-                    onChange={handleChangeViaje}
-                    type="number"
                   />
                 </article>
                 <article className="p-2 w-full md:w-[25%] flex-col flex space-y-2">
@@ -767,7 +775,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
               </button>
             </section>
           ) : (
-            <section className="bg-white p-4 rounded-md shadow-xl relative">
+            <section className="bg-white p-4 rounded-md shadow-md relative w-[95%] max-w-[1000px]">
               <section className="flex items-center space-x-3">
                 {loading ? (
                   <Skeleton variant="rectangular" width={160} height={55} />
@@ -943,21 +951,28 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     )}
                   </article>
                   {viajeData.dolares && (
-                    <section>
-                      <article className="p-2 w-full md:w-[30%]">
+                    <section className="flex w-full flex-wrap">
+                      <article className="p-2 w-full md:w-[25%]">
                         <h3 className="font-bold text-gray-400">Dólares</h3>
                         <p>Si</p>
                       </article>
-                      <article className="p-2 w-full md:w-[30%]">
+                      <article className="p-2 w-full md:w-[25%]">
                         <h3 className="font-bold text-gray-400">
                           Tipo de Cambio
                         </h3>
-                        <p>
-                          {currencyFormatter.format(viajeData.tipodecambio, {
-                            code: "MXN",
-                            precision: 0,
-                          })}
-                        </p>
+                        {loading ? (
+                          <Skeleton
+                            variant="rectangular"
+                            width={85}
+                            height={25}
+                          />
+                        ) : (
+                          <p>
+                            {currencyFormatter.format(viajeData.tipodecambio, {
+                              code: "USD",
+                            })}
+                          </p>
+                        )}
                       </article>
                     </section>
                   )}
@@ -1083,7 +1098,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         onChange={handleChangeViajeProveedorEdit}
                         fullWidth
                       >
-                        {props.proveedores.map((proveedor: any) => (
+                        {proveedorOrdenado.map((proveedor: any) => (
                           <MenuItem key={proveedor.id} value={proveedor.id}>
                             {proveedor.nombre}
                           </MenuItem>
@@ -1137,7 +1152,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     </section>
                   </section>
                 ) : (
-                  <section className="bg-white p-4 rounded-md shadow-xl min-w-[340px] h-[420px]">
+                  <section className="bg-white p-4 rounded-md shadow-md min-w-[340px] h-[420px]">
                     <section className="flex items-center space-x-3 relative">
                       {loading ? (
                         <Skeleton
@@ -1332,7 +1347,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       onChange={handleAgregarNuevoProveedorVistaMode}
                       fullWidth
                     >
-                      {props.proveedores.map((proveedor: any) => (
+                      {proveedorOrdenado.map((proveedor: any) => (
                         <MenuItem key={proveedor.id} value={proveedor.id}>
                           {proveedor.nombre}
                         </MenuItem>
@@ -1383,7 +1398,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
           onSubmit={handleSubmit}
           className="flex flex-col p-3 gap-5 items-center"
         >
-          <section className="bg-white p-4 rounded-md shadow-xl max-w-[1000px]">
+          <section className="bg-white p-4 rounded-md shadow-md w-[95%] max-w-[1000px]">
             <h1 className="text-4xl font-semibold p-2">Añadir Nuevo Viaje</h1>
             <h2 className="text-xl font-semibold p-2 text-gray-600">
               Detalle Viaje
@@ -1396,7 +1411,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   onChange={handleChangeViaje}
                   fullWidth
                 >
-                  {props.clientes.map((cliente: any) => (
+                  {clientesOdenados.map((cliente: any) => (
                     <MenuItem key={cliente.id} value={cliente.id}>
                       {cliente.nombre}
                     </MenuItem>
@@ -1421,6 +1436,14 @@ export const ViajeForm = (props: ViajeFormProps) => {
               </article>
               <article className="p-2 w-full md:w-[25%]">
                 <InputField
+                  label="Tipo de unidad"
+                  name="tipodeunidad"
+                  value={viajeData.tipodeunidad}
+                  onChange={handleChangeViaje}
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <InputField
                   label="Tarifa"
                   name="tarifa"
                   value={viajeData.tarifa}
@@ -1430,35 +1453,11 @@ export const ViajeForm = (props: ViajeFormProps) => {
               </article>
               <article className="p-2 w-full md:w-[25%]">
                 <InputField
-                  label="Abonado"
+                  label="Abono tarifa"
                   name="abonado"
                   value={viajeData.abonado}
                   onChange={handleChangeViaje}
                   type="number"
-                />
-              </article>
-              <article className="p-2 w-full md:w-[25%]">
-                <InputField
-                  label="Factura"
-                  name="factura"
-                  value={viajeData.factura}
-                  onChange={handleChangeViaje}
-                />
-              </article>
-              <article className="p-2 w-full md:w-[25%]">
-                <InputField
-                  label="Referencia"
-                  name="referencia"
-                  value={viajeData.referencia}
-                  onChange={handleChangeViaje}
-                />
-              </article>
-              <article className="p-2 w-full md:w-[25%]">
-                <InputField
-                  label="Tipo de unidad"
-                  name="tipodeunidad"
-                  value={viajeData.tipodeunidad}
-                  onChange={handleChangeViaje}
                 />
               </article>
               <article className="p-2 w-full md:w-[25%]">
@@ -1477,6 +1476,22 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   value={viajeData.abonocomision}
                   onChange={handleChangeViaje}
                   type="number"
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <InputField
+                  label="Referencia"
+                  name="referencia"
+                  value={viajeData.referencia}
+                  onChange={handleChangeViaje}
+                />
+              </article>
+              <article className="p-2 w-full md:w-[25%]">
+                <InputField
+                  label="Factura"
+                  name="factura"
+                  value={viajeData.factura}
+                  onChange={handleChangeViaje}
                 />
               </article>
               <article className="p-2 w-full md:w-[25%] flex-col flex space-y-2">

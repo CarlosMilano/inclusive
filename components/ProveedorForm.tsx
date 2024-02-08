@@ -32,6 +32,10 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
     });
   };
 
+  const proveedorOrdenado = props.proveedores
+    .slice()
+    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+
   return (
     <section className="flex flex-col gap-4 items-center">
       <Select
@@ -40,7 +44,7 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
         onChange={handleChange}
         fullWidth
       >
-        {props.proveedores.map((proveedor: any) => (
+        {proveedorOrdenado.map((proveedor: any) => (
           <MenuItem key={proveedor.id} value={proveedor.id}>
             {proveedor.nombre}
           </MenuItem>

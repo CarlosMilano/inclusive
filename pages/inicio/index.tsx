@@ -176,9 +176,6 @@ export default function Home() {
       </Head>
       <main className="min-h-screen flex flex-col items-center gap-5 p-5 mt-[60px]">
         <section className="flex flex-wrap items-start justify-center gap-5">
-          <article className="flex flex-col justify-center">
-            <Button title="Añadir Viaje" onClick={handleClick} />
-          </article>
           <article className="flex flex-col justify-center items-center z-20">
             <Button title="Añadir Cliente" onClick={clickCliente} />
             <div
@@ -241,6 +238,9 @@ export default function Home() {
                 </button>
               </div>
             </div>
+          </article>
+          <article className="flex flex-col justify-center">
+            <Button title="Añadir Viaje" onClick={handleClick} />
           </article>
         </section>
         <section className="flex flex-wrap justify-center gap-10">
