@@ -46,56 +46,38 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
           </MenuItem>
         ))}
       </Select>
-      <InputField
-        label="Origen"
-        name="origen"
-        value={props.data.origen}
-        onChange={handleChange}
-      />
-
-      <InputField
-        label="Destino"
-        name="destino"
-        value={props.data.destino}
-        onChange={handleChange}
-      />
       {!props.disableOrigenDestino && (
         <>
           <InputField
-            label="Tarifa"
-            name="tarifa"
-            value={props.data.tarifa}
+            label="Origen"
+            name="origen"
+            value={props.data.origen}
             onChange={handleChange}
-            type="number"
           />
 
           <InputField
-            label="Abonado"
-            name="abonado"
-            value={props.data.abonado}
+            label="Destino"
+            name="destino"
+            value={props.data.destino}
             onChange={handleChange}
-            type="number"
           />
         </>
       )}
-      <section className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Proveedor:
-        </label>
-        <select
-          name="proveedor_id"
-          value={props.data.proveedor_id || ""}
-          onChange={handleChange}
-          className="p-3 border rounded-md focus:outline-none focus:border-blue-500"
-        >
-          <option value="">Selecciona un proveedor</option>
-          {props.proveedores.map((proveedor: any) => (
-            <option key={proveedor.id} value={proveedor.id}>
-              {proveedor.nombre}
-            </option>
-          ))}
-        </select>
-      </section>
+      <InputField
+        label="Tarifa"
+        name="tarifa"
+        value={props.data.tarifa}
+        onChange={handleChange}
+        type="number"
+      />
+
+      <InputField
+        label="Abonado"
+        name="abonado"
+        value={props.data.abonado}
+        onChange={handleChange}
+        type="number"
+      />
     </section>
   );
 };
