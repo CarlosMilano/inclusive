@@ -6,6 +6,7 @@ import Table from "@/components/Table";
 import { addDays, differenceInDays, parseISO } from "date-fns";
 import Pagination from "@mui/material/Pagination";
 import { Box, CircularProgress } from "@mui/material";
+import CardComision from "@/components/CardComision";
 
 interface Viaje {
   id: string;
@@ -13,6 +14,7 @@ interface Viaje {
   destino: string;
   tarifa: number;
   comision: number;
+  abonocomision: number;
   factura: string;
   referencia: string;
   fechafactura: string;
@@ -31,33 +33,10 @@ export default function Home() {
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
-  const today = new Date();
 
-  const filterViajes = viajes.filter((viaje) => viaje.tarifa !== viaje.abonado);
-
-  const sortedViajes = filterViajes.sort((viajeA, viajeB) => {
-    const fechaLimiteA = viajeA.fechafactura
-      ? addDays(parseISO(viajeA.fechafactura), cliente?.diascredito || 0)
-      : null;
-
-    const diasRestantesA = fechaLimiteA
-      ? differenceInDays(fechaLimiteA, today)
-      : null;
-
-    const fechaLimiteB = viajeB.fechafactura
-      ? addDays(parseISO(viajeB.fechafactura), cliente?.diascredito || 0)
-      : null;
-
-    const diasRestantesB = fechaLimiteB
-      ? differenceInDays(fechaLimiteB, today)
-      : null;
-
-    if (diasRestantesA === null || diasRestantesB === null) {
-      return diasRestantesA === null ? 1 : -1;
-    }
-
-    return diasRestantesA - diasRestantesB;
-  });
+  const filterViajes = viajes.filter(
+    (viaje) => viaje.comision !== viaje.abonocomision
+  );
 
   useEffect(() => {
     const fetchClienteData = async () => {
@@ -85,8 +64,7 @@ export default function Home() {
         const { data: viajesData, error: viajesError } = await supabase
           .from("viaje")
           .select("*")
-          .eq("cliente_id", id)
-          .order("fechafactura", { ascending: false });
+          .eq("cliente_id", id);
         if (viajesError) console.error(viajesError);
         else {
           const viajesConDiasCredito = viajesData.map((viaje: Viaje) => ({
@@ -109,7 +87,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Viajes {cliente?.nombre}</title>
+        <title>Comisión {cliente?.nombre}</title>
       </Head>
       {loading ? (
         <Box
@@ -125,38 +103,19 @@ export default function Home() {
       ) : (
         <main className="flex flex-col h-screen mt-[60px]">
           <section className="p-8">
-            <h1 className="text-4xl font-bold">Viajes {cliente?.nombre}</h1>
+            <h1 className="text-4xl font-bold">Comisión {cliente?.nombre}</h1>
           </section>
           <section className="flex flex-wrap justify-center">
-            {sortedViajes.slice().map((viaje) => {
-              const fechaLimite = viaje.fechafactura
-                ? addDays(
-                    parseISO(viaje.fechafactura),
-                    cliente?.diascredito || 0
-                  )
-                : null;
-
-              const diasRestantes = fechaLimite
-                ? differenceInDays(fechaLimite, today)
-                : 0;
-
-              return (
-                <Table
-                  key={viaje.id}
-                  origen={viaje.origen || ""}
-                  destino={viaje.destino || ""}
-                  monto={viaje.tarifa || 0}
-                  factura={viaje.factura || ""}
-                  referencia={viaje.referencia || ""}
-                  id={viaje.id || ""}
-                  fechafactura={viaje.fechafactura || ""}
-                  diasRestantes={diasRestantes}
-                  onClick={(rowData) => {
-                    router.push(`/viaje/${rowData.id}`);
-                  }}
-                />
-              );
-            })}
+            {filterViajes.map((viaje) => (
+              <CardComision
+                key={viaje.id}
+                comision={viaje.comision}
+                abonocomision={viaje.abonocomision}
+                id={viaje.id}
+                onClick={() => router.push(`/viaje/${viaje.id}`)}
+                factura={viaje.factura}
+              />
+            ))}
           </section>
         </main>
       )}

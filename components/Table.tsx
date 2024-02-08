@@ -11,7 +11,6 @@ interface TableProps {
   fechafactura: string;
   diasRestantes: number;
   onClick?: (rowData: { id: string }) => void;
-  loading: boolean;
 }
 
 export default function Table(props: TableProps) {
@@ -35,11 +34,7 @@ export default function Table(props: TableProps) {
     >
       <article className="flex flex-col text-sm">
         <h2 className="text-gray-400 text-xs">Origen</h2>
-        {props.loading ? (
-          <Skeleton width="20%" height={40} animation="wave" />
-        ) : (
-          <p>{props.origen || "N/A"}</p>
-        )}
+        <p>{props.origen || "N/A"}</p>
         <h2 className="text-gray-400 text-xs">Destino</h2>
         <p>{props.destino || "N/A"}</p>
       </article>

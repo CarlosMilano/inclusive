@@ -1,5 +1,6 @@
 import React, { ChangeEvent } from "react";
 import { InputField } from "./InputField";
+import { MenuItem, Select } from "@mui/material";
 
 interface ProveedorFormData {
   tarifa: number;
@@ -10,16 +11,14 @@ interface ProveedorFormData {
 }
 
 interface ProveedorFormProps {
-  onChange: (formData: ProveedorFormData) => void; //Recibe el onchangeviajeproveedor en viajeproveedorform y lo utiliza en este onchange
+  onChange: (formData: ProveedorFormData) => void;
   data: ProveedorFormData;
   proveedores: { id: string; nombre: string }[];
   disableOrigenDestino?: boolean;
 }
 
 export const ProveedorForm = (props: ProveedorFormProps) => {
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: any) => {
     const { name, value, type } = e.target;
     const selectedValue =
       type === "select-one"
@@ -34,9 +33,37 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
   };
 
   return (
-    <section>
+    <section className="flex flex-col gap-4 items-center">
+      <Select
+        name="proveedor_id"
+        value={props.data.proveedor_id || ""}
+        onChange={handleChange}
+        fullWidth
+      >
+        {props.proveedores.map((proveedor: any) => (
+          <MenuItem key={proveedor.id} value={proveedor.id}>
+            {proveedor.nombre}
+          </MenuItem>
+        ))}
+      </Select>
       <InputField
-        label=" Proveedor Tarifa:"
+        label="Origen"
+        name="origen"
+        value={props.data.origen}
+        onChange={handleChange}
+      />
+
+      <InputField
+        label="Destino"
+        name="destino"
+        value={props.data.destino}
+        onChange={handleChange}
+      />
+      {!props.disableOrigenDestino && (
+        <section>
+
+      <InputField
+        label="Tarifa"
         name="tarifa"
         value={props.data.tarifa}
         onChange={handleChange}
@@ -44,28 +71,12 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
       />
 
       <InputField
-        label="Proveedor Abonado:"
+        label="Abonado"
         name="abonado"
         value={props.data.abonado}
         onChange={handleChange}
         type="number"
       />
-      {!props.disableOrigenDestino && (
-        <section>
-      <InputField
-        label="Proveedor Origen:"
-        name="origen"
-        value={props.data.origen}
-        onChange={handleChange}
-      />
-
-      <InputField
-        label="Proveedor Destino:"
-        name="destino"
-        value={props.data.destino}
-        onChange={handleChange}
-      />
-      </section>
       )}
       <section className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2">

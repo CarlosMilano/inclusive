@@ -3,6 +3,9 @@ import { ViajeForm } from "@/components/ViajeProveedorForm";
 import { useRouter } from "next/router";
 import supabase from "@/pages/api/supabase";
 import { v4 as uuidv4 } from "uuid";
+import Head from "next/head";
+import { Box, CircularProgress } from "@mui/material";
+import { set } from "date-fns";
 
 interface ViajeData {
   id: string;
@@ -51,6 +54,7 @@ export default function Viaje() {
   const [proveedores, setProveedor] = useState<Proveedor[]>([]);
   const router = useRouter();
   const [existeViaje, setExisteViaje] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,6 +75,7 @@ export default function Viaje() {
         viajeError
           ? console.error("Error al obtener los datos de viaje", viajeError)
           : setViaje(viajeData || []);
+
         clientesError
           ? console.error(
               "Error al obtener los datos de clientes",
@@ -89,6 +94,10 @@ export default function Viaje() {
               proveedorError
             )
           : setProveedor(proveedorData || []);
+
+        setTimeout(() => {
+          setLoading(false);
+        }, 1500);
 
         // Verificar la existencia del ID de viaje en la URL
         const viajeIdFromRoute = router.query.id as string;
@@ -131,14 +140,12 @@ export default function Viaje() {
   };
 
   const addViajeProveedor = async (viajeProveedorData: ViajeProveedorData) => {
-    const { data, error } = await supabase
-      .from("viajeproveedor")
-      .insert([
-        {
-          ...viajeProveedorData,
-          proveedor_id: viajeProveedorData.proveedor_id,
-        },
-      ]);
+    const { data, error } = await supabase.from("viajeproveedor").insert([
+      {
+        ...viajeProveedorData,
+        proveedor_id: viajeProveedorData.proveedor_id,
+      },
+    ]);
 
     if (error) {
       console.error("Error al obtener los datos", error);
@@ -169,7 +176,7 @@ export default function Viaje() {
       if (viajeData.dolares && viajeData.tipodecambio) {
         viajeData.tarifa *= viajeData.tipodecambio;
       }
-  
+
       // Agregar el viaje
       await addViaje(viajeData);
 
@@ -188,14 +195,32 @@ export default function Viaje() {
   };
 
   return (
-    <main className="mt-[70px]">
-      <ViajeForm
-        onSubmit={handleViajeSubmit}
-        clientes={clientes}
-        proveedores={proveedores}
-        existeViaje={existeViaje}
-        viajeIdFromRoute={router.query.id as string}
-      />
-    </main>
+    <>
+      <Head>
+        <title>Viaje</title>
+      </Head>
+      {loading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <main className="mt-[80px]">
+          <ViajeForm
+            onSubmit={handleViajeSubmit}
+            clientes={clientes}
+            proveedores={proveedores}
+            existeViaje={existeViaje}
+            viajeIdFromRoute={router.query.id as string}
+          />
+        </main>
+      )}
+    </>
   );
 }
