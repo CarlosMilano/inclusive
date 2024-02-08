@@ -1364,7 +1364,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
 
             {mostrarFormularioProveedorVistaMode &&
               isButtonProveedorVisible && (
-                <section className=" bg-white p-4 rounded-md shadow-md min-w-[340px] h-[420px]">
+                <section className=" bg-white p-4 rounded-md shadow-md min-w-[340px]">
                   <form
                     onSubmit={handleAgregarProveedorVistaMode}
                     className="flex flex-col gap-3 items-center"
