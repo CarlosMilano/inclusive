@@ -12,7 +12,7 @@ interface Viaje {
   destino: string;
   tarifa: number;
   comision: number;
-
+  factura: string;
   fechafactura: string;
   abonado: number;
   viaje_id: string;
@@ -93,6 +93,7 @@ export default function Home() {
         console.error(error);
       }
     };
+
     setTimeout(() => {
       setLoading(false);
     }, 1500);
@@ -141,6 +142,7 @@ export default function Home() {
                   destino={viaje.destino || ""}
                   monto={viaje.tarifa || 0}
                   id={viaje.viaje_id || ""}
+                  factura={viaje.factura || ""}
                   fechafactura={viaje.fechafactura || ""}
                   diasRestantes={diasRestantes}
                   onClick={(rowData) => {

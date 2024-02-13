@@ -41,6 +41,7 @@ interface ViajeProveedorData {
   viaje_id: string;
   proveedor_id: string;
   fechafactura: string | null;
+  factura: string;
 }
 
 interface ViajeFormProps {
@@ -81,6 +82,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
     destino: "",
     proveedor_id: "",
     fechafactura: null,
+    factura: "",
   });
 
   const [viajeProveedorData, setViajeProveedorData] = useState<
@@ -462,6 +464,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
         viaje_id: "",
         proveedor_id: "",
         fechafactura: null,
+        factura: "",
       },
     ]);
   };
@@ -1135,6 +1138,13 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         onChange={handleChangeViajeProveedorEdit}
                         type="number"
                       />
+                      <InputField
+                        label="Factura"
+                        name="factura"
+                        value={viajeProveedorData[index].factura}
+                        onChange={handleChangeViajeProveedorEdit}
+                        type="number"
+                      />
                       <article className="p-2 w-full flex-col flex space-y-2">
                         <label className="text-sm font-semibold text-gray-600">
                           Fecha de Factura
@@ -1330,6 +1340,18 @@ export const ViajeForm = (props: ViajeFormProps) => {
                           )}
                         </article>
                         <article className="p-2">
+                          <h3 className="font-bold text-gray-400">Factura</h3>
+                          {loading ? (
+                            <Skeleton
+                              variant="rectangular"
+                              width={85}
+                              height={25}
+                            />
+                          ) : (
+                            <p>{proveedor.factura || "N/A"}</p>
+                          )}
+                        </article>
+                        <article className="p-2">
                           <h3 className="font-bold text-gray-400">
                             Fecha de Factura
                           </h3>
@@ -1406,6 +1428,13 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       label="Abonado"
                       name="abonado"
                       value={proveedorformValues.abonado}
+                      onChange={handleAgregarNuevoProveedorVistaMode}
+                      type="number"
+                    />
+                    <InputField
+                      label="Factura"
+                      name="factura"
+                      value={proveedorformValues.factura}
                       onChange={handleAgregarNuevoProveedorVistaMode}
                       type="number"
                     />
