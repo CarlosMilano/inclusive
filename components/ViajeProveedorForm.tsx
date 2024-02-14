@@ -271,6 +271,9 @@ export const ViajeForm = (props: ViajeFormProps) => {
   //Funcion para actualizar viaje
   const guardarCambiosViaje = async (viajeActualizado: ViajeData) => {
     try {
+      if (viajeActualizado.dolares) {
+        viajeActualizado.tarifa *= viajeActualizado.tipodecambio;
+      }
       const { data, error } = await supabase
         .from("viaje")
         .update(viajeActualizado)
@@ -295,6 +298,9 @@ export const ViajeForm = (props: ViajeFormProps) => {
   ) => {
     try {
       if (proveedorActualizado.id) {
+        if (viajeData.dolares) {
+          proveedorActualizado.tarifa *= viajeData.tipodecambio;
+        }
         // Si el proveedor tiene un ID, entonces existe y se debe actualizar
         const { data, error } = await supabase
           .from("viajeproveedor")
@@ -407,17 +413,23 @@ export const ViajeForm = (props: ViajeFormProps) => {
   const handleAgregarProveedorVistaMode = async (e: any) => {
     e.preventDefault();
 
-    const { data, error } = await supabase.from("viajeproveedor").insert([
-      {
-        id: uuidv4(),
-        tarifa: proveedorformValues.tarifa,
-        abonado: proveedorformValues.abonado,
-        origen: proveedorformValues.origen,
-        destino: proveedorformValues.destino,
-        proveedor_id: proveedorformValues.proveedor_id,
-        viaje_id: viajeData.id,
-      },
-    ]);
+    const proveedorDataToInsert = {
+      id: uuidv4(),
+      tarifa: proveedorformValues.tarifa,
+      abonado: proveedorformValues.abonado,
+      origen: proveedorformValues.origen,
+      destino: proveedorformValues.destino,
+      proveedor_id: proveedorformValues.proveedor_id,
+      viaje_id: viajeData.id,
+    };
+
+    if (viajeData.dolares) {
+      proveedorDataToInsert.tarifa *= viajeData.tipodecambio;
+    }
+
+    const { data, error } = await supabase
+      .from("viajeproveedor")
+      .insert([proveedorDataToInsert]);
 
     if (error) {
       console.error("Hubo un error al agregar el proveedor:", error);
@@ -885,7 +897,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     {loading ? (
                       <Skeleton variant="rectangular" width={85} height={25} />
                     ) : (
-                      <p>{viajeData.origen}</p>
+                      <p>{viajeData.origen || "N/A"}</p>
                     )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">
@@ -893,7 +905,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     {loading ? (
                       <Skeleton variant="rectangular" width={85} height={25} />
                     ) : (
-                      <p>{viajeData.destino}</p>
+                      <p>{viajeData.destino || "N/A"}</p>
                     )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">
@@ -1587,7 +1599,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
               <article className="p-2 w-full md:w-[25%]">
                 {viajeData.dolares && (
                   <InputField
-                    label="Tipo de cambio:"
+                    label="Tipo de cambio"
                     name="tipodecambio"
                     value={viajeData.tipodecambio}
                     onChange={handleChangeViaje}

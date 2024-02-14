@@ -169,25 +169,24 @@ export default function Viaje() {
       : [viajeProveedorData];
 
     try {
-      // Asignar el id del viaje desde la ruta al viajeData
       viajeData.id = viajeIdFromRoute;
 
-      // Multiplicar la tarifa por el tipo de cambio si está en dólares y asi pasar a pesos (solo para viaje y cuando esta en modo formulario)
-      if (viajeData.dolares && viajeData.tipodecambio) {
+      if (viajeData.dolares) {
         viajeData.tarifa *= viajeData.tipodecambio;
       }
 
-      // Agregar el viaje
       await addViaje(viajeData);
 
-      // Agregar los proveedores con el mismo ID del viaje
       for (const proveedor of proveedoresArray) {
+        if (proveedor.tarifa && viajeData.dolares) {
+          proveedor.tarifa *= viajeData.tipodecambio;
+        }
+
         proveedor.viaje_id = viajeIdFromRoute;
-        proveedor.id = uuidv4(); // Generar un nuevo ID para cada proveedor
+        proveedor.id = uuidv4();
 
         await addViajeProveedor(proveedor);
       }
-
       router.reload();
     } catch (error) {
       console.error("Error al procesar el formulario:", error);
