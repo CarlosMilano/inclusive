@@ -23,16 +23,17 @@ export default function Table(props: TableProps) {
 
   return (
     <main
-      className={`shadow-md rounded-lg p-5 w-[355px] flex flex-row bg-white m-2 justify-between items-center hover:scale-105 transition-all cursor-pointer duration-300 focus:outline-none 
+      className={`shadow-md rounded-lg p-5 w-[355px] flex flex-row bg-white m-2 justify-between items-center hover:scale-105 transition-all cursor-pointer duration-300 focus:outline-none  
                     ${props.diasRestantes < 0 ? "hover:border-red-500" : ""} 
+                    ${props.historial ? "hover:border-none" : ""}
                     ${
                       props.fechafactura
                         ? "hover:border-green-500"
                         : "hover:border-orange-400"
                     }
-                    ${props.historial ? "hover:border-blue-500" : ""}
-
+                    
                             hover:border-[1px]
+                            
                         `}
       onClick={() => handleRowClick(props)}
     >
