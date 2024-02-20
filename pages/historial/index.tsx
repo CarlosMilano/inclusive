@@ -32,17 +32,10 @@ export default function Historial() {
 
         if (viajesError) console.error(viajesError);
         else {
-          const today = new Date();
-          const twoMonthsAgo = new Date();
-          twoMonthsAgo.setMonth(today.getMonth() - 2);
-
-          const filteredViajes = (viajesData || []).filter(
-            (viaje) => new Date(viaje.fechafactura) >= twoMonthsAgo
-          );
           setTimeout(() => {
             setLoading(false);
           }, 1500);
-          setViajes(filteredViajes);
+          setViajes(viajesData || []);
         }
       } catch (error) {
         console.error(error);
