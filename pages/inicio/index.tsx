@@ -243,7 +243,7 @@ export default function Home() {
             <Button title="Añadir Viaje" onClick={handleClick} />
           </article>
         </section>
-        <section className="flex flex-wrap justify-center gap-10">
+        <section className="flex flex-wrap justify-center gap-7 w-screen">
           <Card
             title="CXC"
             subtitle="Cliente"

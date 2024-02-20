@@ -271,9 +271,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
   //Funcion para actualizar viaje
   const guardarCambiosViaje = async (viajeActualizado: ViajeData) => {
     try {
-      if (viajeActualizado.dolares) {
-        viajeActualizado.tarifa *= viajeActualizado.tipodecambio;
-      }
       const { data, error } = await supabase
         .from("viaje")
         .update(viajeActualizado)
@@ -298,9 +295,6 @@ export const ViajeForm = (props: ViajeFormProps) => {
   ) => {
     try {
       if (proveedorActualizado.id) {
-        if (viajeData.dolares) {
-          proveedorActualizado.tarifa *= viajeData.tipodecambio;
-        }
         // Si el proveedor tiene un ID, entonces existe y se debe actualizar
         const { data, error } = await supabase
           .from("viajeproveedor")

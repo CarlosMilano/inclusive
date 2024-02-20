@@ -171,17 +171,9 @@ export default function Viaje() {
     try {
       viajeData.id = viajeIdFromRoute;
 
-      if (viajeData.dolares) {
-        viajeData.tarifa *= viajeData.tipodecambio;
-      }
-
       await addViaje(viajeData);
 
       for (const proveedor of proveedoresArray) {
-        if (proveedor.tarifa && viajeData.dolares) {
-          proveedor.tarifa *= viajeData.tipodecambio;
-        }
-
         proveedor.viaje_id = viajeIdFromRoute;
         proveedor.id = uuidv4();
 

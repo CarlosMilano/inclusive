@@ -16,6 +16,9 @@ export default function Header() {
         <Link href="/inicio" className="p-3">
           Inicio
         </Link>
+        <Link href="/historial" className="p-3">
+          Historial
+        </Link>
         <button onClick={handleLogout} className="p-3">
           <ExitToAppIcon />
         </button>

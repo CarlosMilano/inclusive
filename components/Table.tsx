@@ -10,6 +10,8 @@ interface TableProps {
   fechafactura: string;
   diasRestantes: number;
   onClick?: (rowData: { id: string }) => void;
+  historial?: boolean;
+  folio?: string;
 }
 
 export default function Table(props: TableProps) {
@@ -28,6 +30,8 @@ export default function Table(props: TableProps) {
                         ? "hover:border-green-500"
                         : "hover:border-orange-400"
                     }
+                    ${props.historial ? "hover:border-blue-500" : ""}
+
                             hover:border-[1px]
                         `}
       onClick={() => handleRowClick(props)}
@@ -53,19 +57,27 @@ export default function Table(props: TableProps) {
         )}
       </article>
       <article className="text-sm flex flex-col justify-center items-end space-y-1">
-        <div
-          className={`${
-            props.fechafactura ? "bg-green-500" : "bg-orange-400"
-          } rounded-full w-8 h-8 flex justify-center items-center ${
-            props.diasRestantes < 0 ? "bg-red-500" : ""
-          }`}
-        >
-          <div className="bg-white rounded-full p-1 w-7 h-7 flex justify-center items-center">
-            {props.diasRestantes >= 0
-              ? props.diasRestantes
-              : `-${Math.abs(props.diasRestantes)}`}
+        {props.historial ? (
+          <div className="bg-blue-500 rounded-full w-9 h-9 flex justify-center items-center">
+            <div className="bg-white rounded-full p-1 w-8 h-8 flex justify-center items-center">
+              {props.folio || "N/A"}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div
+            className={`${
+              props.fechafactura ? "bg-green-500" : "bg-orange-400"
+            } rounded-full w-8 h-8 flex justify-center items-center ${
+              props.diasRestantes < 0 ? "bg-red-500" : ""
+            }`}
+          >
+            <div className="bg-white rounded-full p-1 w-7 h-7 flex justify-center items-center">
+              {props.diasRestantes >= 0
+                ? props.diasRestantes
+                : `-${Math.abs(props.diasRestantes)}`}
+            </div>
+          </div>
+        )}
         <h2 className="text-gray-400 text-xs">Tarifa</h2>
         <p>
           {currencyFormatter.format(props.monto, {
