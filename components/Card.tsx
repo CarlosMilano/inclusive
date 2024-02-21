@@ -59,9 +59,9 @@ export default function Card(props: CardProps) {
             />
           </div>
         ) : (
-          <table className="w-full my-3">
+          <table className="w-full">
             <thead>
-              <tr className=" border-b-2 border-zinc-400">
+              <tr className=" border-b-2 border-zinc-300">
                 <th className="p-2 w-1/2">{props.subtitle}</th>
                 <th className="p-2 w-1/2">Monto</th>
               </tr>
@@ -70,11 +70,11 @@ export default function Card(props: CardProps) {
               {filteredData.map((data, index) => (
                 <tr
                   key={index}
-                  className=" border-b-2 border-zinc-300 cursor-pointer hover:bg-gray-300 transition duration-300 ease-in-out"
+                  className=" border-b-2 border-zinc-200 cursor-pointer hover:bg-gray-100 transition duration-300 ease-in-out"
                   onClick={() => handleRowClick(data)}
                 >
-                  <td className="p-2 pl-9">{data.cliente}</td>
-                  <td className="p-2 pl-9">
+                  <td className="p-2 pl-8">{data.cliente}</td>
+                  <td className="p-2 pl-8">
                     {currencyFormatter.format(data.monto, {
                       code: "MXN",
                       precision: 0,

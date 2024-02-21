@@ -941,12 +941,26 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     {loading ? (
                       <Skeleton variant="rectangular" width={85} height={25} />
                     ) : (
-                      <p>
-                        {currencyFormatter.format(viajeData.tarifa, {
-                          code: "MXN",
-                          precision: 0,
-                        })}
-                      </p>
+                      <>
+                        {viajeData.dolares ? (
+                          <p>
+                            {currencyFormatter.format(
+                              viajeData.tarifa * viajeData.tipodecambio,
+                              {
+                                code: "MXN",
+                                precision: 0,
+                              }
+                            )}
+                          </p>
+                        ) : (
+                          <p>
+                            {currencyFormatter.format(viajeData.tarifa, {
+                              code: "MXN",
+                              precision: 0,
+                            })}
+                          </p>
+                        )}
+                      </>
                     )}
                   </article>
                   <article className="p-2 w-full md:w-[25%]">

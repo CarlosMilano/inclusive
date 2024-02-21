@@ -4,6 +4,7 @@ import Table from "@/components/Table";
 import { useRouter } from "next/router";
 import { Box, CircularProgress } from "@mui/material";
 import Head from "next/head";
+import Pagination from "@mui/material/Pagination";
 
 interface Viaje {
   id: string;
@@ -22,6 +23,8 @@ export default function Historial() {
   const [viajes, setViajes] = useState<Viaje[]>([]);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const dataPerPage = 20;
 
   useEffect(() => {
     const fetchViajes = async () => {
@@ -48,6 +51,11 @@ export default function Historial() {
     (a, b) => parseInt(b.folio) - parseInt(a.folio)
   );
 
+  const paginatedViajes = sortedViajes.slice(
+    (page - 1) * dataPerPage,
+    page * dataPerPage
+  );
+
   return (
     <>
       <Head>
@@ -65,12 +73,12 @@ export default function Historial() {
           <CircularProgress />
         </Box>
       ) : (
-        <main className="min-h-screen flex flex-col mt-[60px]">
+        <main className="min-h-screen flex flex-col mt-[60px] ">
           <section className="p-8">
             <h1 className="text-4xl font-bold">Historial</h1>
           </section>
           <article className="flex flex-wrap justify-center">
-            {sortedViajes.map((viaje) => (
+            {paginatedViajes.map((viaje) => (
               <Table
                 key={viaje.id}
                 origen={viaje.origen || ""}
@@ -89,6 +97,15 @@ export default function Historial() {
               />
             ))}
           </article>
+          <section className="m-2 p-2 flex justify-center w-screen">
+            <Pagination
+              count={Math.ceil(sortedViajes.length / dataPerPage)}
+              page={page}
+              onChange={(event, value) => {
+                setPage(value);
+              }}
+            />
+          </section>
         </main>
       )}
     </>
