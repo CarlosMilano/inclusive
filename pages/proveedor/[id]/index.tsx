@@ -16,6 +16,10 @@ interface Viaje {
   fechafactura: string;
   abonado: number;
   viaje_id: string;
+  dolares: boolean;
+  viaje: {
+    tipodecambio: number;
+  };
 }
 
 interface Proveedor {
@@ -83,7 +87,7 @@ export default function Home() {
       try {
         const { data: viajesData, error: viajesError } = await supabase
           .from("viajeproveedor")
-          .select("*")
+          .select("*, viaje:viaje_id(*,tipodecambio)")
           .eq("proveedor_id", id);
         if (viajesError) console.error(viajesError);
         else {
@@ -97,6 +101,7 @@ export default function Home() {
     setTimeout(() => {
       setLoading(false);
     }, 1500);
+
     fetchProveedorData();
     fetchData();
   }, [id]);
@@ -148,6 +153,8 @@ export default function Home() {
                   onClick={(rowData) => {
                     router.push(`/viaje/${rowData.id}`);
                   }}
+                  dolares={viaje.dolares}
+                  tipodecambio={viaje.viaje.tipodecambio || 0}
                 />
               );
             })}

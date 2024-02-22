@@ -17,6 +17,12 @@ interface Viaje {
   fechafactura: string;
   abonado: number;
   folio: string;
+  tipodecambio: number;
+  dolares: boolean;
+  cliente: {
+    id: string;
+    nombre: string;
+  };
 }
 
 export default function Historial() {
@@ -31,7 +37,12 @@ export default function Historial() {
       try {
         const { data: viajesData, error: viajesError } = await supabase
           .from("viaje")
-          .select("*");
+          .select(
+            `
+            *,
+            cliente:cliente_id(id, nombre)
+          `
+          );
 
         if (viajesError) console.error(viajesError);
         else {
@@ -44,6 +55,7 @@ export default function Historial() {
         console.error(error);
       }
     };
+
     fetchViajes();
   }, []);
 
@@ -94,10 +106,13 @@ export default function Historial() {
                 }}
                 historial
                 folio={viaje.folio || ""}
+                dolares={viaje.dolares}
+                tipodecambio={viaje.tipodecambio}
+                cliente={viaje.cliente.nombre || "Cliente"}
               />
             ))}
           </article>
-          <section className="m-2 p-2 flex justify-center w-screen">
+          <section className=" p-3 flex justify-center w-screen">
             <Pagination
               count={Math.ceil(sortedViajes.length / dataPerPage)}
               page={page}

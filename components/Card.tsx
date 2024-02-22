@@ -1,7 +1,5 @@
 import currencyFormatter from "currency-formatter";
 import Skeleton from "@mui/material/Skeleton";
-import Pagination from "@mui/material/Pagination";
-import { useState } from "react";
 
 interface CardProps {
   title: string;

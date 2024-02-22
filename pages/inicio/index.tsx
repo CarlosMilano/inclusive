@@ -65,11 +65,22 @@ export default function Home() {
             (viaje) => viaje.cliente_id === cliente.id
           );
           const sumaTarifas =
-            viajesCliente?.reduce((total, viaje) => total + viaje.tarifa, 0) ||
-            0;
+            viajesCliente?.reduce((total, viaje) => {
+              if (viaje.dolares) {
+                return total + viaje.tarifa * viaje.tipodecambio;
+              } else {
+                return total + viaje.tarifa;
+              }
+            }, 0) || 0;
           const sumaAbonos =
-            viajesCliente?.reduce((total, viaje) => total + viaje.abonado, 0) ||
-            0;
+            viajesCliente?.reduce((total, viaje) => {
+              if (viaje.dolares) {
+                return total + viaje.abonado * viaje.tipodecambio;
+              } else {
+                return total + viaje.abonado;
+              }
+            }, 0) || 0;
+
           const monto = sumaTarifas - sumaAbonos;
 
           return { cliente, monto };
@@ -99,15 +110,33 @@ export default function Home() {
             (viajeProveedor) => viajeProveedor.proveedor_id === proveedor.id
           );
           const sumaTarifas =
-            viajesProveedor?.reduce(
-              (total, viaje) => total + viaje.tarifa,
-              0
-            ) || 0;
+            viajesProveedor?.reduce((total, viajeProveedor) => {
+              const viajeEnViajes = viajesData?.find(
+                (v) => v.id === viajeProveedor.viaje_id
+              );
+
+              if (viajeEnViajes && viajeProveedor.dolares) {
+                return (
+                  total + viajeProveedor.tarifa * viajeEnViajes.tipodecambio
+                );
+              } else {
+                return total + viajeProveedor.tarifa;
+              }
+            }, 0) || 0;
           const sumaAbonos =
-            viajesProveedor?.reduce(
-              (total, viaje) => total + viaje.abonado,
-              0
-            ) || 0;
+            viajesProveedor?.reduce((total, viajeProveedor) => {
+              const viajeEnViajes = viajesData?.find(
+                (v) => v.id === viajeProveedor.viaje_id
+              );
+
+              if (viajeEnViajes && viajeProveedor.dolares) {
+                return (
+                  total + viajeProveedor.abonado * viajeEnViajes.tipodecambio
+                );
+              } else {
+                return total + viajeProveedor.abonado;
+              }
+            }, 0) || 0;
           const monto = sumaTarifas - sumaAbonos;
 
           return { proveedor, monto };

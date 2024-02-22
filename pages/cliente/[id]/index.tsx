@@ -16,6 +16,8 @@ interface Viaje {
   referencia: string;
   fechafactura: string;
   abonado: number;
+  tipodecambio: number;
+  dolares: boolean;
 }
 
 interface Cliente {
@@ -153,6 +155,8 @@ export default function Home() {
                   onClick={(rowData) => {
                     router.push(`/viaje/${rowData.id}`);
                   }}
+                  dolares={viaje.dolares}
+                  tipodecambio={viaje.tipodecambio}
                 />
               );
             })}

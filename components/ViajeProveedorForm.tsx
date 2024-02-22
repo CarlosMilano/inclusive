@@ -42,6 +42,7 @@ interface ViajeProveedorData {
   proveedor_id: string;
   fechafactura: string | null;
   factura: string;
+  dolares: boolean;
 }
 
 interface ViajeFormProps {
@@ -83,6 +84,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
     proveedor_id: "",
     fechafactura: null,
     factura: "",
+    dolares: false,
   });
 
   const [viajeProveedorData, setViajeProveedorData] = useState<
@@ -377,12 +379,14 @@ export const ViajeForm = (props: ViajeFormProps) => {
 
   //Handle para editar proveedor
   const handleChangeViajeProveedorEdit = (e: any) => {
-    const { name, value, type } = e.target;
+    const { name, value, type, checked } = e.target;
     const selectedValue =
       type === "select-one"
         ? value
         : type === "number"
         ? parseFloat(value)
+        : type === "checkbox"
+        ? checked
         : value;
 
     setViajeProveedorData((prevData) => {
@@ -397,9 +401,11 @@ export const ViajeForm = (props: ViajeFormProps) => {
 
   //Para manejar los campos del proveedorform en la vista de solo mostrar los datos
   const handleAgregarNuevoProveedorVistaMode = (e: any) => {
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
     ProveedorsetFormValues({
       ...proveedorformValues,
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
     });
   };
 
@@ -415,11 +421,10 @@ export const ViajeForm = (props: ViajeFormProps) => {
       destino: proveedorformValues.destino,
       proveedor_id: proveedorformValues.proveedor_id,
       viaje_id: viajeData.id,
+      fechafactura: proveedorformValues.fechafactura,
+      factura: proveedorformValues.factura,
+      dolares: proveedorformValues.dolares,
     };
-
-    if (viajeData.dolares) {
-      proveedorDataToInsert.tarifa *= viajeData.tipodecambio;
-    }
 
     const { data, error } = await supabase
       .from("viajeproveedor")
@@ -471,6 +476,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
         proveedor_id: "",
         fechafactura: null,
         factura: "",
+        dolares: false,
       },
     ]);
   };
@@ -968,12 +974,26 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     {loading ? (
                       <Skeleton variant="rectangular" width={85} height={25} />
                     ) : (
-                      <p>
-                        {currencyFormatter.format(viajeData.abonado, {
-                          code: "MXN",
-                          precision: 0,
-                        })}
-                      </p>
+                      <>
+                        {viajeData.dolares ? (
+                          <p>
+                            {currencyFormatter.format(
+                              viajeData.abonado * viajeData.tipodecambio,
+                              {
+                                code: "MXN",
+                                precision: 0,
+                              }
+                            )}
+                          </p>
+                        ) : (
+                          <p>
+                            {currencyFormatter.format(viajeData.abonado, {
+                              code: "MXN",
+                              precision: 0,
+                            })}
+                          </p>
+                        )}
+                      </>
                     )}
                   </article>
                   {viajeData.dolares && (
@@ -1176,6 +1196,17 @@ export const ViajeForm = (props: ViajeFormProps) => {
                           type="date"
                         />
                       </article>
+                      <article className="p-2 w-full space-y-2">
+                        <label className="block text-gray-700 text-sm font-bold">
+                          Dolares
+                        </label>
+                        <input
+                          type="checkbox"
+                          name="dolares"
+                          checked={viajeProveedorData[index].dolares}
+                          onChange={handleChangeViajeProveedorEdit}
+                        />
+                      </article>
 
                       <button
                         type="button"
@@ -1334,12 +1365,26 @@ export const ViajeForm = (props: ViajeFormProps) => {
                               height={25}
                             />
                           ) : (
-                            <p>
-                              {currencyFormatter.format(proveedor.tarifa, {
-                                code: "MXN",
-                                precision: 0,
-                              })}
-                            </p>
+                            <>
+                              {proveedor.dolares ? (
+                                <p>
+                                  {currencyFormatter.format(
+                                    proveedor.tarifa * viajeData.tipodecambio,
+                                    {
+                                      code: "MXN",
+                                      precision: 0,
+                                    }
+                                  )}
+                                </p>
+                              ) : (
+                                <p>
+                                  {currencyFormatter.format(proveedor.tarifa, {
+                                    code: "MXN",
+                                    precision: 0,
+                                  })}
+                                </p>
+                              )}
+                            </>
                           )}
                         </article>
                         <article className="p-2">
@@ -1351,12 +1396,26 @@ export const ViajeForm = (props: ViajeFormProps) => {
                               height={25}
                             />
                           ) : (
-                            <p>
-                              {currencyFormatter.format(proveedor.abonado, {
-                                code: "MXN",
-                                precision: 0,
-                              })}
-                            </p>
+                            <>
+                              {proveedor.dolares ? (
+                                <p>
+                                  {currencyFormatter.format(
+                                    proveedor.abonado * viajeData.tipodecambio,
+                                    {
+                                      code: "MXN",
+                                      precision: 0,
+                                    }
+                                  )}
+                                </p>
+                              ) : (
+                                <p>
+                                  {currencyFormatter.format(proveedor.abonado, {
+                                    code: "MXN",
+                                    precision: 0,
+                                  })}
+                                </p>
+                              )}
+                            </>
                           )}
                         </article>
                         <article className="p-2">
@@ -1385,6 +1444,12 @@ export const ViajeForm = (props: ViajeFormProps) => {
                             <p>{proveedor.fechafactura || "N/A"}</p>
                           )}
                         </article>
+                        {proveedor.dolares && (
+                          <article className="p-2 w-full md:w-[25%]">
+                            <h3 className="font-bold text-gray-400">Dólares</h3>
+                            <p>Si</p>
+                          </article>
+                        )}
                       </section>
                     </section>
                   </section>
@@ -1467,6 +1532,17 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         value={proveedorformValues.fechafactura || ""}
                         onChange={handleAgregarNuevoProveedorVistaMode}
                         type="date"
+                      />
+                    </article>
+                    <article className="p-2 w-full space-y-2">
+                      <label className="block text-gray-700 text-sm font-bold">
+                        Dolares
+                      </label>
+                      <input
+                        type="checkbox"
+                        name="dolares"
+                        checked={proveedorformValues.dolares}
+                        onChange={handleAgregarNuevoProveedorVistaMode}
                       />
                     </article>
 

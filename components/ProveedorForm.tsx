@@ -10,6 +10,7 @@ interface ProveedorFormData {
   proveedor_id: string;
   fechafactura: string | null;
   factura: string;
+  dolares: boolean;
 }
 
 interface ProveedorFormProps {
@@ -21,12 +22,14 @@ interface ProveedorFormProps {
 
 export const ProveedorForm = (props: ProveedorFormProps) => {
   const handleChange = (e: any) => {
-    const { name, value, type } = e.target;
+    const { name, value, type, checked } = e.target;
     const selectedValue =
       type === "select-one"
         ? value
         : type === "number"
         ? parseFloat(value)
+        : type === "checkbox"
+        ? checked
         : value;
     props.onChange({
       ...props.data,
@@ -99,6 +102,15 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
           value={props.data.fechafactura || ""}
           onChange={handleChange}
           type="date"
+        />
+      </article>
+      <article className="p-2 w-full  space-y-2">
+        <label className="block text-gray-700 text-sm font-bold">Dolares</label>
+        <input
+          type="checkbox"
+          name="dolares"
+          checked={props.data.dolares}
+          onChange={handleChange}
         />
       </article>
     </section>
