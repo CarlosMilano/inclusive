@@ -19,6 +19,7 @@ interface Viaje {
   dolares: boolean;
   viaje: {
     tipodecambio: number;
+    referencia: string;
   };
 }
 
@@ -87,7 +88,7 @@ export default function Home() {
       try {
         const { data: viajesData, error: viajesError } = await supabase
           .from("viajeproveedor")
-          .select("*, viaje:viaje_id(*,tipodecambio)")
+          .select("*, viaje:viaje_id(*,tipodecambio,referencia)")
           .eq("proveedor_id", id);
         if (viajesError) console.error(viajesError);
         else {
@@ -155,6 +156,7 @@ export default function Home() {
                   }}
                   dolares={viaje.dolares}
                   tipodecambio={viaje.viaje.tipodecambio || 0}
+                  referencia={viaje.viaje.referencia || ""}
                 />
               );
             })}
