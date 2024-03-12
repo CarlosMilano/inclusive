@@ -25,8 +25,16 @@ interface Viaje {
   };
 }
 
+interface ViajeProveedor {
+  id: string;
+  tarifa: number;
+  viaje_id: string;
+  dolares: boolean;
+}
+
 export default function Historial() {
   const [viajes, setViajes] = useState<Viaje[]>([]);
+  const [proveedor, setProveedor] = useState<ViajeProveedor[]>([]);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -56,8 +64,52 @@ export default function Historial() {
       }
     };
 
+    const fetchDataProveedor = async () => {
+      try {
+        const { data: viajesDataProveedor, error: viajesError } = await supabase
+          .from("viajeproveedor")
+          .select("*");
+        if (viajesError) console.error(viajesError);
+        else {
+          setProveedor(viajesDataProveedor || []);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     fetchViajes();
+    fetchDataProveedor();
   }, []);
+
+  const calcularSumaTarifasProveedor = (viajeId: string) => {
+    const viajesProveedorRelacionados = proveedor.filter(
+      (viajeProveedor) => viajeProveedor.viaje_id === viajeId
+    );
+
+    const sumaTarifasProveedor = viajesProveedorRelacionados.reduce(
+      (acc, viajeProveedor) => {
+        const viajeCorrespondiente = viajes.find(
+          (viaje) => viaje.id === viajeProveedor.viaje_id
+        );
+
+        if (
+          viajeCorrespondiente &&
+          viajeProveedor.dolares &&
+          viajeCorrespondiente.tipodecambio
+        ) {
+          return (
+            acc + viajeProveedor.tarifa * viajeCorrespondiente.tipodecambio
+          );
+        } else {
+          return acc + viajeProveedor.tarifa;
+        }
+      },
+      0
+    );
+
+    return sumaTarifasProveedor;
+  };
 
   const sortedViajes = viajes.sort(
     (a, b) => parseInt(b.folio) - parseInt(a.folio)
@@ -90,27 +142,36 @@ export default function Historial() {
             <h1 className="text-4xl font-bold">Historial</h1>
           </section>
           <article className="flex flex-wrap justify-center">
-            {paginatedViajes.map((viaje) => (
-              <Table
-                key={viaje.id}
-                origen={viaje.origen || ""}
-                destino={viaje.destino || ""}
-                monto={viaje.tarifa || 0}
-                factura={viaje.factura || ""}
-                referencia={viaje.referencia || ""}
-                id={viaje.id || ""}
-                fechafactura={viaje.fechafactura || ""}
-                diasRestantes={30}
-                onClick={(rowData) => {
-                  router.push(`/viaje/${rowData.id}`);
-                }}
-                historial
-                folio={viaje.folio || ""}
-                dolares={viaje.dolares}
-                tipodecambio={viaje.tipodecambio}
-                cliente={viaje.cliente.nombre || "Cliente"}
-              />
-            ))}
+            {paginatedViajes.slice().map((viaje) => {
+              const sumaTarifasProveedor = calcularSumaTarifasProveedor(
+                viaje.id
+              );
+
+              return (
+                <Table
+                  key={viaje.id}
+                  origen={viaje.origen || ""}
+                  destino={viaje.destino || ""}
+                  monto={viaje.tarifa || 0}
+                  factura={viaje.factura || ""}
+                  referencia={viaje.referencia || ""}
+                  id={viaje.id || ""}
+                  fechafactura={viaje.fechafactura || ""}
+                  diasRestantes={30}
+                  onClick={(rowData) => {
+                    router.push(`/viaje/${rowData.id}`);
+                  }}
+                  historial
+                  folio={viaje.folio || ""}
+                  dolares={viaje.dolares}
+                  tipodecambio={viaje.tipodecambio}
+                  cliente={viaje.cliente.nombre || "Cliente"}
+                  tarifaProveedor={sumaTarifasProveedor}
+                  comision={viaje.comision || 0}
+                  utilidad
+                />
+              );
+            })}
           </article>
           <section className=" p-3 flex justify-center w-screen">
             <Pagination

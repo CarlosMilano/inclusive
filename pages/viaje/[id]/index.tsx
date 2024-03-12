@@ -97,7 +97,7 @@ export default function Viaje() {
 
         setTimeout(() => {
           setLoading(false);
-        }, 1500);
+        }, 1200);
 
         // Verificar la existencia del ID de viaje en la URL
         const viajeIdFromRoute = router.query.id as string;
@@ -202,7 +202,7 @@ export default function Viaje() {
           <CircularProgress />
         </Box>
       ) : (
-        <main className="mt-[80px]">
+        <main className="mt-[60px] min-h-screen">
           <ViajeForm
             onSubmit={handleViajeSubmit}
             clientes={clientes}

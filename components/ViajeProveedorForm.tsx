@@ -10,9 +10,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
 import { v4 as uuidv4 } from "uuid";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import { set } from "date-fns";
+import { Select, SelectItem } from "@nextui-org/select";
 
 interface ViajeData {
   id: string;
@@ -69,7 +67,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
     referencia: "",
     fechafactura: null,
     abonado: 0,
-    cliente_id: null,
+    cliente_id: "null",
     dolares: false,
     abonocomision: 0,
     folio: 0,
@@ -649,7 +647,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
       {props.existeViaje ? (
         <section className="flex flex-col p-3 gap-5 items-center">
           {editModeViaje ? (
-            <section className="bg-white p-4 rounded-md shadow-md w-[95%] max-w-[1000px]">
+            <section className="bg-white p-4 rounded-md shadow-sm w-[95%] max-w-[1000px]">
               <h2 className="text-xl font-semibold p-2 text-gray-600">
                 Detalle Viaje
               </h2>
@@ -657,14 +655,22 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 <article className="p-2 w-full md:w-[25%]">
                   <Select
                     name="cliente_id"
-                    value={viajeData.cliente_id || ""}
+                    value={viajeData.cliente_id ?? ""}
                     onChange={handleChangeViaje}
-                    fullWidth
+                    label="Cliente"
+                    radius="none"
+                    placeholder={
+                      viajeData.cliente_id
+                        ? clientesOdenados.find(
+                            (cliente) => cliente.id === viajeData.cliente_id
+                          )?.nombre
+                        : "Selecciona un cliente"
+                    }
                   >
-                    {clientesOdenados.map((cliente: any) => (
-                      <MenuItem key={cliente.id} value={cliente.id}>
+                    {clientesOdenados.map((cliente) => (
+                      <SelectItem key={cliente.id} value={cliente.id}>
                         {cliente.nombre}
-                      </MenuItem>
+                      </SelectItem>
                     ))}
                   </Select>
                 </article>
@@ -787,13 +793,20 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     router.reload();
                   }
                 }}
-                className="py-2 bg-blue-600 w-[120px] text-white shadow-xl rounded-lg"
+                className="py-2 bg-blue-600 w-[120px] text-white shadow-sm rounded-lg"
               >
                 Guardar
               </button>
             </section>
           ) : (
-            <section className="bg-white p-4 rounded-md shadow-md relative w-[95%] max-w-[1000px]">
+            <section className="bg-white p-4 rounded-md shadow-sm relative w-[95%] max-w-[1000px]">
+              <article className="font-semibold text-lg text-gray-400 flex justify-end">
+                {loading ? (
+                  <Skeleton variant="rectangular" width={35} height={25} />
+                ) : (
+                  <p>{viajeData.folio || "N/A"}</p>
+                )}
+              </article>
               <section className="flex items-center space-x-3">
                 {loading ? (
                   <Skeleton variant="rectangular" width={160} height={55} />
@@ -819,14 +832,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   onClick={() => setEditModeViaje(true)}
                   sx={{ color: "#1971c2", cursor: "pointer" }}
                 />
-                <article className="absolute font-semibold top-8 right-8 text-lg text-gray-400">
-                  {loading ? (
-                    <Skeleton variant="rectangular" width={35} height={25} />
-                  ) : (
-                    <p>{viajeData.folio || "N/A"}</p>
-                  )}
-                </article>
-                <section className="flex flex-col items-center justify-center absolute top-[82px] left-10">
+                <section className="flex flex-col items-center justify-center absolute top-[111px] left-10">
                   {viajeData.abonado !== viajeData.tarifa && (
                     <PaidIcon
                       onClick={clickCobradoTarifaViaje}
@@ -834,7 +840,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     />
                   )}
                   <section
-                    className={`flex flex-col z-20 rounded-2xl shadow-md w-[210px] p-3 bg-white transition-all duration-300${
+                    className={`flex flex-col z-20 rounded-2xl shadow-sm w-[210px] p-3 bg-white transition-all duration-300${
                       openCobradoTarifaViaje
                         ? " scale-100 opacity-100 ease-out"
                         : " scale-50 opacity-0 ease-in"
@@ -845,13 +851,13 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   >
                     <article className="flex space-x-3">
                       <button
-                        className="py-2 bg-blue-600 text-lg  text-white shadow-md rounded-lg w-[90px]"
+                        className="py-2 bg-blue-600 text-lg  text-white shadow-sm rounded-lg w-[90px]"
                         onClick={contadoTarifaViaje}
                       >
                         Contado
                       </button>
                       <button
-                        className="py-2 bg-blue-600 text-lg text-white shadow-md rounded-lg w-[90px]"
+                        className="py-2 bg-blue-600 text-lg text-white shadow-sm rounded-lg w-[90px]"
                         onClick={clickAbonadoTarifaViaje}
                       >
                         Abono
@@ -878,7 +884,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       />
 
                       <button
-                        className="py-2 bg-blue-600 m-2 text-white shadow-md rounded-lg w-[90px]"
+                        className="py-2 bg-blue-600 m-2 text-white shadow-sm rounded-lg w-[90px]"
                         onClick={abonoTarifaViaje}
                       >
                         Guardar
@@ -1037,7 +1043,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       )}
 
                       <section
-                        className={`flex flex-col z-20 rounded-2xl shadow-md w-[210px] p-3 bg-white transition-all duration-300${
+                        className={`flex flex-col z-20 rounded-2xl shadow-sm w-[210px] p-3 bg-white transition-all duration-300${
                           openCobradoComisionViaje
                             ? " scale-100 opacity-100 ease-out"
                             : " scale-50 opacity-0 ease-in"
@@ -1050,13 +1056,13 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       >
                         <article className="flex space-x-3">
                           <button
-                            className="py-2 bg-blue-600 text-lg text-white shadow-md rounded-lg w-[90px]"
+                            className="py-2 bg-blue-600 text-lg text-white shadow-sm rounded-lg w-[90px]"
                             onClick={contadoComisionViaje}
                           >
                             Contado
                           </button>
                           <button
-                            className="py-2 bg-blue-600 text-lg text-white shadow-md rounded-lg w-[90px]"
+                            className="py-2 bg-blue-600 text-lg text-white shadow-sm rounded-lg w-[90px]"
                             onClick={clickAbonadoComisionViaje}
                           >
                             Abono
@@ -1083,7 +1089,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                           />
 
                           <button
-                            className="py-2 bg-blue-600 m-2 text-white shadow-md rounded-lg w-[90px]"
+                            className="py-2 bg-blue-600 m-2 text-white shadow-sm rounded-lg w-[90px]"
                             onClick={abonoComisionViaje}
                           >
                             Guardar
@@ -1136,18 +1142,28 @@ export const ViajeForm = (props: ViajeFormProps) => {
             {viajeProveedorData.map((proveedor, index) => (
               <section key={index}>
                 {editModeProveedor && index === proveedorEditandoIndex ? (
-                  <section className="bg-white p-4 rounded-md shadow-md min-w-[340px]">
+                  <section className="bg-white p-4 rounded-md shadow-sm min-w-[340px]">
                     <section className="flex flex-col gap-3 items-center">
                       <Select
                         name="proveedor_id"
-                        value={viajeProveedorData[index].proveedor_id || ""}
+                        value={viajeProveedorData[index].proveedor_id ?? ""}
                         onChange={handleChangeViajeProveedorEdit}
-                        fullWidth
+                        label="Proveedor"
+                        radius="none"
+                        placeholder={
+                          viajeProveedorData[index].proveedor_id
+                            ? proveedorOrdenado.find(
+                                (cliente) =>
+                                  cliente.id ===
+                                  viajeProveedorData[index].proveedor_id
+                              )?.nombre
+                            : "Selecciona un proveedor"
+                        }
                       >
                         {proveedorOrdenado.map((proveedor: any) => (
-                          <MenuItem key={proveedor.id} value={proveedor.id}>
+                          <SelectItem key={proveedor.id} value={proveedor.id}>
                             {proveedor.nombre}
-                          </MenuItem>
+                          </SelectItem>
                         ))}
                       </Select>
                       <InputField
@@ -1227,7 +1243,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                     </section>
                   </section>
                 ) : (
-                  <section className="bg-white p-4 rounded-md shadow-md min-w-[340px]">
+                  <section className="bg-white p-4 rounded-md shadow-sm min-w-[340px]">
                     <section className="flex items-center space-x-3 relative">
                       {loading ? (
                         <Skeleton
@@ -1268,7 +1284,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         )}
 
                         <section
-                          className={`flex flex-col z-20 rounded-2xl shadow-md w-[210px] p-3 bg-white transition-all duration-300${
+                          className={`flex flex-col z-20 rounded-2xl shadow-sm w-[210px] p-3 bg-white transition-all duration-300${
                             openCobradoTarifaProveedor &&
                             proveedorSeleccionadoIndex === index
                               ? " scale-100 opacity-100 ease-out"
@@ -1282,13 +1298,13 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         >
                           <article className="flex space-x-3">
                             <button
-                              className="py-2 bg-blue-600 text-lg  text-white shadow-md rounded-lg w-[90px]"
+                              className="py-2 bg-blue-600 text-lg  text-white shadow-sm rounded-lg w-[90px]"
                               onClick={() => contadoTarifaProveedor(index)}
                             >
                               Contado
                             </button>
                             <button
-                              className="py-2 bg-blue-600 text-lg  text-white shadow-md rounded-lg w-[90px]"
+                              className="py-2 bg-blue-600 text-lg  text-white shadow-sm rounded-lg w-[90px]"
                               onClick={() => {
                                 clickAbonadoTarifaProveedor(index);
                               }}
@@ -1317,7 +1333,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                             />
 
                             <button
-                              className="py-2 bg-blue-600 m-2 text-white shadow-md rounded-lg w-[90px]"
+                              className="py-2 bg-blue-600 m-2 text-white shadow-sm rounded-lg w-[90px]"
                               onClick={abonoTarifaProveedor}
                             >
                               Guardar
@@ -1471,7 +1487,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
 
             {mostrarFormularioProveedorVistaMode &&
               isButtonProveedorVisible && (
-                <section className=" bg-white p-4 rounded-md shadow-md min-w-[340px]">
+                <section className=" bg-white p-4 rounded-md shadow-sm min-w-[340px]">
                   <form
                     onSubmit={handleAgregarProveedorVistaMode}
                     className="flex flex-col gap-3 items-center"
@@ -1480,12 +1496,14 @@ export const ViajeForm = (props: ViajeFormProps) => {
                       name="proveedor_id"
                       value={proveedorformValues.proveedor_id}
                       onChange={handleAgregarNuevoProveedorVistaMode}
-                      fullWidth
+                      label="Proveedor"
+                      radius="none"
+                      placeholder="Selecciona un proveedor"
                     >
                       {proveedorOrdenado.map((proveedor: any) => (
-                        <MenuItem key={proveedor.id} value={proveedor.id}>
+                        <SelectItem key={proveedor.id} value={proveedor.id}>
                           {proveedor.nombre}
-                        </MenuItem>
+                        </SelectItem>
                       ))}
                     </Select>
                     <InputField
@@ -1562,7 +1580,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
           onSubmit={handleSubmit}
           className="flex flex-col p-3 gap-5 items-center"
         >
-          <section className="bg-white p-4 rounded-md shadow-md w-[95%] max-w-[1000px]">
+          <section className="bg-white p-4 rounded-md shadow-sm w-[95%] max-w-[1000px]">
             <h1 className="text-4xl font-semibold p-2">Añadir Nuevo Viaje</h1>
             <h2 className="text-xl font-semibold p-2 text-gray-600">
               Detalle Viaje
@@ -1573,12 +1591,14 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   name="cliente_id"
                   value={viajeData.cliente_id || ""}
                   onChange={handleChangeViaje}
-                  fullWidth
+                  label="Cliente"
+                  radius="none"
+                  placeholder="Selecciona un cliente"
                 >
-                  {clientesOdenados.map((cliente: any) => (
-                    <MenuItem key={cliente.id} value={cliente.id}>
+                  {clientesOdenados.map((cliente) => (
+                    <SelectItem key={cliente.id} value={cliente.id}>
                       {cliente.nombre}
-                    </MenuItem>
+                    </SelectItem>
                   ))}
                 </Select>
               </article>
@@ -1696,7 +1716,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
           <section className="flex flex-wrap gap-5 items-start justify-center">
             {viajeProveedorData.map((proveedor, index) => (
               <section key={index}>
-                <section className="bg-white p-4 rounded-md shadow-md min-w-[340px]">
+                <section className="bg-white p-4 rounded-md shadow-sm min-w-[340px]">
                   <h1 className="text-2xl font-bold p-2">{`Añadir Proveedor ${
                     index + 1
                   }`}</h1>

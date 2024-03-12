@@ -1,6 +1,6 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import { InputField } from "./InputField";
-import { MenuItem, Select } from "@mui/material";
+import { Select, SelectItem } from "@nextui-org/select";
 
 interface ProveedorFormData {
   tarifa: number;
@@ -47,12 +47,14 @@ export const ProveedorForm = (props: ProveedorFormProps) => {
         name="proveedor_id"
         value={props.data.proveedor_id || ""}
         onChange={handleChange}
-        fullWidth
+        label="Proveedor"
+        radius="none"
+        placeholder="Selecciona un proveedor"
       >
         {proveedorOrdenado.map((proveedor: any) => (
-          <MenuItem key={proveedor.id} value={proveedor.id}>
+          <SelectItem key={proveedor.id} value={proveedor.id}>
             {proveedor.nombre}
-          </MenuItem>
+          </SelectItem>
         ))}
       </Select>
       {!props.disableOrigenDestino && (

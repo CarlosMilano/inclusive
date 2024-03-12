@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { addDays, differenceInDays, parseISO } from "date-fns";
 import { Box, CircularProgress } from "@mui/material";
 import Table from "@/components/Table";
+import currencyFormatter from "currency-formatter";
 
 interface Viaje {
   id: string;
@@ -107,6 +108,38 @@ export default function Home() {
     fetchData();
   }, [id]);
 
+  const totalVencido = sortedViajes.reduce((acc, viaje) => {
+    const fechaLimite = viaje.fechafactura
+      ? addDays(parseISO(viaje.fechafactura), proveedor?.diascredito || 0)
+      : null;
+
+    const diasRestantes = fechaLimite
+      ? differenceInDays(fechaLimite, today)
+      : 0;
+
+    return viaje.fechafactura && diasRestantes < 0 ? acc + viaje.tarifa : acc;
+  }, 0);
+
+  const totalPorVencer = sortedViajes.reduce((acc, viaje) => {
+    const fechaLimite = viaje.fechafactura
+      ? addDays(parseISO(viaje.fechafactura), proveedor?.diascredito || 0)
+      : null;
+
+    const diasRestantes = fechaLimite
+      ? differenceInDays(fechaLimite, today)
+      : 0;
+
+    if (viaje.fechafactura && viaje.dolares) {
+      return diasRestantes >= 0
+        ? acc + viaje.tarifa * viaje.viaje.tipodecambio
+        : acc;
+    } else if (viaje.fechafactura) {
+      return diasRestantes >= 0 ? acc + viaje.tarifa : acc;
+    }
+
+    return acc;
+  }, 0);
+
   return (
     <>
       <Head>
@@ -124,9 +157,25 @@ export default function Home() {
           <CircularProgress />
         </Box>
       ) : (
-        <main className="flex flex-col h-screen mt-[60px]">
-          <section className="p-8">
-            <h1 className="text-4xl font-bold">Viajes {proveedor?.nombre}</h1>
+        <main className="flex flex-col min-h-screen mt-[60px]">
+          <section className="p-8 flex flex-wrap items-center gap-6">
+            <h1 className="text-3xl font-bold">Viajes {proveedor?.nombre}</h1>
+            <article className="flex flex-col items-start space-y-1 text-sm">
+              <article className="flex justify-center items-center gap-1">
+                <div className=" bg-red-500 w-3 h-3 rounded-full" />
+                {currencyFormatter.format(totalVencido, {
+                  code: "MXN",
+                  precision: 0,
+                })}
+              </article>
+              <article className="flex justify-center items-center gap-1">
+                <div className=" bg-green-500 w-3 h-3 rounded-full" />
+                {currencyFormatter.format(totalPorVencer, {
+                  code: "MXN",
+                  precision: 0,
+                })}
+              </article>
+            </article>
           </section>
           <section className="flex flex-wrap justify-center">
             {sortedViajes.slice().map((viaje) => {

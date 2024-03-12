@@ -35,7 +35,7 @@ export default function Card(props: CardProps) {
   };
 
   return (
-    <main className="flex flex-col bg-white w-[90%] max-w-[370px] min-h-[510px] shadow-md rounded-md p-3">
+    <main className="flex flex-col bg-white w-[90%] max-w-[370px] min-h-[510px] shadow-sm rounded-md p-3">
       <section className="flex flex-col items-center">
         <h1 className="text-4xl font-semibold p-5">
           {props.title || "Titulo"}

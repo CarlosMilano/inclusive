@@ -7,6 +7,7 @@ import { User } from "firebase/auth";
 import { auth } from "@/config/firebase";
 import Header from "@/components/Header";
 import { Box, CircularProgress } from "@mui/material";
+import { NextUIProvider } from "@nextui-org/system";
 
 dotenv.config();
 
@@ -31,8 +32,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return router.pathname === "/" || user ? (
     <>
-      {user && <Header />}
-      <Component {...pageProps} />
+      <NextUIProvider>
+        {user && <Header />}
+        <Component {...pageProps} />
+      </NextUIProvider>
     </>
   ) : (
     <Box

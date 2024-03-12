@@ -36,7 +36,7 @@ export default function Login() {
         <title>Log in</title>
       </Head>
       <main className="flex flex-col justify-center items-center h-screen">
-        <section className="h-[400px] justify-center flex bg-white flex-col space-y-10 items-center w-[350px] rounded-lg shadow-xl">
+        <section className="h-[400px] justify-center flex bg-white flex-col space-y-10 items-center w-[350px] rounded-lg shadow-sm">
           <h1 className="text-5xl">Bienvenido</h1>
           <form onSubmit={handleLogin} className="flex flex-col space-y-5 w-72">
             <TextField

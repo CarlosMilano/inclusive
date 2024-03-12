@@ -17,7 +17,7 @@ export default function CardComision(props: CardComision) {
 
   return (
     <main
-      className="shadow-md rounded-lg p-4 w-[340px] justify-between flex flex-row bg-white m-2 gap-6 items-center hover:scale-105 transition-all cursor-pointer duration-300 focus:outline-none"
+      className="shadow-sm rounded-lg p-4 w-[340px] justify-between flex flex-row bg-white m-2 gap-6 items-center hover:scale-105 transition-all cursor-pointer duration-300 focus:outline-none"
       onClick={() => handleRowClick(props)}
     >
       <article>

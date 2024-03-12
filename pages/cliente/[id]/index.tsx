@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import Table from "@/components/Table";
 import { addDays, differenceInDays, parseISO } from "date-fns";
 import { Box, CircularProgress } from "@mui/material";
+import currencyFormatter from "currency-formatter";
 
 interface Viaje {
   id: string;
@@ -20,6 +21,13 @@ interface Viaje {
   dolares: boolean;
 }
 
+interface ViajeProveedor {
+  id: string;
+  tarifa: number;
+  viaje_id: string;
+  dolares: boolean;
+}
+
 interface Cliente {
   id: string;
   diascredito: number;
@@ -29,6 +37,7 @@ interface Cliente {
 export default function Home() {
   const [viajes, setViajes] = useState<Viaje[]>([]);
   const [cliente, setCliente] = useState<Cliente>();
+  const [proveedor, setProveedor] = useState<ViajeProveedor[]>([]);
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
@@ -96,16 +105,86 @@ export default function Home() {
           }));
           setViajes(viajesConDiasCredito || []);
         }
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const fetchDataProveedor = async () => {
+      try {
+        const { data: viajesDataProveedor, error: viajesError } = await supabase
+          .from("viajeproveedor")
+          .select("*");
+        if (viajesError) console.error(viajesError);
+        else {
+          setProveedor(viajesDataProveedor || []);
+        }
       } catch (error) {
         console.error(error);
       }
     };
     fetchClienteData();
     fetchData();
+    fetchDataProveedor();
   }, [id]);
+
+  const calcularSumaTarifasProveedor = (viajeId: string) => {
+    const viajesProveedorRelacionados = proveedor.filter(
+      (viajeProveedor) => viajeProveedor.viaje_id === viajeId
+    );
+
+    const sumaTarifasProveedor = viajesProveedorRelacionados.reduce(
+      (acc, viajeProveedor) => {
+        const viajeCorrespondiente = viajes.find(
+          (viaje) => viaje.id === viajeProveedor.viaje_id
+        );
+
+        if (
+          viajeCorrespondiente &&
+          viajeProveedor.dolares &&
+          viajeCorrespondiente.tipodecambio
+        ) {
+          return (
+            acc + viajeProveedor.tarifa * viajeCorrespondiente.tipodecambio
+          );
+        } else {
+          return acc + viajeProveedor.tarifa;
+        }
+      },
+      0
+    );
+
+    return sumaTarifasProveedor;
+  };
+
+  const totalVencido = sortedViajes.reduce((acc, viaje) => {
+    const fechaLimite = viaje.fechafactura
+      ? addDays(parseISO(viaje.fechafactura), cliente?.diascredito || 0)
+      : null;
+
+    const diasRestantes = fechaLimite
+      ? differenceInDays(fechaLimite, today)
+      : 0;
+
+    return viaje.fechafactura && diasRestantes < 0 ? acc + viaje.tarifa : acc;
+  }, 0);
+
+  const totalPorVencer = sortedViajes.reduce((acc, viaje) => {
+    const fechaLimite = viaje.fechafactura
+      ? addDays(parseISO(viaje.fechafactura), cliente?.diascredito || 0)
+      : null;
+
+    const diasRestantes = fechaLimite
+      ? differenceInDays(fechaLimite, today)
+      : 0;
+
+    if (viaje.fechafactura && viaje.dolares) {
+      return diasRestantes >= 0 ? acc + viaje.tarifa * viaje.tipodecambio : acc;
+    } else if (viaje.fechafactura) {
+      return diasRestantes >= 0 ? acc + viaje.tarifa : acc;
+    }
+
+    return acc;
+  }, 0);
 
   return (
     <>
@@ -124,12 +203,28 @@ export default function Home() {
           <CircularProgress />
         </Box>
       ) : (
-        <main className="flex flex-col h-screen mt-[60px]">
-          <section className="p-8">
-            <h1 className="text-4xl font-bold">Viajes {cliente?.nombre}</h1>
+        <main className="flex flex-col min-h-screen mt-[60px]">
+          <section className="p-8 flex flex-wrap items-center gap-6">
+            <h1 className="text-3xl font-bold">Viajes {cliente?.nombre}</h1>
+            <article className="flex flex-col items-start space-y-1 text-sm">
+              <article className="flex justify-center items-center gap-1">
+                <div className=" bg-red-500 w-3 h-3 rounded-full" />
+                {currencyFormatter.format(totalVencido, {
+                  code: "MXN",
+                  precision: 0,
+                })}
+              </article>
+              <article className="flex justify-center items-center gap-1">
+                <div className=" bg-green-500 w-3 h-3 rounded-full" />
+                {currencyFormatter.format(totalPorVencer, {
+                  code: "MXN",
+                  precision: 0,
+                })}
+              </article>
+            </article>
           </section>
           <section className="flex flex-wrap justify-center">
-            {sortedViajes.slice().map((viaje) => {
+            {sortedViajes.map((viaje) => {
               const fechaLimite = viaje.fechafactura
                 ? addDays(
                     parseISO(viaje.fechafactura),
@@ -140,6 +235,10 @@ export default function Home() {
               const diasRestantes = fechaLimite
                 ? differenceInDays(fechaLimite, today)
                 : 0;
+
+              const sumaTarifasProveedor = calcularSumaTarifasProveedor(
+                viaje.id
+              );
 
               return (
                 <Table
@@ -157,6 +256,9 @@ export default function Home() {
                   }}
                   dolares={viaje.dolares}
                   tipodecambio={viaje.tipodecambio}
+                  comision={viaje.comision}
+                  tarifaProveedor={sumaTarifasProveedor}
+                  utilidad
                 />
               );
             })}

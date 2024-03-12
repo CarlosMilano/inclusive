@@ -25,17 +25,17 @@ export default function Header() {
   return (
     <>
       <header>
-        <div className="flex py-2 px-3 items-center fixed left-0 top-0 w-full bg-white h-[60px] z-40 shadow-lg">
+        <div className="flex py-2 px-3 items-center fixed left-0 top-0 w-full bg-white h-[60px] z-40 shadow-sm">
           <div className="justify-center lg:w-full flex">
             <nav
               className={`menu-sidebar ${
                 menu
                   ? "translate-x-0"
                   : "translate-x-full transition-transform duration-200"
-              } lg:translate-x-0 lg:transition-transform duration-300 flex flex-col bg-white lg:bg-transparent w-60 fixed h-[94%] md:h-[96%] top-[55px] right-0 shadow-lg z-50 lg:w-auto lg:static lg:h-auto lg:shadow-none lg:z-auto lg:top-0`}
+              } lg:translate-x-0 lg:transition-transform duration-300 flex flex-col bg-white lg:bg-transparent w-60 fixed h-[94%] md:h-[96%] top-[55px] right-0 shadow-sm z-50 lg:w-auto lg:static lg:h-auto lg:shadow-none lg:z-auto lg:top-0`}
             >
               <div className="h-full">
-                <ul className="flex mt-14 flex-col items-start p-5 lg:p-0 lg:m-0 lg:flex-row text-xl md:text-xl font-light space-y-4 lg:space-y-0 lg:space-x-8 text-black  ">
+                <ul className="flex mt-14 flex-col items-start p-5 lg:p-0 lg:m-0 lg:flex-row text-xl md:text-xl font-light space-y-4 lg:space-y-0 lg:space-x-8 text-black lg:items-center">
                   <li>
                     <Link
                       className="menu-item p-2 "
@@ -61,6 +61,15 @@ export default function Header() {
                       onClick={closeMenu}
                     >
                       Resumen
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="menu-item p-2 "
+                      href="/reportes"
+                      onClick={closeMenu}
+                    >
+                      Reportes
                     </Link>
                   </li>
                   <li>
