@@ -14,7 +14,6 @@ interface TableProps {
   folio?: string;
   dolares: boolean;
   tipodecambio: number;
-  cliente?: string;
   comision?: number;
   tarifaProveedor?: number;
   utilidad?: boolean;
@@ -35,11 +34,6 @@ export default function Table(props: TableProps) {
 
   return (
     <main className="flex flex-col m-2 hover:scale-105 transition-all cursor-pointer duration-300">
-      <section className="bg-white flex justify-center rounded-lg w-[35%] mb-[-10px] z-10 p-1 ml-[2px]">
-        {props.historial && (
-          <h2 className=" font-semibold text-gray-400">{props.cliente}</h2>
-        )}
-      </section>
       <section
         className={`shadow-sm rounded-lg p-3 w-[355px] flex flex-row bg-white justify-between items-center focus:outline-none  
                     ${props.diasRestantes < 0 ? "hover:border-red-500" : ""} 

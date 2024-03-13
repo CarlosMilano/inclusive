@@ -178,7 +178,7 @@ export default function Home() {
             </article>
           </section>
           <section className="flex flex-wrap justify-center">
-            {sortedViajes.slice().map((viaje) => {
+            {sortedViajes.map((viaje) => {
               const fechaLimite = viaje.fechafactura
                 ? addDays(
                     parseISO(viaje.fechafactura),

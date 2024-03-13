@@ -18,6 +18,10 @@ export default function Home() {
     setTipo(value);
   };
 
+  const handleReporte = (value: any) => {
+    setReporte(value);
+  };
+
   return (
     <>
       <Head>
@@ -43,31 +47,41 @@ export default function Home() {
                 label="Reporte"
                 radius="sm"
                 placeholder="Selecciona un Reporte"
+                value={reporte}
               >
-                <SelectItem value="Ventas" key="1">
+                <SelectItem key="1" onClick={() => handleReporte("Ventas")}>
                   Ventas
                 </SelectItem>
-                <SelectItem value="UxC" key="2">
+                <SelectItem key="2" onClick={() => handleReporte("UxC")}>
                   Utilidad x Cliente
                 </SelectItem>
-                <SelectItem value="Utilidad" key="3">
-                  Utilidad
-                </SelectItem>
-                <SelectItem value="Proveedores" key="4">
+                <SelectItem
+                  key="3"
+                  onClick={() => handleReporte("Proveedores")}
+                >
                   Proveedores
                 </SelectItem>
-              </Select>
-            </article>
-            <article className="w-[200px]">
-              <Select label="Tipo" radius="sm" placeholder="Selecciona un Tipo">
-                <SelectItem key="1" onClick={() => handleTipo("Anual")}>
-                  Anual
-                </SelectItem>
-                <SelectItem key="2" onClick={() => handleTipo("Mensual")}>
-                  Mensual
+                <SelectItem key="4" onClick={() => handleReporte("Utilidad")}>
+                  Utilidad
                 </SelectItem>
               </Select>
             </article>
+            {reporte !== "Ventas" && (
+              <article className="w-[200px]">
+                <Select
+                  label="Tipo"
+                  radius="sm"
+                  placeholder="Selecciona un Tipo"
+                >
+                  <SelectItem key="1" onClick={() => handleTipo("Anual")}>
+                    Anual
+                  </SelectItem>
+                  <SelectItem key="2" onClick={() => handleTipo("Mensual")}>
+                    Mensual
+                  </SelectItem>
+                </Select>
+              </article>
+            )}
             {tipo === "Mensual" && (
               <article className="w-[200px]">
                 <Select label="Año" radius="sm" placeholder="Selecciona un Año">

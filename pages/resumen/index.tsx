@@ -132,7 +132,7 @@ export default function Home() {
           <CircularProgress />
         </Box>
       ) : (
-        <main className="flex flex-col h-screen mt-[60px]">
+        <main className="flex flex-col min-h-screen mt-[60px]">
           <h1 className="text-4xl font-bold p-8">Resumen</h1>
           <section className="flex flex-wrap justify-center">
             <Resumen
