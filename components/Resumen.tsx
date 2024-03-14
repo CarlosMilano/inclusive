@@ -1,6 +1,9 @@
+import Skeleton from "@mui/material/Skeleton";
+
 interface ResumenProps {
   title: string;
   monto: string | number;
+  loading: boolean;
 }
 
 export default function Resumen(props: ResumenProps) {
@@ -10,7 +13,11 @@ export default function Resumen(props: ResumenProps) {
         <h1 className="text-lg text-gray-500 font-bold">
           {props.title || "Titulo"}
         </h1>
-        <h2 className="text-2xl ">{props.monto}</h2>
+        {props.loading ? (
+          <Skeleton width="60%" height={40} animation="wave" />
+        ) : (
+          <h2 className="text-2xl ">{props.monto}</h2>
+        )}
       </section>
     </>
   );

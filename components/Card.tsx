@@ -43,9 +43,9 @@ export default function Card(props: CardProps) {
   };
 
   return (
-    <main className="flex flex-col w-[90%] max-w-[370px] gap-4 p-3">
-      <section className="flex flex-col gap-2 bg-white shadow-sm rounded-[14px] p-3">
-        <h1 className="text-xl text-gray-500 font-bold">
+    <main className="flex flex-col w-[90%] max-w-[370px] bg-white rounded-[14px] p-3 shadow-sm">
+      <section className="flex flex-col gap-2 items-center p-5">
+        <h1 className="text-2xl text-gray-500 font-bold ">
           {props.title || "Titulo"}
         </h1>
         {props.loading ? (
@@ -65,7 +65,7 @@ export default function Card(props: CardProps) {
             />
           </div>
         ) : (
-          <Table aria-label="Example static collection table">
+          <Table aria-label="Example static collection table" removeWrapper>
             <TableHeader>
               <TableColumn className="text-base">{props.subtitle}</TableColumn>
               <TableColumn className="text-base">Monto</TableColumn>

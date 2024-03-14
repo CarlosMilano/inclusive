@@ -384,6 +384,7 @@ export default function Home() {
               code: "MXN",
               precision: 0,
             })}
+            loading={loading}
           />
           <Resumen
             title="Proveedores"
@@ -391,6 +392,7 @@ export default function Home() {
               code: "MXN",
               precision: 0,
             })}
+            loading={loading}
           />
           <Resumen
             title="Utilidad"
@@ -398,6 +400,7 @@ export default function Home() {
               code: "MXN",
               precision: 0,
             })}
+            loading={loading}
           />
           <Resumen
             title="Ut x C"
@@ -405,8 +408,9 @@ export default function Home() {
               code: "MXN",
               precision: 0,
             })}
+            loading={loading}
           />
-          <Resumen title="% Utilidad" monto={porcentaje} />
+          <Resumen title="% Utilidad" monto={porcentaje} loading={loading} />
         </section>
         <section className="flex flex-wrap justify-center gap-4 w-screen">
           <Card
