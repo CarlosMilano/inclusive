@@ -54,15 +54,7 @@ export default function Header() {
                       Historial
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      className="menu-item p-2 "
-                      href="/resumen"
-                      onClick={closeMenu}
-                    >
-                      Resumen
-                    </Link>
-                  </li>
+
                   <li>
                     <Link
                       className="menu-item p-2 "

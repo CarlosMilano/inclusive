@@ -1,5 +1,13 @@
 import currencyFormatter from "currency-formatter";
 import Skeleton from "@mui/material/Skeleton";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableColumn,
+  TableRow,
+  TableCell,
+} from "@nextui-org/table";
 
 interface CardProps {
   title: string;
@@ -35,15 +43,15 @@ export default function Card(props: CardProps) {
   };
 
   return (
-    <main className="flex flex-col bg-white w-[90%] max-w-[370px] min-h-[510px] shadow-sm rounded-md p-3">
-      <section className="flex flex-col items-center">
-        <h1 className="text-4xl font-semibold p-5">
+    <main className="flex flex-col w-[90%] max-w-[370px] gap-4 p-3">
+      <section className="flex flex-col gap-2 bg-white shadow-sm rounded-[14px] p-3">
+        <h1 className="text-xl text-gray-500 font-bold">
           {props.title || "Titulo"}
         </h1>
         {props.loading ? (
           <Skeleton width="60%" height={40} animation="wave" />
         ) : (
-          <h2 className="text-xl p-3">{formattedTotal}</h2>
+          <h2 className="text-3xl">{formattedTotal}</h2>
         )}
       </section>
       <section className="flex flex-col items-center">
@@ -51,37 +59,35 @@ export default function Card(props: CardProps) {
           <div className="mt-3">
             <Skeleton
               variant="rectangular"
-              width={290}
-              height={310}
+              width={350}
+              height={400}
               animation="wave"
             />
           </div>
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className=" border-b-2 border-zinc-300">
-                <th className="p-2 w-1/2">{props.subtitle}</th>
-                <th className="p-2 w-1/2">Monto</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table aria-label="Example static collection table">
+            <TableHeader>
+              <TableColumn className="text-base">{props.subtitle}</TableColumn>
+              <TableColumn className="text-base">Monto</TableColumn>
+            </TableHeader>
+            <TableBody>
               {filteredData.map((data, index) => (
-                <tr
+                <TableRow
                   key={index}
-                  className=" border-b-2 border-zinc-200 cursor-pointer hover:bg-gray-100 transition duration-300 ease-in-out"
                   onClick={() => handleRowClick(data)}
+                  className="cursor-pointer hover:bg-[#F4F4F5]  transition-all ease-in-out duration-300"
                 >
-                  <td className="p-2 pl-8">{data.cliente}</td>
-                  <td className="p-2 pl-8">
+                  <TableCell className="text-base">{data.cliente}</TableCell>
+                  <TableCell className="text-base">
                     {currencyFormatter.format(data.monto, {
                       code: "MXN",
                       precision: 0,
                     })}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         )}
       </section>
     </main>

@@ -5,6 +5,8 @@ import Card from "@/components/Card";
 import Button from "@/components/Button";
 import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
+import Resumen from "@/components/Resumen";
+import currencyFormatter from "currency-formatter";
 
 interface Cliente {
   id: string;
@@ -14,6 +16,26 @@ interface Cliente {
 interface Proveedor {
   id: string;
   nombre: string;
+}
+
+interface Viaje {
+  id: string;
+  tarifa: number;
+  comision: number;
+  abonocomision: number;
+  abonado: number;
+  dolares: boolean;
+  tipodecambio: number;
+}
+
+interface ViajeProveedor {
+  id: string;
+  tarifa: number;
+  abonado: number;
+  dolares: boolean;
+  viaje: {
+    tipodecambio: number;
+  };
 }
 
 export default function Home() {
@@ -35,8 +57,41 @@ export default function Home() {
   const [openCliente, setOpenCliente] = useState(false);
   const [openProveedor, setOpenProveedor] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [viajes, setViajes] = useState<Viaje[]>([]);
+  const [viajesProveedor, setViajesProveedor] = useState<ViajeProveedor[]>([]);
 
   useEffect(() => {
+    const fetchViajes = async () => {
+      try {
+        const { data: viajesData, error: viajesError } = await supabase
+          .from("viaje")
+          .select("*");
+
+        if (viajesError) console.error(viajesError);
+        else {
+          setTimeout(() => {
+            setLoading(false);
+          }, 1500);
+          setViajes(viajesData || []);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const fetchViajesProveedor = async () => {
+      try {
+        const { data: viajesData, error: viajesError } = await supabase
+          .from("viajeproveedor")
+          .select("*, viaje:viaje_id(*,tipodecambio)");
+
+        if (viajesError) console.error(viajesError);
+        else {
+          setViajesProveedor(viajesData || []);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
     const fetchData = async () => {
       try {
         const { data: clientesData, error: clientesError } = await supabase
@@ -151,7 +206,8 @@ export default function Home() {
         setLoading(false);
       }
     };
-
+    fetchViajesProveedor();
+    fetchViajes();
     fetchData();
   }, []);
 
@@ -189,6 +245,55 @@ export default function Home() {
       console.error(error);
     }
   };
+
+  const ventas = viajes
+    .map((viaje) => {
+      if (viaje.dolares) {
+        return viaje.tarifa * viaje.tipodecambio;
+      } else {
+        return viaje.tarifa;
+      }
+    })
+    .reduce((total, tarifa) => total + tarifa, 0);
+  const ventasProveedor = viajesProveedor
+    .map((viaje) => {
+      if (viaje.dolares) {
+        return viaje.tarifa * viaje.viaje.tipodecambio;
+      } else {
+        return viaje.tarifa;
+      }
+    })
+    .reduce((total, tarifa) => total + tarifa, 0);
+  const comisiones = viajes
+    .map((viaje) => viaje.comision)
+    .reduce((a, b) => a + b, 0);
+  const utilidad = ventas - ventasProveedor - comisiones;
+  const CxC = viajes.reduce((total, viaje) => {
+    const tarifa = viaje.dolares
+      ? viaje.tarifa * viaje.tipodecambio
+      : viaje.tarifa;
+    const abonado = viaje.dolares
+      ? viaje.abonado * viaje.tipodecambio
+      : viaje.abonado;
+
+    return total + (tarifa - abonado);
+  }, 0);
+
+  const CxP = viajesProveedor.reduce((total, viaje) => {
+    const tarifa = viaje.dolares
+      ? viaje.tarifa * viaje.viaje.tipodecambio
+      : viaje.tarifa;
+    const abonado = viaje.dolares
+      ? viaje.abonado * viaje.viaje.tipodecambio
+      : viaje.abonado;
+
+    return total + (tarifa - abonado);
+  }, 0);
+  const comisionSinAbono = viajes.reduce((total, viaje) => {
+    return total + viaje.comision - viaje.abonocomision;
+  }, 0);
+  const UtxC = CxC - CxP - comisionSinAbono;
+  const porcentaje = ((utilidad / ventas) * 100).toFixed(2);
 
   const clickCliente = () => {
     setOpenCliente(!openCliente);
@@ -272,7 +377,38 @@ export default function Home() {
             <Button title="Añadir Viaje" onClick={handleClick} />
           </article>
         </section>
-        <section className="flex flex-wrap justify-center gap-9 w-screen">
+        <section className="flex flex-wrap justify-center gap-3">
+          <Resumen
+            title="Ventas"
+            monto={currencyFormatter.format(ventas, {
+              code: "MXN",
+              precision: 0,
+            })}
+          />
+          <Resumen
+            title="Proveedores"
+            monto={currencyFormatter.format(ventasProveedor, {
+              code: "MXN",
+              precision: 0,
+            })}
+          />
+          <Resumen
+            title="Utilidad"
+            monto={currencyFormatter.format(utilidad, {
+              code: "MXN",
+              precision: 0,
+            })}
+          />
+          <Resumen
+            title="Ut x C"
+            monto={currencyFormatter.format(UtxC, {
+              code: "MXN",
+              precision: 0,
+            })}
+          />
+          <Resumen title="% Utilidad" monto={porcentaje} />
+        </section>
+        <section className="flex flex-wrap justify-center gap-4 w-screen">
           <Card
             title="CXC"
             subtitle="Cliente"
