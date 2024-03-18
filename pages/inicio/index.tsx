@@ -11,6 +11,7 @@ import currencyFormatter from "currency-formatter";
 interface Cliente {
   id: string;
   nombre: string;
+  diascredito: number;
 }
 
 interface Proveedor {
@@ -26,6 +27,8 @@ interface Viaje {
   abonado: number;
   dolares: boolean;
   tipodecambio: number;
+  fechafactura: string;
+  cliente_id: string;
 }
 
 interface ViajeProveedor {
@@ -36,6 +39,8 @@ interface ViajeProveedor {
   viaje: {
     tipodecambio: number;
   };
+  fechafactura: string;
+  proveedor_id: string;
 }
 
 export default function Home() {
@@ -303,6 +308,79 @@ export default function Home() {
     setOpenProveedor(!openProveedor);
   };
 
+  const calcularFacturasVencidas = (viajes: Viaje[]) => {
+    const facturasVencidasPorCliente: { [key: string]: number } = {};
+
+    viajes.forEach((viaje) => {
+      if (viaje.fechafactura) {
+        const clienteId = viaje.cliente_id;
+        const clientes = cliente.find((c) => c.id === clienteId);
+
+        if (cliente) {
+          const diasCredito = clientes?.diascredito;
+          const fechaFactura = new Date(viaje.fechafactura);
+          const fechaVencimiento = new Date(fechaFactura);
+          fechaVencimiento.setDate(fechaFactura.getDate() + (diasCredito ?? 0));
+          const hoy = new Date();
+          if (hoy > fechaVencimiento && viaje.tarifa !== viaje.abonado) {
+            facturasVencidasPorCliente[clienteId] =
+              (facturasVencidasPorCliente[clienteId] || 0) + 1;
+          }
+        }
+      }
+    });
+
+    return facturasVencidasPorCliente;
+  };
+
+  const calcularFacturasVencidasProveedor = (
+    viajesProveedor: ViajeProveedor[]
+  ) => {
+    const facturasVencidasPorProveedor: { [key: string]: number } = {};
+
+    viajesProveedor.forEach((viajeProveedor) => {
+      if (viajeProveedor.fechafactura) {
+        const proveedorId = viajeProveedor.proveedor_id;
+        if (proveedor) {
+          const diasCredito = 30;
+          const fechaFactura = new Date(viajeProveedor.fechafactura);
+          const fechaVencimiento = new Date(fechaFactura);
+          fechaVencimiento.setDate(fechaFactura.getDate() + diasCredito);
+          const hoy = new Date();
+          if (
+            hoy > fechaVencimiento &&
+            viajeProveedor.tarifa !== viajeProveedor.abonado
+          ) {
+            facturasVencidasPorProveedor[proveedorId] =
+              (facturasVencidasPorProveedor[proveedorId] || 0) + 1;
+          }
+        }
+      }
+    });
+
+    return facturasVencidasPorProveedor;
+  };
+
+  const calcularFacturasVencidasComision = (viajes: Viaje[]) => {
+    const facturasVencidasPorCliente: { [key: string]: number } = {};
+
+    viajes.forEach((viaje) => {
+      if (viaje.comision !== viaje.abonocomision) {
+        const clienteId = viaje.cliente_id;
+        facturasVencidasPorCliente[clienteId] =
+          (facturasVencidasPorCliente[clienteId] || 0) + 1;
+      }
+    });
+
+    return facturasVencidasPorCliente;
+  };
+
+  const totalFacturasVencidasCxC = calcularFacturasVencidas(viajes);
+  const totalFacturasVencidasCxP =
+    calcularFacturasVencidasProveedor(viajesProveedor);
+  const totalFacturasVencidasComision =
+    calcularFacturasVencidasComision(viajes);
+
   return (
     <>
       <Head>
@@ -424,6 +502,7 @@ export default function Home() {
               cliente: resultado.cliente.nombre,
               monto: resultado.monto,
               id: resultado.cliente.id,
+              vencidas: totalFacturasVencidasCxC[resultado.cliente.id] || 0,
             }))}
             loading={loading}
             onClick={(rowData) => {
@@ -441,6 +520,7 @@ export default function Home() {
               cliente: resultado.proveedor.nombre,
               monto: resultado.monto,
               id: resultado.proveedor.id,
+              vencidas: totalFacturasVencidasCxP[resultado.proveedor.id] || 0,
             }))}
             loading={loading}
             onClick={(rowData) => {
@@ -458,6 +538,8 @@ export default function Home() {
               cliente: resultado.cliente.nombre,
               monto: resultado.monto,
               id: resultado.cliente.id,
+              vencidas:
+                totalFacturasVencidasComision[resultado.cliente.id] || 0,
             }))}
             loading={loading}
             onClick={(rowData) => {
