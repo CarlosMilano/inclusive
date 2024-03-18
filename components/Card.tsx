@@ -87,7 +87,7 @@ export default function Card(props: CardProps) {
                       precision: 0,
                     })}
                   </TableCell>
-                  <TableCell className="text-base">
+                  <TableCell className="text-base text-center">
                     {data.vencidas || 0}
                   </TableCell>
                 </TableRow>
