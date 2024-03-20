@@ -61,7 +61,7 @@ export default function Card(props: CardProps) {
           <div className="mt-3">
             <Skeleton
               variant="rectangular"
-              width={350}
+              width={330}
               height={400}
               animation="wave"
             />

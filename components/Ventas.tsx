@@ -23,6 +23,7 @@ export default function Ventas({ data, years }: VentasProps) {
         className=" overflow-auto"
       >
         <TableHeader>
+          <TableColumn> Mes </TableColumn>
           {sortedYears.map((year) => (
             <TableColumn key={year}>{year}</TableColumn>
           ))}
@@ -32,6 +33,7 @@ export default function Ventas({ data, years }: VentasProps) {
             const mes = index + 1;
             return (
               <TableRow key={mes}>
+                <TableCell>{mes}</TableCell>
                 {sortedYears.map((year) => (
                   <TableCell key={`${mes}-${year}`}>
                     {data
