@@ -125,12 +125,8 @@ export default function Utilitdad({
           </h3>
         </article>
       </section>
-      <section>
-        <Table
-          aria-label="Example static collection table"
-          removeWrapper
-          className="overflow-auto"
-        >
+      <section className="overflow-scroll">
+        <Table aria-label="Example static collection table" removeWrapper>
           <TableHeader>
             {columns.map((column) => (
               <TableColumn key={column.id}>{column.label}</TableColumn>
@@ -158,7 +154,7 @@ export default function Utilitdad({
         <Table
           aria-label="Example static collection table"
           removeWrapper
-          className="overflow-auto"
+          hideHeader
         >
           <TableHeader>
             {columnsYear.map((column) => (
@@ -169,15 +165,25 @@ export default function Utilitdad({
             <TableRow>
               {columnsYear.map((column) => {
                 if (column.id === "año") {
-                  return <TableCell key={column.id}>Total</TableCell>;
+                  return (
+                    <TableCell key={column.id} className="text-xs md:text-sm">
+                      Total
+                    </TableCell>
+                  );
                 } else if (column.id === "total") {
                   const totalTodosAnios = calcularTotalTodosAnios();
                   return (
-                    <TableCell key={column.id}>{totalTodosAnios}</TableCell>
+                    <TableCell key={column.id} className="md:pr-[14px]">
+                      {totalTodosAnios}
+                    </TableCell>
                   );
                 } else {
                   const totalAnio = calcularTotalAnio(column.id);
-                  return <TableCell key={column.id}>{totalAnio}</TableCell>;
+                  return (
+                    <TableCell key={column.id} className="text-xs md:text-sm ">
+                      {totalAnio}
+                    </TableCell>
+                  );
                 }
               })}
             </TableRow>
