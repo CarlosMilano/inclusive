@@ -832,7 +832,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   onClick={() => setEditModeViaje(true)}
                   sx={{ color: "#1971c2", cursor: "pointer" }}
                 />
-                <section className="flex flex-col items-center justify-center absolute top-[111px] left-10">
+                <section className="flex flex-col items-center justify-center absolute top-[111px] left-14">
                   {viajeData.abonado !== viajeData.tarifa && (
                     <PaidIcon
                       onClick={clickCobradoTarifaViaje}
@@ -1275,7 +1275,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                         }}
                         sx={{ color: "#1971c2", cursor: "pointer" }}
                       />
-                      <section className="flex flex-col items-center justify-center absolute top-[67px] left-[74px]">
+                      <section className="flex flex-col items-center justify-center absolute top-[67px] left-[85px]">
                         {proveedor.abonado !== proveedor.tarifa && (
                           <PaidIcon
                             onClick={() => clickCobradoTarifaProveedor(index)}

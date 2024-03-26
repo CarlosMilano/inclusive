@@ -25,7 +25,7 @@ interface CardProps {
   onClick?: (rowData: { cliente: string; monto: number; id: string }) => void;
 }
 
-export default function Card(props: CardProps) {
+export default function Comision(props: CardProps) {
   const formattedTotal = currencyFormatter.format(props.total, {
     code: "MXN",
     precision: 0,
@@ -72,8 +72,6 @@ export default function Card(props: CardProps) {
             <TableHeader>
               <TableColumn className="text-base">{props.subtitle}</TableColumn>
               <TableColumn className="text-base">Monto</TableColumn>
-              <TableColumn className="text-base">V</TableColumn>
-              <TableColumn className="text-base">SF</TableColumn>
             </TableHeader>
             <TableBody>
               {filteredData.map((data, index) => (
@@ -88,12 +86,6 @@ export default function Card(props: CardProps) {
                       code: "MXN",
                       precision: 0,
                     })}
-                  </TableCell>
-                  <TableCell className="text-base">
-                    {data.vencidas || 0}
-                  </TableCell>
-                  <TableCell className="text-base">
-                    {data.sinfecha || 0}
                   </TableCell>
                 </TableRow>
               ))}

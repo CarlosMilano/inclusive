@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
 import Resumen from "@/components/Resumen";
 import currencyFormatter from "currency-formatter";
+import Comision from "@/components/Comision";
 
 interface Cliente {
   id: string;
@@ -333,6 +334,20 @@ export default function Home() {
     return facturasVencidasPorCliente;
   };
 
+  const calcularFacturasSinFecha = (viajes: Viaje[]) => {
+    const facturasSinFechaPorCliente: { [key: string]: number } = {};
+
+    viajes.forEach((viaje) => {
+      if (!viaje.fechafactura) {
+        const clienteId = viaje.cliente_id;
+        facturasSinFechaPorCliente[clienteId] =
+          (facturasSinFechaPorCliente[clienteId] || 0) + 1;
+      }
+    });
+
+    return facturasSinFechaPorCliente;
+  };
+
   const calcularFacturasVencidasProveedor = (
     viajesProveedor: ViajeProveedor[]
   ) => {
@@ -361,25 +376,29 @@ export default function Home() {
     return facturasVencidasPorProveedor;
   };
 
-  const calcularFacturasVencidasComision = (viajes: Viaje[]) => {
-    const facturasVencidasPorCliente: { [key: string]: number } = {};
+  const calcularFacturasSinFechaProveedor = (
+    viajesProveedor: ViajeProveedor[]
+  ) => {
+    const facturasSinFechaPorProveedor: { [key: string]: number } = {};
 
-    viajes.forEach((viaje) => {
-      if (viaje.comision !== viaje.abonocomision) {
-        const clienteId = viaje.cliente_id;
-        facturasVencidasPorCliente[clienteId] =
-          (facturasVencidasPorCliente[clienteId] || 0) + 1;
+    viajesProveedor.forEach((viajeProveedor) => {
+      if (!viajeProveedor.fechafactura) {
+        const proveedorId = viajeProveedor.proveedor_id;
+        facturasSinFechaPorProveedor[proveedorId] =
+          (facturasSinFechaPorProveedor[proveedorId] || 0) + 1;
       }
     });
 
-    return facturasVencidasPorCliente;
+    return facturasSinFechaPorProveedor;
   };
 
   const totalFacturasVencidasCxC = calcularFacturasVencidas(viajes);
   const totalFacturasVencidasCxP =
     calcularFacturasVencidasProveedor(viajesProveedor);
-  const totalFacturasVencidasComision =
-    calcularFacturasVencidasComision(viajes);
+
+  const totalFacturasSinFechaCxC = calcularFacturasSinFecha(viajes);
+  const totalFacturasSinFechaCxP =
+    calcularFacturasSinFechaProveedor(viajesProveedor);
 
   return (
     <>
@@ -503,6 +522,7 @@ export default function Home() {
               monto: resultado.monto,
               id: resultado.cliente.id,
               vencidas: totalFacturasVencidasCxC[resultado.cliente.id] || 0,
+              sinfecha: totalFacturasSinFechaCxC[resultado.cliente.id] || 0,
             }))}
             loading={loading}
             onClick={(rowData) => {
@@ -521,13 +541,14 @@ export default function Home() {
               monto: resultado.monto,
               id: resultado.proveedor.id,
               vencidas: totalFacturasVencidasCxP[resultado.proveedor.id] || 0,
+              sinfecha: totalFacturasSinFechaCxP[resultado.proveedor.id] || 0,
             }))}
             loading={loading}
             onClick={(rowData) => {
               router.push(`/proveedor/${rowData.id}`);
             }}
           />
-          <Card
+          <Comision
             title="Comisión"
             subtitle="Cliente"
             total={comision.reduce(
@@ -538,8 +559,6 @@ export default function Home() {
               cliente: resultado.cliente.nombre,
               monto: resultado.monto,
               id: resultado.cliente.id,
-              vencidas:
-                totalFacturasVencidasComision[resultado.cliente.id] || 0,
             }))}
             loading={loading}
             onClick={(rowData) => {

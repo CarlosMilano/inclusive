@@ -3,24 +3,33 @@ import { useEffect, useState } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import Anual from "@/components/Anual";
 import Mensual from "@/components/Mensual";
-import Utilidad from "@/components/Utilidad";
+import Utilidad from "@/components/UtilidadTable";
 import { Select, SelectItem } from "@nextui-org/select";
 import supabase from "../api/supabase";
+import ProveedoresTable from "@/components/ProveedoresTable";
+
+interface Cliente {
+  id: string;
+  nombre: string;
+}
 
 export default function Reportes() {
   const [loading, setLoading] = useState(true);
   const [reporte, setReporte] = useState("Utilidad");
-  const [tipo, setTipo] = useState("Anual");
-  const [ventasData, setVentasData] = useState<{
+  const [utilidadData, setUtilidadData] = useState<{
     ventasArray: any[];
     totalUtilidad: number;
   }>({ ventasArray: [], totalUtilidad: 0 });
 
   const [years, setYears] = useState<number[]>([]);
-  const [anio, setAnio] = useState("");
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [ventasData, setVentasData] = useState<{
+    ventasArray: any[];
+    totalVentas: number;
+  }>({ ventasArray: [], totalVentas: 0 });
 
   useEffect(() => {
-    async function fetchVentasData() {
+    async function fetchUtilidadData() {
       try {
         const { data: viajesData, error: viajesError } = await supabase
           .from("viaje")
@@ -109,7 +118,7 @@ export default function Reportes() {
           return acc + utilidad;
         }, 0);
 
-        setVentasData({ ventasArray, totalUtilidad });
+        setUtilidadData({ ventasArray, totalUtilidad });
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -117,23 +126,77 @@ export default function Reportes() {
       }
     }
 
+    async function fetchVentasData() {
+      try {
+        const { data: clientesData, error: clientesError } = await supabase
+          .from("cliente")
+          .select("*");
+        if (clientesError) throw clientesError;
+        const clientes = clientesData || [];
+
+        const { data: viajesData, error: viajesError } = await supabase
+          .from("viaje")
+          .select("*");
+        if (viajesError) throw viajesError;
+        const viajes = viajesData || [];
+
+        const ventasPorClientePorAnio = viajes.reduce(
+          (acc: any, viaje: any) => {
+            if (viaje.fechafactura && viaje.fechafactura !== "") {
+              const fecha = new Date(viaje.fechafactura);
+              const anio = fecha.getFullYear();
+              let tarifaViaje = viaje.tarifa;
+              if (viaje.dolares && viaje.tipodecambio) {
+                tarifaViaje *= viaje.tipodecambio;
+              }
+
+              if (!acc[viaje.cliente_id]) {
+                acc[viaje.cliente_id] = { cliente_id: viaje.cliente_id };
+              }
+
+              if (!acc[viaje.cliente_id][anio]) {
+                acc[viaje.cliente_id][anio] = tarifaViaje;
+              } else {
+                acc[viaje.cliente_id][anio] += tarifaViaje;
+              }
+            }
+            return acc;
+          },
+          {}
+        );
+
+        const ventasArray = Object.keys(ventasPorClientePorAnio).map(
+          (clienteId) => ({
+            cliente_id: clienteId,
+            ...ventasPorClientePorAnio[clienteId],
+          })
+        );
+
+        const totalVentas = viajes.reduce((acc: number, viaje: any) => {
+          let tarifaViaje = viaje.tarifa;
+          if (viaje.dolares && viaje.tipodecambio) {
+            tarifaViaje *= viaje.tipodecambio;
+          }
+          return acc + tarifaViaje;
+        }, 0);
+
+        setVentasData({ ventasArray, totalVentas });
+        setClientes(clientes);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
     fetchVentasData();
+    fetchUtilidadData();
   }, []);
 
   setTimeout(() => {
     setLoading(false);
   }, 1000);
 
-  const handleTipo = (value: any) => {
-    setTipo(value);
-  };
-
   const handleReporte = (value: any) => {
     setReporte(value);
-  };
-
-  const handleAnio = (value: any) => {
-    setAnio(value);
   };
 
   return (
@@ -178,52 +241,26 @@ export default function Reportes() {
                 <SelectItem key="4" onClick={() => handleReporte("Ventas")}>
                   Ventas
                 </SelectItem>
+                <SelectItem key="5" onClick={() => handleReporte("VxC")}>
+                  Viajes x Cliente
+                </SelectItem>
               </Select>
             </article>
-            {reporte !== "Utilidad" && (
-              <article className="w-[200px]">
-                <Select
-                  label="Tipo"
-                  radius="sm"
-                  value={tipo}
-                  placeholder="Selecciona un Tipo"
-                >
-                  <SelectItem
-                    key="1"
-                    onClick={() => handleTipo("Anual")}
-                    value="Anual"
-                  >
-                    Anual
-                  </SelectItem>
-                  <SelectItem key="2" onClick={() => handleTipo("Mensual")}>
-                    Mensual
-                  </SelectItem>
-                </Select>
-              </article>
-            )}
-            {tipo === "Mensual" && (
-              <article className="w-[200px]">
-                <Select
-                  label="Año"
-                  placeholder="Selecciona un Año"
-                  radius="sm"
-                  value={anio}
-                >
-                  {years.map((year) => (
-                    <SelectItem key={year} onClick={() => handleAnio(year)}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </article>
-            )}
           </section>
           <section className="m-3">
             {reporte === "Utilidad" && (
               <Utilidad
-                ventasArray={ventasData.ventasArray}
-                totalUtilidad={ventasData.totalUtilidad}
+                ventasArray={utilidadData.ventasArray}
+                totalUtilidad={utilidadData.totalUtilidad}
                 years={years}
+              />
+            )}
+            {reporte === "Ventas" && (
+              <Anual
+                ventasArray={ventasData.ventasArray}
+                years={years}
+                clientes={clientes}
+                totalVentas={ventasData.totalVentas}
               />
             )}
           </section>
