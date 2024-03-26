@@ -13,8 +13,14 @@ interface Cliente {
   nombre: string;
 }
 
+interface Proveedores {
+  id: string;
+  nombre: string;
+}
+
 export default function Reportes() {
   const [loading, setLoading] = useState(true);
+  const [loadingReporte, setLoadingReporte] = useState(true);
   const [reporte, setReporte] = useState("Utilidad");
   const [utilidadData, setUtilidadData] = useState<{
     ventasArray: any[];
@@ -23,10 +29,16 @@ export default function Reportes() {
 
   const [years, setYears] = useState<number[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [proveedores, setProveedores] = useState<Proveedores[]>([]);
   const [ventasData, setVentasData] = useState<{
     ventasArray: any[];
     totalVentas: number;
-  }>({ ventasArray: [], totalVentas: 0 });
+    utilidadArray: any[];
+  }>({ ventasArray: [], totalVentas: 0, utilidadArray: [] });
+  const [proveedoresData, setProveedoresData] = useState<{
+    proveedoresArray: any[];
+    totalProveedores: number;
+  }>({ proveedoresArray: [], totalProveedores: 0 });
 
   useEffect(() => {
     async function fetchUtilidadData() {
@@ -140,6 +152,10 @@ export default function Reportes() {
         if (viajesError) throw viajesError;
         const viajes = viajesData || [];
 
+        const { data: proveedoresData, error: proveedoresError } =
+          await supabase.from("viajeproveedor").select("*");
+        if (proveedoresError) throw proveedoresError;
+
         const ventasPorClientePorAnio = viajes.reduce(
           (acc: any, viaje: any) => {
             if (viaje.fechafactura && viaje.fechafactura !== "") {
@@ -165,6 +181,53 @@ export default function Reportes() {
           {}
         );
 
+        const utilidadPorClientePorAnio = viajes.reduce(
+          (acc: any, viaje: any) => {
+            if (viaje.fechafactura && viaje.fechafactura !== "") {
+              const fecha = new Date(viaje.fechafactura);
+              const anio = fecha.getFullYear();
+              let tarifaViaje = viaje.tarifa;
+              if (viaje.dolares && viaje.tipodecambio) {
+                tarifaViaje *= viaje.tipodecambio;
+              }
+
+              const proveedoresDelViaje = proveedoresData.filter(
+                (proveedor: any) => proveedor.viaje_id === viaje.id
+              );
+              let tarifaProveedores = 0;
+              proveedoresDelViaje.forEach((proveedor: any) => {
+                let tarifaProveedor = proveedor.tarifa;
+                if (proveedor.dolares && viaje.tipodecambio) {
+                  tarifaProveedor *= viaje.tipodecambio;
+                }
+                tarifaProveedores += tarifaProveedor;
+              });
+
+              const comision = viaje.comision;
+              const utilidad = tarifaViaje - comision - tarifaProveedores;
+
+              if (!acc[viaje.cliente_id]) {
+                acc[viaje.cliente_id] = { cliente_id: viaje.cliente_id };
+              }
+
+              if (!acc[viaje.cliente_id][anio]) {
+                acc[viaje.cliente_id][anio] = utilidad;
+              } else {
+                acc[viaje.cliente_id][anio] += utilidad;
+              }
+            }
+            return acc;
+          },
+          {}
+        );
+
+        const utilidadArray = Object.keys(utilidadPorClientePorAnio).map(
+          (clienteId) => ({
+            cliente_id: clienteId,
+            ...utilidadPorClientePorAnio[clienteId],
+          })
+        );
+
         const ventasArray = Object.keys(ventasPorClientePorAnio).map(
           (clienteId) => ({
             cliente_id: clienteId,
@@ -180,24 +243,119 @@ export default function Reportes() {
           return acc + tarifaViaje;
         }, 0);
 
-        setVentasData({ ventasArray, totalVentas });
+        setVentasData({ ventasArray, totalVentas, utilidadArray });
         setClientes(clientes);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
 
+    async function fetchProveedoresData() {
+      try {
+        const { data: proveedoresData, error: proveedoresError } =
+          await supabase.from("proveedor").select("*");
+        if (proveedoresError) throw proveedoresError;
+        const proveedores = proveedoresData || [];
+
+        const { data: viajeData, error: viajeError } = await supabase
+          .from("viaje")
+          .select("*");
+        if (viajeError) throw viajeError;
+        const viajes = viajeData || [];
+
+        const { data: viajesProveedorData, error: viajesError } = await supabase
+          .from("viajeproveedor")
+          .select("*");
+        if (viajesError) throw viajesError;
+        const viajesProveedor = viajesProveedorData || [];
+
+        const proveedoresPorAnio = viajesProveedor.reduce(
+          (acc: any, viajeProveedor: any) => {
+            const viajeCorrespondiente = viajes.find(
+              (viaje) => viaje.id === viajeProveedor.viaje_id
+            );
+
+            if (
+              viajeCorrespondiente &&
+              viajeCorrespondiente.fechafactura &&
+              viajeCorrespondiente.fechafactura !== ""
+            ) {
+              const fecha = new Date(viajeCorrespondiente.fechafactura);
+              const anio = fecha.getFullYear();
+              let tarifaProveedor = viajeProveedor.tarifa;
+              if (viajeProveedor.dolares && viajeCorrespondiente.tipodecambio) {
+                tarifaProveedor *= viajeCorrespondiente.tipodecambio;
+              }
+
+              if (!acc[viajeProveedor.proveedor_id]) {
+                acc[viajeProveedor.proveedor_id] = {
+                  proveedor_id: viajeProveedor.proveedor_id,
+                };
+              }
+
+              if (!acc[viajeProveedor.proveedor_id][anio]) {
+                acc[viajeProveedor.proveedor_id][anio] = tarifaProveedor;
+              } else {
+                acc[viajeProveedor.proveedor_id][anio] += tarifaProveedor;
+              }
+            }
+            return acc;
+          },
+          {}
+        );
+
+        const proveedoresArray = Object.keys(proveedoresPorAnio).map(
+          (proveedorId) => ({
+            proveedor_id: proveedorId,
+            ...proveedoresPorAnio[proveedorId],
+          })
+        );
+
+        const totalProveedores = viajesProveedor.reduce(
+          (acc: number, viajeProveedor: any) => {
+            let tarifaProveedor = viajeProveedor.tarifa;
+            const viajeCorrespondiente = viajes.find(
+              (viaje) => viaje.id === viajeProveedor.viaje_id
+            );
+            if (
+              viajeCorrespondiente &&
+              viajeProveedor.dolares &&
+              viajeCorrespondiente.tipodecambio
+            ) {
+              tarifaProveedor *= viajeCorrespondiente.tipodecambio;
+            }
+            return acc + tarifaProveedor;
+          },
+          0
+        );
+
+        setProveedoresData({ proveedoresArray, totalProveedores });
+        setProveedores(proveedores);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    fetchProveedoresData();
     fetchVentasData();
     fetchUtilidadData();
   }, []);
 
   setTimeout(() => {
     setLoading(false);
-  }, 1000);
+  }, 1200);
 
   const handleReporte = (value: any) => {
+    setLoadingReporte(true);
     setReporte(value);
+    setTimeout(() => {
+      setLoadingReporte(false);
+    }, 1200);
   };
+
+  setTimeout(() => {
+    setLoadingReporte(false);
+  }, 500);
 
   return (
     <>
@@ -234,7 +392,7 @@ export default function Reportes() {
                 </SelectItem>
                 <SelectItem
                   key="3"
-                  onClick={() => handleReporte("Proovedores")}
+                  onClick={() => handleReporte("Proveedores")}
                 >
                   Proveedores
                 </SelectItem>
@@ -247,23 +405,58 @@ export default function Reportes() {
               </Select>
             </article>
           </section>
-          <section className="m-3">
-            {reporte === "Utilidad" && (
-              <Utilidad
-                ventasArray={utilidadData.ventasArray}
-                totalUtilidad={utilidadData.totalUtilidad}
-                years={years}
-              />
-            )}
-            {reporte === "Ventas" && (
-              <Anual
-                ventasArray={ventasData.ventasArray}
-                years={years}
-                clientes={clientes}
-                totalVentas={ventasData.totalVentas}
-              />
-            )}
-          </section>
+          {loadingReporte ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh",
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          ) : (
+            <section className="m-3">
+              {reporte === "Utilidad" && (
+                <Utilidad
+                  ventasArray={utilidadData.ventasArray}
+                  totalUtilidad={utilidadData.totalUtilidad}
+                  years={years}
+                />
+              )}
+              {reporte === "Ventas" && (
+                <Anual
+                  ventasArray={ventasData.ventasArray}
+                  years={years}
+                  clientes={clientes}
+                  total={ventasData.totalVentas}
+                  isCliente={true}
+                  title="Ventas"
+                />
+              )}
+              {reporte === "Proveedores" && (
+                <Anual
+                  ventasArray={proveedoresData.proveedoresArray}
+                  years={years}
+                  clientes={proveedores}
+                  total={proveedoresData.totalProveedores}
+                  isCliente={false}
+                  title="Proveedores"
+                />
+              )}
+              {reporte === "UxC" && (
+                <Anual
+                  ventasArray={ventasData.utilidadArray}
+                  years={years}
+                  clientes={clientes}
+                  total={utilidadData.totalUtilidad}
+                  isCliente={true}
+                  title="Utilidad x Cliente"
+                />
+              )}
+            </section>
+          )}
         </main>
       )}
     </>

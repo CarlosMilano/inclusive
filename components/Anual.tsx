@@ -11,7 +11,9 @@ interface VentasProps {
   ventasArray: any[];
   years: number[];
   clientes: any[];
-  totalVentas: number;
+  total: number;
+  isCliente: boolean;
+  title: string;
 }
 
 interface ColumnData {
@@ -23,16 +25,19 @@ export default function Anual({
   ventasArray,
   years,
   clientes,
-  totalVentas,
+  total,
+  isCliente,
+  title,
 }: VentasProps) {
   const sortedYears = years.sort((a, b) => a - b);
   const sortedClientes = clientes.sort((a, b) =>
     a.nombre.localeCompare(b.nombre)
   );
 
-  const renderVentasCells = (clienteId: number, year: number) => {
+  const renderVentasCells = (Id: number, year: number) => {
+    const key = isCliente ? "cliente_id" : "proveedor_id";
     const ventaClienteAnio = ventasArray?.find(
-      (venta) => venta.cliente_id === clienteId && venta[year]
+      (venta) => venta[key] === Id && venta[year]
     );
     const venta =
       ventaClienteAnio && ventaClienteAnio[year]
@@ -41,7 +46,7 @@ export default function Anual({
             currency: "MXN",
           })
         : "-";
-    return <TableCell key={`${clienteId}-${year}`}>{venta}</TableCell>;
+    return <TableCell key={`${Id}-${year}`}>{venta}</TableCell>;
   };
 
   const calcularTotalAnio = (year: string) => {
@@ -55,9 +60,10 @@ export default function Anual({
   };
 
   const renderTotalAnual = (clienteId: number) => {
+    const key = isCliente ? "cliente_id" : "proveedor_id";
     const totalAnual = years.reduce((sum, year) => {
       const ventaClienteAnio = ventasArray?.find(
-        (venta) => venta.cliente_id === clienteId && venta[year]
+        (venta) => venta[key] === clienteId && venta[year]
       );
       const venta =
         ventaClienteAnio && ventaClienteAnio[year] ? ventaClienteAnio[year] : 0;
@@ -83,8 +89,7 @@ export default function Anual({
   };
 
   const sinFecha =
-    totalVentas -
-    parseFloat(calcularTotalTodosAnios().replace(/[^0-9.-]+/g, ""));
+    total - parseFloat(calcularTotalTodosAnios().replace(/[^0-9.-]+/g, ""));
 
   const columns: ColumnData[] = [
     { id: "cliente", label: "Clientes" },
@@ -102,7 +107,7 @@ export default function Anual({
     <main className="bg-white rounded-md shadow-sm p-2">
       <section className="flex flex-wrap gap-5 md:gap-10 p-4">
         <article>
-          <h2 className="text-lg text-gray-500 font-bold">Venta</h2>
+          <h2 className="text-lg text-gray-500 font-bold">{title}</h2>
           <h3 className="text-2xl">
             {parseFloat(
               calcularTotalTodosAnios().replace(/[^0-9.-]+/g, "")
@@ -122,9 +127,9 @@ export default function Anual({
           </h3>
         </article>
         <article>
-          <h2 className="text-lg text-gray-500 font-bold">Venta Total</h2>
+          <h2 className="text-lg text-gray-500 font-bold">{title} Total</h2>
           <h3 className="text-2xl">
-            {totalVentas.toLocaleString("es-MX", {
+            {total.toLocaleString("es-MX", {
               style: "currency",
               currency: "MXN",
             })}

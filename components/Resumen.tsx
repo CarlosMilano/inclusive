@@ -14,7 +14,7 @@ export default function Resumen(props: ResumenProps) {
           {props.title || "Titulo"}
         </h1>
         {props.loading ? (
-          <Skeleton width="100%" height={50} animation="wave" />
+          <Skeleton width="90%" height={40} animation="wave" />
         ) : (
           <h2 className="text-lg md:text-2xl ">{props.monto}</h2>
         )}
