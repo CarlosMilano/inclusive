@@ -652,7 +652,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                 Detalle Viaje
               </h2>
               <section className="flex flex-wrap">
-                <article className="p-2 w-full md:w-[25%]">
+                <article className="p-2 md:w-[25%]">
                   <Select
                     name="cliente_id"
                     value={viajeData.cliente_id ?? ""}
@@ -1594,6 +1594,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
                   label="Cliente"
                   radius="none"
                   placeholder="Selecciona un cliente"
+                  fullWidth
                 >
                   {clientesOdenados.map((cliente) => (
                     <SelectItem key={cliente.id} value={cliente.id}>
