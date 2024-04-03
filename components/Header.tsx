@@ -27,7 +27,7 @@ export default function Header() {
   return (
     <>
       <header>
-        <div className="flex py-2 px-3 items-center fixed left-0 top-0 w-full bg-white h-[60px] z-40 shadow-sm">
+        <div className="flex items-center fixed left-0 top-0 w-full bg-white h-[60px] z-40 shadow-sm">
           <div className="justify-center lg:w-full flex">
             <nav
               className={`menu-sidebar ${

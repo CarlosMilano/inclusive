@@ -261,6 +261,9 @@ export default function Home() {
                   comision={viaje.comision}
                   tarifaProveedor={sumaTarifasProveedor}
                   utilidad
+                  abonado={viaje.abonado || 0}
+                  isCliente
+                  historial = {false}
                 />
               );
             })}

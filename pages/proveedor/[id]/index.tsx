@@ -201,6 +201,7 @@ export default function Home() {
               return (
                 <Table
                   key={viaje.id}
+                  idproveedor={viaje.id}
                   origen={viaje.origen || ""}
                   destino={viaje.destino || ""}
                   monto={viaje.tarifa || 0}
@@ -214,6 +215,9 @@ export default function Home() {
                   dolares={viaje.dolares}
                   tipodecambio={viaje.viaje.tipodecambio || 0}
                   referencia={viaje.viaje.referencia || ""}
+                  abonado={viaje.abonado || 0}
+                  isCliente={false}
+                  historial={false}
                 />
               );
             })}
