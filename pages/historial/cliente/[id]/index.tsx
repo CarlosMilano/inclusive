@@ -4,34 +4,9 @@ import Table from "@/components/Table";
 import { useRouter } from "next/router";
 import { Box, CircularProgress } from "@mui/material";
 import Head from "next/head";
-import Pagination from "@mui/material/Pagination";
-
-interface Viaje {
-  id: string;
-  origen: string;
-  destino: string;
-  tarifa: number;
-  comision: number;
-  factura: string;
-  referencia: string;
-  fechafactura: string;
-  abonado: number;
-  folio: string;
-  tipodecambio: number;
-  dolares: boolean;
-}
-
-interface ViajeProveedor {
-  id: string;
-  tarifa: number;
-  viaje_id: string;
-  dolares: boolean;
-}
-
-interface Cliente {
-  id: string;
-  nombre: string;
-}
+import { Viaje } from "@/types/Viaje";
+import { ViajeProveedor } from "@/types/ViajeProveedor";
+import { Cliente } from "@/types/Cliente";
 
 export default function Historial() {
   const [viajes, setViajes] = useState<Viaje[]>([]);
@@ -125,9 +100,9 @@ export default function Historial() {
     return sumaTarifasProveedor;
   };
 
-  const sortedViajes = viajes.sort(
-    (a, b) => parseInt(b.folio) - parseInt(a.folio)
-  );
+  const sortedViajes = viajes.sort((a, b) => b.folio - a.folio);
+
+
 
   return (
     <>
@@ -171,7 +146,7 @@ export default function Historial() {
                     router.push(`/viaje/${rowData.id}`);
                   }}
                   historial
-                  folio={viaje.folio || ""}
+                  folio={viaje.folio || 0}
                   dolares={viaje.dolares}
                   tipodecambio={viaje.tipodecambio}
                   tarifaProveedor={sumaTarifasProveedor}

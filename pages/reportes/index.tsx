@@ -6,17 +6,8 @@ import Mensual from "@/components/Mensual";
 import Utilidad from "@/components/UtilidadTable";
 import { Select, SelectItem } from "@nextui-org/select";
 import supabase from "../api/supabase";
-import ProveedoresTable from "@/components/ProveedoresTable";
-
-interface Cliente {
-  id: string;
-  nombre: string;
-}
-
-interface Proveedores {
-  id: string;
-  nombre: string;
-}
+import { Cliente } from "@/types/Cliente";
+import { Proveedor } from "@/types/Proveedor";
 
 export default function Reportes() {
   const [loading, setLoading] = useState(true);
@@ -29,7 +20,7 @@ export default function Reportes() {
 
   const [years, setYears] = useState<number[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [proveedores, setProveedores] = useState<Proveedores[]>([]);
+  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [ventasData, setVentasData] = useState<{
     ventasArray: any[];
     totalVentas: number;

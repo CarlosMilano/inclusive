@@ -7,25 +7,9 @@ import { addDays, differenceInDays, parseISO } from "date-fns";
 import Pagination from "@mui/material/Pagination";
 import { Box, CircularProgress } from "@mui/material";
 import CardComision from "@/components/CardComision";
+import { Viaje } from "@/types/Viaje";
+import { Cliente } from "@/types/Cliente";
 
-interface Viaje {
-  id: string;
-  origen: string;
-  destino: string;
-  tarifa: number;
-  comision: number;
-  abonocomision: number;
-  factura: string;
-  referencia: string;
-  fechafactura: string;
-  abonado: number;
-}
-
-interface Cliente {
-  id: string;
-  diascredito: number;
-  nombre: string;
-}
 
 export default function Home() {
   const [viajes, setViajes] = useState<Viaje[]>([]);

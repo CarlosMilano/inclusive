@@ -17,7 +17,7 @@ interface TableProps {
   diasRestantes: number;
   onClick?: (rowData: { id: string }) => void;
   historial?: boolean;
-  folio?: string;
+  folio?: number;
   dolares: boolean;
   tipodecambio: number;
   comision?: number;

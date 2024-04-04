@@ -4,33 +4,11 @@ import Table from "@/components/Table";
 import { useRouter } from "next/router";
 import { Box, CircularProgress } from "@mui/material";
 import Head from "next/head";
-
-interface Viaje {
-  id: string;
-  origen: string;
-  destino: string;
-  tarifa: number;
-  factura: string;
-  referencia: string;
-  fechafactura: string;
-  abonado: number;
-  dolares: boolean;
-  viaje_id: string;
-  viaje: {
-    id: string;
-    tipodecambio: number;
-    referencia: string;
-    folio: string;
-  };
-}
-
-interface Proveedor {
-  id: string;
-  nombre: string;
-}
+import { Proveedor } from "@/types/Proveedor";
+import { ViajeProveedor } from "@/types/ViajeProveedor";
 
 export default function Historial() {
-  const [viajes, setViajes] = useState<Viaje[]>([]);
+  const [viajes, setViajes] = useState<ViajeProveedor[]>([]);
   const [proveedor, setProveedor] = useState<Proveedor>();
   const router = useRouter();
   const { id } = router.query;
@@ -77,9 +55,9 @@ export default function Historial() {
     fetchData();
   }, []);
 
-  const sortedViajes = viajes.sort(
-    (a, b) => parseInt(b.viaje.folio) - parseInt(a.viaje.folio)
-  );
+
+  const sortedViajes = viajes.sort((a, b) => b.viaje.folio - a.viaje.folio);
+
 
   return (
     <>
@@ -120,7 +98,7 @@ export default function Historial() {
                   onClick={(rowData) => {
                     router.push(`/viaje/${rowData.id}`);
                   }}
-                  folio={viaje.viaje.folio || ""}
+                  folio={viaje.viaje.folio || 0}
                   dolares={viaje.dolares}
                   tipodecambio={viaje.viaje.tipodecambio || 0}
                   historial

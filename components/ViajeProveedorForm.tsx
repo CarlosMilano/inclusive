@@ -11,26 +11,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
 import { v4 as uuidv4 } from "uuid";
 import { Select, SelectItem } from "@nextui-org/select";
+import { Viaje } from "@/types/Viaje";
 
-interface ViajeData {
-  id: string;
-  origen: string;
-  destino: string;
-  tarifa: number;
-  tipodecambio: number;
-  factura: string;
-  comision: number;
-  tipodeunidad: string;
-  referencia: string;
-  fechafactura: string | null;
-  abonado: number;
-  cliente_id: string | null;
-  dolares: boolean;
-  abonocomision: number;
-  folio: number;
-}
-
-interface ViajeProveedorData {
+interface ViajeProveedor {
   id: string;
   tarifa: number;
   abonado: number;
@@ -45,8 +28,8 @@ interface ViajeProveedorData {
 
 interface ViajeFormProps {
   onSubmit: (
-    viajeData: ViajeData,
-    viajeProveedorData: ViajeProveedorData[]
+    viajeData: Viaje,
+    viajeProveedorData: ViajeProveedor[]
   ) => void;
   clientes: { id: string; nombre: string }[];
   proveedores: { id: string; nombre: string }[];
@@ -55,7 +38,7 @@ interface ViajeFormProps {
 }
 
 export const ViajeForm = (props: ViajeFormProps) => {
-  const [viajeData, setViajeData] = useState<ViajeData>({
+  const [viajeData, setViajeData] = useState<Viaje>({
     id: "",
     origen: "",
     destino: "",
@@ -86,7 +69,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
   });
 
   const [viajeProveedorData, setViajeProveedorData] = useState<
-    ViajeProveedorData[]
+  ViajeProveedor[]
   >([]);
 
   const [editModeViaje, setEditModeViaje] = useState(false);
@@ -209,7 +192,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
   }, []);
 
   //Funcion para eiminar viaje completo y sus proveedores
-  const eliminarViaje = async (ViajeData: ViajeData) => {
+  const eliminarViaje = async (ViajeData: Viaje) => {
     try {
       const { data: proveedorData, error: proveedorError } = await supabase
         .from("viajeproveedor")
@@ -269,7 +252,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
   };
 
   //Funcion para actualizar viaje
-  const guardarCambiosViaje = async (viajeActualizado: ViajeData) => {
+  const guardarCambiosViaje = async (viajeActualizado: Viaje) => {
     try {
       const { data, error } = await supabase
         .from("viaje")
@@ -291,7 +274,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
 
   // Función para actualizar proveedor por proveedor y para añadir nuevos proveedores en la vista donde se muestran los datos
   const guardarCambiosProveedor = async (
-    proveedorActualizado: ViajeProveedorData
+    proveedorActualizado: ViajeProveedor
   ) => {
     try {
       if (proveedorActualizado.id) {
@@ -362,7 +345,7 @@ export const ViajeForm = (props: ViajeFormProps) => {
   //handle para viajeProveedor cuando es formulario nuevo
   const handleChangeViajeProveedor = (
     index: number,
-    formData: ViajeProveedorData
+    formData: ViajeProveedor
   ) => {
     if (index === 0 && !hasMultipleProviders) {
       formData.origen = viajeData.origen;

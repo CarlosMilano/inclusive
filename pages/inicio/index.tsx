@@ -8,41 +8,11 @@ import { v4 as uuidv4 } from "uuid";
 import Resumen from "@/components/Resumen";
 import currencyFormatter from "currency-formatter";
 import Comision from "@/components/Comision";
+import { Cliente } from "@/types/Cliente";
+import { Proveedor } from "@/types/Proveedor";
+import { Viaje } from "@/types/Viaje";
+import { ViajeProveedor } from "@/types/ViajeProveedor";
 
-interface Cliente {
-  id: string;
-  nombre: string;
-  diascredito: number;
-}
-
-interface Proveedor {
-  id: string;
-  nombre: string;
-}
-
-interface Viaje {
-  id: string;
-  tarifa: number;
-  comision: number;
-  abonocomision: number;
-  abonado: number;
-  dolares: boolean;
-  tipodecambio: number;
-  fechafactura: string;
-  cliente_id: string;
-}
-
-interface ViajeProveedor {
-  id: string;
-  tarifa: number;
-  abonado: number;
-  dolares: boolean;
-  viaje: {
-    tipodecambio: number;
-  };
-  fechafactura: string;
-  proveedor_id: string;
-}
 
 export default function Home() {
   const [cliente, setCliente] = useState<Cliente[]>([]);

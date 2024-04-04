@@ -12,16 +12,9 @@ import {
   TableCell,
 } from "@nextui-org/table";
 import Pagination from "@mui/material/Pagination";
+import { Cliente } from "@/types/Cliente";
+import { Proveedor } from "@/types/Proveedor";
 
-interface Cliente {
-  id: string;
-  nombre: string;
-}
-
-interface Proveedor {
-  id: string;
-  nombre: string;
-}
 
 export default function Historial() {
   const [clientes, setClientes] = useState<Cliente[]>([]);

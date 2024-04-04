@@ -6,32 +6,11 @@ import { addDays, differenceInDays, parseISO } from "date-fns";
 import { Box, CircularProgress } from "@mui/material";
 import Table from "@/components/Table";
 import currencyFormatter from "currency-formatter";
-
-interface Viaje {
-  id: string;
-  origen: string;
-  destino: string;
-  tarifa: number;
-  comision: number;
-  factura: string;
-  fechafactura: string;
-  abonado: number;
-  viaje_id: string;
-  dolares: boolean;
-  viaje: {
-    tipodecambio: number;
-    referencia: string;
-  };
-}
-
-interface Proveedor {
-  id: string;
-  diascredito?: number;
-  nombre: string;
-}
+import { Proveedor } from "@/types/Proveedor";
+import { ViajeProveedor } from "@/types/ViajeProveedor";
 
 export default function Home() {
-  const [viajes, setViajes] = useState<Viaje[]>([]);
+  const [viajes, setViajes] = useState<ViajeProveedor[]>([]);
   const [proveedor, setProveedor] = useState<Proveedor>();
   const router = useRouter();
   const { id } = router.query;

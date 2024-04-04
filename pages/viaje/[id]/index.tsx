@@ -5,37 +5,12 @@ import supabase from "@/pages/api/supabase";
 import { v4 as uuidv4 } from "uuid";
 import Head from "next/head";
 import { Box, CircularProgress } from "@mui/material";
-import { set } from "date-fns";
+import { Viaje } from "@/types/Viaje";
+import { Proveedor } from "@/types/Proveedor";
+import { Cliente } from "@/types/Cliente";
 
-interface ViajeData {
-  id: string;
-  origen: string;
-  destino: string;
-  tarifa: number;
-  tipodecambio: number;
-  factura: string;
-  comision: number;
-  tipodeunidad: string;
-  referencia: string;
-  fechafactura: string | null;
-  abonado: number;
-  cliente_id: string | null;
-  dolares: boolean;
-  abonocomision: number;
-  folio: number;
-}
 
-interface Cliente {
-  id: string;
-  nombre: string;
-}
-
-interface Proveedor {
-  id: string;
-  nombre: string;
-}
-
-interface ViajeProveedorData {
+interface ViajeProveedor {
   id: string;
   tarifa: number;
   abonado: number;
@@ -46,9 +21,9 @@ interface ViajeProveedorData {
 }
 
 export default function Viaje() {
-  const [viaje, setViaje] = useState<ViajeData[]>([]);
+  const [viaje, setViaje] = useState<Viaje[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [viajeProveedor, setViajeProveedor] = useState<ViajeProveedorData[]>(
+  const [viajeProveedor, setViajeProveedor] = useState<ViajeProveedor[]>(
     []
   );
   const [proveedores, setProveedor] = useState<Proveedor[]>([]);
@@ -117,7 +92,7 @@ export default function Viaje() {
     fetchData();
   }, [router.query.id]);
 
-  const addViaje = async (viajeData: ViajeData) => {
+  const addViaje = async (viajeData: Viaje) => {
     // Verificar y modificar valores antes de insertar en la base de datos para mandarlos null
     const dataToInsert = {
       ...viajeData,
@@ -139,7 +114,7 @@ export default function Viaje() {
     }
   };
 
-  const addViajeProveedor = async (viajeProveedorData: ViajeProveedorData) => {
+  const addViajeProveedor = async (viajeProveedorData: ViajeProveedor) => {
     const { data, error } = await supabase.from("viajeproveedor").insert([
       {
         ...viajeProveedorData,
@@ -157,8 +132,8 @@ export default function Viaje() {
   };
 
   const handleViajeSubmit = async (
-    viajeData: ViajeData,
-    viajeProveedorData: ViajeProveedorData | ViajeProveedorData[]
+    viajeData: Viaje,
+    viajeProveedorData: ViajeProveedor | ViajeProveedor[]
   ) => {
     // Obtener el id del viaje de la ruta
     const viajeIdFromRoute = router.query.id as string;
