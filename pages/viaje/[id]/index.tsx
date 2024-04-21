@@ -5,7 +5,7 @@ import supabase from "@/pages/api/supabase";
 import { v4 as uuidv4 } from "uuid";
 import Head from "next/head";
 import { Box, CircularProgress } from "@mui/material";
-import { Viaje } from "@/types/Viaje";
+import type { Viaje } from "@/types/Viaje";
 import { Proveedor } from "@/types/Proveedor";
 import { Cliente } from "@/types/Cliente";
 

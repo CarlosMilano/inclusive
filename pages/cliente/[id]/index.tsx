@@ -142,7 +142,14 @@ export default function Home() {
       ? differenceInDays(fechaLimite, today)
       : 0;
 
-    return viaje.fechafactura && diasRestantes < 0 ? acc + viaje.tarifa : acc;
+
+    if (viaje.fechafactura && viaje.dolares) {
+      return diasRestantes < 0 ? acc + viaje.tarifa * viaje.tipodecambio : acc;
+    } else if (viaje.fechafactura) {
+      return diasRestantes < 0 ? acc + viaje.tarifa : acc;
+    }
+
+    return acc;
   }, 0);
 
   const totalPorVencer = sortedViajes.reduce((acc, viaje) => {
