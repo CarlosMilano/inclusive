@@ -48,37 +48,48 @@ export default function Mensual({ data, mostrarMoneda }: MensualProps) {
   )
 
   return (
-    <Table>
-      <TableHeader>
-        {columns.map(column => (
-          <TableColumn key={column.id}>{column.label}</TableColumn>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {sortedClientesData.map(cliente => (
-          <TableRow key={cliente.clienteId}>
-            {columns.map(column => {
-              if (column.id === 'cliente') {
-                return <TableCell key={column.id}>{cliente.nombre}</TableCell>
-              } else {
-                const cellData = cliente.data[Number(column.id)]
-                return (
-                  <TableCell key={column.id}>
-                    {cellData !== undefined
-                      ? mostrarMoneda
-                        ? cellData.toLocaleString('es-MX', {
-                            style: 'currency',
-                            currency: 'MXN'
-                          })
-                        : cellData
-                      : '-'}
-                  </TableCell>
-                )
-              }
-            })}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <section className='overflow-scroll bg-white rounded-lg shadow-sm'>
+      <Table removeWrapper>
+        <TableHeader>
+          {columns.map(column => (
+            <TableColumn
+              key={column.id}
+              className={column.id === 'cliente' ? 'sticky-column-header' : ''}
+            >
+              {column.label}
+            </TableColumn>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {sortedClientesData.map(cliente => (
+            <TableRow key={cliente.clienteId}>
+              {columns.map(column => {
+                if (column.id === 'cliente') {
+                  return (
+                    <TableCell key={column.id} className='sticky-column'>
+                      {cliente.nombre}
+                    </TableCell>
+                  )
+                } else {
+                  const cellData = cliente.data[Number(column.id)]
+                  return (
+                    <TableCell key={column.id}>
+                      {cellData !== undefined
+                        ? mostrarMoneda
+                          ? cellData.toLocaleString('es-MX', {
+                              style: 'currency',
+                              currency: 'MXN'
+                            })
+                          : cellData
+                        : '-'}
+                    </TableCell>
+                  )
+                }
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </section>
   )
 }

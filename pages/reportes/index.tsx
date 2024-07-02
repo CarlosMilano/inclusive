@@ -578,7 +578,7 @@ export default function Reportes() {
         <main className='flex flex-col min-h-screen mt-[60px]'>
           <h1 className='text-4xl font-bold p-8'>Reportes</h1>
           <section className=' bg-white p-2 m-3 rounded-md shadow-sm flex flex-wrap gap-2 '>
-            <article className='w-[200px]'>
+            <article className='w-[170px]'>
               <Select
                 label='Reporte'
                 radius='sm'
@@ -606,7 +606,7 @@ export default function Reportes() {
               </Select>
             </article>
             {verVista && (
-              <article className='w-[200px]'>
+              <article className='w-[170px]'>
                 <Select
                   label='Vista'
                   radius='sm'
@@ -629,7 +629,7 @@ export default function Reportes() {
               </article>
             )}
             {verVista && vista === 'Mensual' && (
-              <article className='w-[200px]'>
+              <article className='w-[170px]'>
                 <Select
                   label='Año'
                   radius='sm'
