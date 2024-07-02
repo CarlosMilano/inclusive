@@ -8,12 +8,19 @@ import {
   TableCell
 } from '@nextui-org/table'
 
-interface VxCMensualProps {
+interface VxCProps {
   data: {
     clienteId: string
     nombre: string
-    data: { [key: number]: number }
+    anio: number
+    viajes: number
   }[]
+}
+
+interface ClienteData {
+  clienteId: string
+  nombre: string
+  viajes: Record<string, number>
 }
 
 interface ColumnData {
@@ -21,28 +28,28 @@ interface ColumnData {
   label: string
 }
 
-export default function Mensual({ data }: VxCMensualProps) {
-  const months = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre'
-  ]
+export default function VxC({ data }: VxCProps) {
+  const uniqueYears = Array.from(new Set(data.map(item => item.anio))).sort()
 
   const columns: ColumnData[] = [
     { id: 'cliente', label: 'Clientes' },
-    ...months.map((month, index) => ({ id: String(index + 1), label: month }))
+    ...uniqueYears.map(year => ({ id: String(year), label: String(year) }))
   ]
 
-  const sortedClientesData = data.sort((a, b) =>
+  const clientesData = Object.values(
+    data.reduce((acc, item) => {
+      if (!acc[item.clienteId]) {
+        acc[item.clienteId] = {
+          clienteId: item.clienteId,
+          nombre: item.nombre,
+          viajes: {}
+        }
+      }
+      acc[item.clienteId].viajes[item.anio] = item.viajes
+      return acc
+    }, {} as Record<string, ClienteData>)
+  )
+  const sortedClientesData = clientesData.sort((a, b) =>
     a.nombre.localeCompare(b.nombre)
   )
 
@@ -62,15 +69,7 @@ export default function Mensual({ data }: VxCMensualProps) {
               } else {
                 return (
                   <TableCell key={column.id}>
-                    {cliente.data[Number(column.id)]
-                      ? cliente.data[Number(column.id)].toLocaleString(
-                          'es-MX',
-                          {
-                            style: 'currency',
-                            currency: 'MXN'
-                          }
-                        )
-                      : '-'}
+                    {cliente.viajes[column.id] || '-'}
                   </TableCell>
                 )
               }

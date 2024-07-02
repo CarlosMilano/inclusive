@@ -2,17 +2,25 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { Box, CircularProgress } from '@mui/material'
 import Anual from '@/components/Anual'
-import Mensual from '@/components/Mensual'
 import Utilidad from '@/components/UtilidadTable'
 import { Select, SelectItem } from '@nextui-org/select'
 import supabase from '../api/supabase'
 import { Cliente } from '@/types/Cliente'
 import { Proveedor } from '@/types/Proveedor'
+import VxC from '@/components/VxC'
+import Mensual from '@/components/Mensual'
+
+interface ClienteViajes {
+  clienteId: string
+  nombre: string
+  data: { [key: number]: number }
+}
 
 export default function Reportes() {
   const [loading, setLoading] = useState(true)
   const [loadingReporte, setLoadingReporte] = useState(true)
   const [reporte, setReporte] = useState('Utilidad')
+  const [vista, setVista] = useState('Anual')
   const [utilidadData, setUtilidadData] = useState<{
     ventasArray: any[]
     totalUtilidad: number
@@ -30,6 +38,12 @@ export default function Reportes() {
     proveedoresArray: any[]
     totalProveedores: number
   }>({ proveedoresArray: [], totalProveedores: 0 })
+  const [vxCData, setVxCData] = useState<any[]>([])
+  const [vxCMensualData, setVxCMensualData] = useState<ClienteViajes[]>([])
+  const [uxCMensualData, setUxCMensualData] = useState<ClienteViajes[]>([])
+  const [selectedYear, setSelectedYear] = useState<number>(
+    new Date().getFullYear()
+  )
 
   useEffect(() => {
     async function fetchUtilidadData() {
@@ -57,7 +71,7 @@ export default function Reportes() {
         const ventasPorMesAnio = viajesData.reduce((acc: any, viaje: any) => {
           if (viaje.fechafactura && viaje.fechafactura !== '') {
             const fecha = new Date(viaje.fechafactura)
-            const mes = fecha.getUTCMonth() + 1 // Los meses en JavaScript son base 0, +1 para base 1
+            const mes = fecha.getUTCMonth() + 1
             const anio = fecha.getUTCFullYear()
             let tarifaViaje = viaje.tarifa
             if (viaje.dolares && viaje.tipodecambio) {
@@ -327,10 +341,187 @@ export default function Reportes() {
       }
     }
 
+    async function fetchVxCData() {
+      try {
+        const { data: viajesData, error: viajesError } = await supabase
+          .from('viaje')
+          .select('*, cliente:cliente_id (nombre)')
+
+        if (viajesError) throw viajesError
+
+        const viajesPorClienteAnio = viajesData.reduce(
+          (acc: any, viaje: any) => {
+            if (viaje.fechafactura && viaje.fechafactura !== '') {
+              const fecha = new Date(viaje.fechafactura)
+              const anio = fecha.getFullYear()
+              const clienteId = viaje.cliente_id
+              const clienteNombre = viaje.cliente.nombre
+
+              if (!acc[clienteId]) {
+                acc[clienteId] = { nombre: clienteNombre, viajes: {} }
+              }
+
+              if (!acc[clienteId].viajes[anio]) {
+                acc[clienteId].viajes[anio] = 1
+              } else {
+                acc[clienteId].viajes[anio] += 1
+              }
+            }
+            return acc
+          },
+          {}
+        )
+
+        const viajesArray = []
+        for (const clienteId in viajesPorClienteAnio) {
+          const clienteData = viajesPorClienteAnio[clienteId]
+          for (const anio in clienteData.viajes) {
+            viajesArray.push({
+              clienteId,
+              nombre: clienteData.nombre,
+              anio: parseInt(anio, 10),
+              viajes: clienteData.viajes[anio]
+            })
+          }
+        }
+
+        setVxCData(viajesArray)
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setLoading(false)
+      }
+    }
+
     fetchProveedoresData()
     fetchVentasData()
     fetchUtilidadData()
+    fetchVxCData()
   }, [])
+
+  useEffect(() => {
+    async function fetchVxCMensualData(year: number) {
+      try {
+        const { data: viajesData, error: viajesError } = await supabase
+          .from('viaje')
+          .select('*, cliente:cliente_id (nombre)')
+
+        if (viajesError) throw viajesError
+
+        const viajesPorClienteMes = viajesData.reduce(
+          (acc: any, viaje: any) => {
+            const fecha = new Date(viaje.fechafactura)
+            const mes = fecha.getUTCMonth() + 1
+            const anio = fecha.getUTCFullYear()
+            const clienteId = viaje.cliente_id
+            const clienteNombre = viaje.cliente.nombre
+
+            if (anio === year) {
+              if (!acc[clienteId]) {
+                acc[clienteId] = { nombre: clienteNombre, viajes: {} }
+              }
+
+              if (!acc[clienteId].viajes[mes]) {
+                acc[clienteId].viajes[mes] = 1
+              } else {
+                acc[clienteId].viajes[mes] += 1
+              }
+            }
+            return acc
+          },
+          {}
+        )
+
+        const viajesArray = Object.keys(viajesPorClienteMes).map(clienteId => ({
+          clienteId,
+          nombre: viajesPorClienteMes[clienteId].nombre,
+          data: viajesPorClienteMes[clienteId].viajes
+        }))
+
+        setVxCMensualData(viajesArray)
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setLoading(false)
+      }
+    }
+
+    async function fetchUxCMensualData(year: number) {
+      try {
+        const { data: viajesData, error: viajesError } = await supabase
+          .from('viaje')
+          .select('*, cliente:cliente_id (nombre)')
+        const { data: proveedoresData, error: proveedoresError } =
+          await supabase.from('viajeproveedor').select('*')
+
+        if (viajesError) throw viajesError
+        if (proveedoresError) throw proveedoresError
+
+        const utilidadPorClienteMes = viajesData.reduce(
+          (acc: any, viaje: any) => {
+            if (viaje.fechafactura && viaje.fechafactura !== '') {
+              const fecha = new Date(viaje.fechafactura)
+              const mes = fecha.getUTCMonth() + 1
+              const anio = fecha.getUTCFullYear()
+              const clienteId = viaje.cliente_id
+              const clienteNombre = viaje.cliente.nombre
+              let tarifaViaje = viaje.tarifa
+
+              if (viaje.dolares && viaje.tipodecambio) {
+                tarifaViaje *= viaje.tipodecambio
+              }
+
+              const proveedoresDelViaje = proveedoresData.filter(
+                (proveedor: any) => proveedor.viaje_id === viaje.id
+              )
+              let tarifaProveedores = 0
+              proveedoresDelViaje.forEach((proveedor: any) => {
+                let tarifaProveedor = proveedor.tarifa
+                if (proveedor.dolares && viaje.tipodecambio) {
+                  tarifaProveedor *= viaje.tipodecambio
+                }
+                tarifaProveedores += tarifaProveedor
+              })
+
+              const comision = viaje.comision
+              const utilidad = tarifaViaje - comision - tarifaProveedores
+
+              if (anio === year) {
+                if (!acc[clienteId]) {
+                  acc[clienteId] = { nombre: clienteNombre, utilidad: {} }
+                }
+
+                if (!acc[clienteId].utilidad[mes]) {
+                  acc[clienteId].utilidad[mes] = utilidad
+                } else {
+                  acc[clienteId].utilidad[mes] += utilidad
+                }
+              }
+            }
+            return acc
+          },
+          {}
+        )
+
+        const utilidadArray = Object.keys(utilidadPorClienteMes).map(
+          clienteId => ({
+            clienteId,
+            nombre: utilidadPorClienteMes[clienteId].nombre,
+            data: utilidadPorClienteMes[clienteId].utilidad
+          })
+        )
+
+        setUxCMensualData(utilidadArray)
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setLoading(false)
+      }
+    }
+
+    fetchVxCMensualData(selectedYear)
+    fetchUxCMensualData(selectedYear)
+  }, [selectedYear])
 
   setTimeout(() => {
     setLoading(false)
@@ -339,6 +530,23 @@ export default function Reportes() {
   const handleReporte = (value: any) => {
     setLoadingReporte(true)
     setReporte(value)
+    setVista('Anual')
+    setTimeout(() => {
+      setLoadingReporte(false)
+    }, 1200)
+  }
+
+  const handleVistaChange = (value: any) => {
+    setLoadingReporte(true)
+    setVista(value)
+    setTimeout(() => {
+      setLoadingReporte(false)
+    }, 1200)
+  }
+
+  const handleYearChange = (value: any) => {
+    setLoadingReporte(true)
+    setSelectedYear(value)
     setTimeout(() => {
       setLoadingReporte(false)
     }, 1200)
@@ -347,6 +555,8 @@ export default function Reportes() {
   setTimeout(() => {
     setLoadingReporte(false)
   }, 500)
+
+  const verVista = reporte === 'VxC' || reporte === 'UxC'
 
   return (
     <>
@@ -395,6 +605,48 @@ export default function Reportes() {
                 </SelectItem>
               </Select>
             </article>
+            {verVista && (
+              <article className='w-[200px]'>
+                <Select
+                  label='Vista'
+                  radius='sm'
+                  value={vista}
+                  placeholder={vista}
+                >
+                  <SelectItem
+                    key='anual'
+                    onClick={() => handleVistaChange('Anual')}
+                  >
+                    Anual
+                  </SelectItem>
+                  <SelectItem
+                    key='mensual'
+                    onClick={() => handleVistaChange('Mensual')}
+                  >
+                    Mensual
+                  </SelectItem>
+                </Select>
+              </article>
+            )}
+            {verVista && vista === 'Mensual' && (
+              <article className='w-[200px]'>
+                <Select
+                  label='Año'
+                  radius='sm'
+                  value={selectedYear}
+                  placeholder={selectedYear.toString()}
+                >
+                  {years.map(year => (
+                    <SelectItem
+                      key={year}
+                      onClick={() => handleYearChange(year)}
+                    >
+                      {year}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </article>
+            )}
           </section>
           {loadingReporte ? (
             <Box
@@ -436,7 +688,7 @@ export default function Reportes() {
                   title='Proveedores'
                 />
               )}
-              {reporte === 'UxC' && (
+              {reporte === 'UxC' && vista === 'Anual' && (
                 <Anual
                   ventasArray={ventasData.utilidadArray}
                   years={years}
@@ -445,6 +697,13 @@ export default function Reportes() {
                   isCliente={true}
                   title='Utilidad x Cliente'
                 />
+              )}
+              {reporte === 'UxC' && vista === 'Mensual' && (
+                <Mensual data={uxCMensualData} />
+              )}
+              {reporte === 'VxC' && vista === 'Anual' && <VxC data={vxCData} />}
+              {reporte === 'VxC' && vista === 'Mensual' && (
+                <Mensual data={vxCMensualData} />
               )}
             </section>
           )}
