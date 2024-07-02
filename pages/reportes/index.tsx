@@ -533,7 +533,7 @@ export default function Reportes() {
     setVista('Anual')
     setTimeout(() => {
       setLoadingReporte(false)
-    }, 1200)
+    }, 2000)
   }
 
   const handleVistaChange = (value: any) => {
@@ -541,7 +541,7 @@ export default function Reportes() {
     setVista(value)
     setTimeout(() => {
       setLoadingReporte(false)
-    }, 1200)
+    }, 2000)
   }
 
   const handleYearChange = (value: any) => {
@@ -549,12 +549,12 @@ export default function Reportes() {
     setSelectedYear(value)
     setTimeout(() => {
       setLoadingReporte(false)
-    }, 1200)
+    }, 2000)
   }
 
   setTimeout(() => {
     setLoadingReporte(false)
-  }, 500)
+  }, 1000)
 
   const verVista = reporte === 'VxC' || reporte === 'UxC'
 
@@ -699,11 +699,11 @@ export default function Reportes() {
                 />
               )}
               {reporte === 'UxC' && vista === 'Mensual' && (
-                <Mensual data={uxCMensualData} />
+                <Mensual data={uxCMensualData} mostrarMoneda />
               )}
               {reporte === 'VxC' && vista === 'Anual' && <VxC data={vxCData} />}
               {reporte === 'VxC' && vista === 'Mensual' && (
-                <Mensual data={vxCMensualData} />
+                <Mensual data={vxCMensualData} mostrarMoneda={false} />
               )}
             </section>
           )}

@@ -8,12 +8,13 @@ import {
   TableCell
 } from '@nextui-org/table'
 
-interface VxCMensualProps {
+interface MensualProps {
   data: {
     clienteId: string
     nombre: string
     data: { [key: number]: number }
   }[]
+  mostrarMoneda: boolean
 }
 
 interface ColumnData {
@@ -21,7 +22,7 @@ interface ColumnData {
   label: string
 }
 
-export default function Mensual({ data }: VxCMensualProps) {
+export default function Mensual({ data, mostrarMoneda }: MensualProps) {
   const months = [
     'Enero',
     'Febrero',
@@ -60,16 +61,16 @@ export default function Mensual({ data }: VxCMensualProps) {
               if (column.id === 'cliente') {
                 return <TableCell key={column.id}>{cliente.nombre}</TableCell>
               } else {
+                const cellData = cliente.data[Number(column.id)]
                 return (
                   <TableCell key={column.id}>
-                    {cliente.data[Number(column.id)]
-                      ? cliente.data[Number(column.id)].toLocaleString(
-                          'es-MX',
-                          {
+                    {cellData !== undefined
+                      ? mostrarMoneda
+                        ? cellData.toLocaleString('es-MX', {
                             style: 'currency',
                             currency: 'MXN'
-                          }
-                        )
+                          })
+                        : cellData
                       : '-'}
                   </TableCell>
                 )
