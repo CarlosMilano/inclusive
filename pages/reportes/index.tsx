@@ -1,14 +1,14 @@
-import Head from 'next/head'
-import { useEffect, useState } from 'react'
-import { Box, CircularProgress } from '@mui/material'
-import Anual from '@/components/Anual'
-import Utilidad from '@/components/UtilidadTable'
-import { Select, SelectItem } from '@nextui-org/select'
-import supabase from '../api/supabase'
-import { Cliente } from '@/types/Cliente'
-import { Proveedor } from '@/types/Proveedor'
-import VxC from '@/components/VxC'
-import Mensual from '@/components/Mensual'
+import Head from "next/head"
+import { useEffect, useState } from "react"
+import { Box, CircularProgress } from "@mui/material"
+import Anual from "@/components/Anual"
+import Utilidad from "@/components/UtilidadTable"
+import { Select, SelectItem } from "@nextui-org/select"
+import supabase from "../api/supabase"
+import { Cliente } from "@/types/Cliente"
+import { Proveedor } from "@/types/Proveedor"
+import VxC from "@/components/VxC"
+import Mensual from "@/components/Mensual"
 
 interface ClienteViajes {
   clienteId: string
@@ -19,8 +19,8 @@ interface ClienteViajes {
 export default function Reportes() {
   const [loading, setLoading] = useState(true)
   const [loadingReporte, setLoadingReporte] = useState(true)
-  const [reporte, setReporte] = useState('Utilidad')
-  const [vista, setVista] = useState('Anual')
+  const [reporte, setReporte] = useState("Utilidad")
+  const [vista, setVista] = useState("Anual")
   const [utilidadData, setUtilidadData] = useState<{
     ventasArray: any[]
     totalUtilidad: number
@@ -44,15 +44,19 @@ export default function Reportes() {
   const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear()
   )
+  const [ventasPorMes, setVentasPorMes] = useState<{
+    ventasArray: any[]
+    totalVentas: number
+  }>({ ventasArray: [], totalVentas: 0 })
 
   useEffect(() => {
     async function fetchUtilidadData() {
       try {
         const { data: viajesData, error: viajesError } = await supabase
-          .from('viaje')
-          .select('*')
+          .from("viaje")
+          .select("*")
         const { data: proveedoresData, error: proveedoresError } =
-          await supabase.from('viajeproveedor').select('*')
+          await supabase.from("viajeproveedor").select("*")
 
         if (viajesError) throw viajesError
         if (proveedoresError) throw proveedoresError
@@ -61,7 +65,7 @@ export default function Reportes() {
           new Set(
             viajesData
               .filter(
-                (viaje: any) => viaje.fechafactura && viaje.fechafactura !== ''
+                (viaje: any) => viaje.fechafactura && viaje.fechafactura !== ""
               )
               .map((viaje: any) => new Date(viaje.fechafactura).getFullYear())
           )
@@ -69,7 +73,7 @@ export default function Reportes() {
         setYears(uniqueYears)
 
         const ventasPorMesAnio = viajesData.reduce((acc: any, viaje: any) => {
-          if (viaje.fechafactura && viaje.fechafactura !== '') {
+          if (viaje.fechafactura && viaje.fechafactura !== "") {
             const fecha = new Date(viaje.fechafactura)
             const mes = fecha.getUTCMonth() + 1
             const anio = fecha.getUTCFullYear()
@@ -138,7 +142,7 @@ export default function Reportes() {
         setUtilidadData({ ventasArray, totalUtilidad })
         setLoading(false)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error("Error fetching data:", error)
         setLoading(false)
       }
     }
@@ -146,24 +150,24 @@ export default function Reportes() {
     async function fetchVentasData() {
       try {
         const { data: clientesData, error: clientesError } = await supabase
-          .from('cliente')
-          .select('*')
+          .from("cliente")
+          .select("*")
         if (clientesError) throw clientesError
         const clientes = clientesData || []
 
         const { data: viajesData, error: viajesError } = await supabase
-          .from('viaje')
-          .select('*')
+          .from("viaje")
+          .select("*")
         if (viajesError) throw viajesError
         const viajes = viajesData || []
 
         const { data: proveedoresData, error: proveedoresError } =
-          await supabase.from('viajeproveedor').select('*')
+          await supabase.from("viajeproveedor").select("*")
         if (proveedoresError) throw proveedoresError
 
         const ventasPorClientePorAnio = viajes.reduce(
           (acc: any, viaje: any) => {
-            if (viaje.fechafactura && viaje.fechafactura !== '') {
+            if (viaje.fechafactura && viaje.fechafactura !== "") {
               const fecha = new Date(viaje.fechafactura)
               const anio = fecha.getFullYear()
               let tarifaViaje = viaje.tarifa
@@ -188,7 +192,7 @@ export default function Reportes() {
 
         const utilidadPorClientePorAnio = viajes.reduce(
           (acc: any, viaje: any) => {
-            if (viaje.fechafactura && viaje.fechafactura !== '') {
+            if (viaje.fechafactura && viaje.fechafactura !== "") {
               const fecha = new Date(viaje.fechafactura)
               const anio = fecha.getFullYear()
               let tarifaViaje = viaje.tarifa
@@ -251,26 +255,26 @@ export default function Reportes() {
         setVentasData({ ventasArray, totalVentas, utilidadArray })
         setClientes(clientes)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error("Error fetching data:", error)
       }
     }
 
     async function fetchProveedoresData() {
       try {
         const { data: proveedoresData, error: proveedoresError } =
-          await supabase.from('proveedor').select('*')
+          await supabase.from("proveedor").select("*")
         if (proveedoresError) throw proveedoresError
         const proveedores = proveedoresData || []
 
         const { data: viajeData, error: viajeError } = await supabase
-          .from('viaje')
-          .select('*')
+          .from("viaje")
+          .select("*")
         if (viajeError) throw viajeError
         const viajes = viajeData || []
 
         const { data: viajesProveedorData, error: viajesError } = await supabase
-          .from('viajeproveedor')
-          .select('*')
+          .from("viajeproveedor")
+          .select("*")
         if (viajesError) throw viajesError
         const viajesProveedor = viajesProveedorData || []
 
@@ -283,7 +287,7 @@ export default function Reportes() {
             if (
               viajeCorrespondiente &&
               viajeCorrespondiente.fechafactura &&
-              viajeCorrespondiente.fechafactura !== ''
+              viajeCorrespondiente.fechafactura !== ""
             ) {
               const fecha = new Date(viajeCorrespondiente.fechafactura)
               const anio = fecha.getFullYear()
@@ -337,21 +341,21 @@ export default function Reportes() {
         setProveedoresData({ proveedoresArray, totalProveedores })
         setProveedores(proveedores)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error("Error fetching data:", error)
       }
     }
 
     async function fetchVxCData() {
       try {
         const { data: viajesData, error: viajesError } = await supabase
-          .from('viaje')
-          .select('*, cliente:cliente_id (nombre)')
+          .from("viaje")
+          .select("*, cliente:cliente_id (nombre)")
 
         if (viajesError) throw viajesError
 
         const viajesPorClienteAnio = viajesData.reduce(
           (acc: any, viaje: any) => {
-            if (viaje.fechafactura && viaje.fechafactura !== '') {
+            if (viaje.fechafactura && viaje.fechafactura !== "") {
               const fecha = new Date(viaje.fechafactura)
               const anio = fecha.getFullYear()
               const clienteId = viaje.cliente_id
@@ -388,11 +392,59 @@ export default function Reportes() {
         setVxCData(viajesArray)
         setLoading(false)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error("Error fetching data:", error)
         setLoading(false)
       }
     }
 
+    async function fetchVentasPorMes() {
+      try {
+        const { data: viajesData, error: viajesError } = await supabase
+          .from("viaje")
+          .select("*")
+
+        if (viajesError) throw viajesError
+
+        const ventasPorMesAnio = viajesData.reduce((acc: any, viaje: any) => {
+          if (viaje.fechafactura && viaje.fechafactura !== "") {
+            const fecha = new Date(viaje.fechafactura)
+            const mes = fecha.getUTCMonth() + 1
+            const anio = fecha.getUTCFullYear()
+            let tarifaViaje = viaje.tarifa
+            if (viaje.dolares && viaje.tipodecambio) {
+              tarifaViaje *= viaje.tipodecambio
+            }
+
+            if (!acc[mes]) {
+              acc[mes] = { mes, [anio]: tarifaViaje }
+            } else {
+              if (!acc[mes][anio]) {
+                acc[mes][anio] = tarifaViaje
+              } else {
+                acc[mes][anio] += tarifaViaje
+              }
+            }
+          }
+          return acc
+        }, {})
+
+        const ventasArray = Object.values(ventasPorMesAnio)
+
+        const totalVentas = viajesData.reduce((acc: number, viaje: any) => {
+          let tarifaViaje = viaje.tarifa
+          if (viaje.dolares && viaje.tipodecambio) {
+            tarifaViaje *= viaje.tipodecambio
+          }
+          return acc + tarifaViaje
+        }, 0)
+
+        setVentasPorMes({ ventasArray, totalVentas })
+      } catch (error) {
+        console.error("Error fetching ventas por mes data:", error)
+      }
+    }
+
+    fetchVentasPorMes()
     fetchProveedoresData()
     fetchVentasData()
     fetchUtilidadData()
@@ -403,8 +455,8 @@ export default function Reportes() {
     async function fetchVxCMensualData(year: number) {
       try {
         const { data: viajesData, error: viajesError } = await supabase
-          .from('viaje')
-          .select('*, cliente:cliente_id (nombre)')
+          .from("viaje")
+          .select("*, cliente:cliente_id (nombre)")
 
         if (viajesError) throw viajesError
 
@@ -441,7 +493,7 @@ export default function Reportes() {
         setVxCMensualData(viajesArray)
         setLoading(false)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error("Error fetching data:", error)
         setLoading(false)
       }
     }
@@ -449,17 +501,17 @@ export default function Reportes() {
     async function fetchUxCMensualData(year: number) {
       try {
         const { data: viajesData, error: viajesError } = await supabase
-          .from('viaje')
-          .select('*, cliente:cliente_id (nombre)')
+          .from("viaje")
+          .select("*, cliente:cliente_id (nombre)")
         const { data: proveedoresData, error: proveedoresError } =
-          await supabase.from('viajeproveedor').select('*')
+          await supabase.from("viajeproveedor").select("*")
 
         if (viajesError) throw viajesError
         if (proveedoresError) throw proveedoresError
 
         const utilidadPorClienteMes = viajesData.reduce(
           (acc: any, viaje: any) => {
-            if (viaje.fechafactura && viaje.fechafactura !== '') {
+            if (viaje.fechafactura && viaje.fechafactura !== "") {
               const fecha = new Date(viaje.fechafactura)
               const mes = fecha.getUTCMonth() + 1
               const anio = fecha.getUTCFullYear()
@@ -514,7 +566,7 @@ export default function Reportes() {
         setUxCMensualData(utilidadArray)
         setLoading(false)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error("Error fetching data:", error)
         setLoading(false)
       }
     }
@@ -530,7 +582,7 @@ export default function Reportes() {
   const handleReporte = (value: any) => {
     setLoadingReporte(true)
     setReporte(value)
-    setVista('Anual')
+    setVista("Anual")
     setTimeout(() => {
       setLoadingReporte(false)
     }, 2000)
@@ -556,7 +608,7 @@ export default function Reportes() {
     setLoadingReporte(false)
   }, 1000)
 
-  const verVista = reporte === 'VxC' || reporte === 'UxC'
+  const verVista = reporte === "VxC" || reporte === "UxC"
 
   return (
     <>
@@ -566,10 +618,10 @@ export default function Reportes() {
       {loading ? (
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh'
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh"
           }}
         >
           <CircularProgress />
@@ -585,23 +637,26 @@ export default function Reportes() {
                 placeholder={reporte}
                 value={reporte}
               >
-                <SelectItem key='1' onClick={() => handleReporte('Utilidad')}>
+                <SelectItem key='1' onClick={() => handleReporte("Utilidad")}>
                   Utilidad
                 </SelectItem>
-                <SelectItem key='2' onClick={() => handleReporte('UxC')}>
+                <SelectItem key='2' onClick={() => handleReporte("UxC")}>
                   Utilidad x Cliente
                 </SelectItem>
                 <SelectItem
                   key='3'
-                  onClick={() => handleReporte('Proveedores')}
+                  onClick={() => handleReporte("Proveedores")}
                 >
                   Proveedores
                 </SelectItem>
-                <SelectItem key='4' onClick={() => handleReporte('Ventas')}>
+                <SelectItem key='4' onClick={() => handleReporte("Ventas")}>
                   Ventas
                 </SelectItem>
-                <SelectItem key='5' onClick={() => handleReporte('VxC')}>
+                <SelectItem key='5' onClick={() => handleReporte("VxC")}>
                   Viajes x Cliente
+                </SelectItem>
+                <SelectItem key='6' onClick={() => handleReporte("VxM")}>
+                  Ventas x Mes
                 </SelectItem>
               </Select>
             </article>
@@ -615,20 +670,20 @@ export default function Reportes() {
                 >
                   <SelectItem
                     key='anual'
-                    onClick={() => handleVistaChange('Anual')}
+                    onClick={() => handleVistaChange("Anual")}
                   >
                     Anual
                   </SelectItem>
                   <SelectItem
                     key='mensual'
-                    onClick={() => handleVistaChange('Mensual')}
+                    onClick={() => handleVistaChange("Mensual")}
                   >
                     Mensual
                   </SelectItem>
                 </Select>
               </article>
             )}
-            {verVista && vista === 'Mensual' && (
+            {verVista && vista === "Mensual" && (
               <article className='w-[170px]'>
                 <Select
                   label='Año'
@@ -651,24 +706,25 @@ export default function Reportes() {
           {loadingReporte ? (
             <Box
               sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh'
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh"
               }}
             >
               <CircularProgress />
             </Box>
           ) : (
             <section className='m-3'>
-              {reporte === 'Utilidad' && (
+              {reporte === "Utilidad" && (
                 <Utilidad
                   ventasArray={utilidadData.ventasArray}
                   totalUtilidad={utilidadData.totalUtilidad}
                   years={years}
+                  title='Utilidad'
                 />
               )}
-              {reporte === 'Ventas' && (
+              {reporte === "Ventas" && (
                 <Anual
                   ventasArray={ventasData.ventasArray}
                   years={years}
@@ -678,7 +734,7 @@ export default function Reportes() {
                   title='Ventas'
                 />
               )}
-              {reporte === 'Proveedores' && (
+              {reporte === "Proveedores" && (
                 <Anual
                   ventasArray={proveedoresData.proveedoresArray}
                   years={years}
@@ -688,7 +744,7 @@ export default function Reportes() {
                   title='Proveedores'
                 />
               )}
-              {reporte === 'UxC' && vista === 'Anual' && (
+              {reporte === "UxC" && vista === "Anual" && (
                 <Anual
                   ventasArray={ventasData.utilidadArray}
                   years={years}
@@ -698,12 +754,20 @@ export default function Reportes() {
                   title='Utilidad x Cliente'
                 />
               )}
-              {reporte === 'UxC' && vista === 'Mensual' && (
+              {reporte === "UxC" && vista === "Mensual" && (
                 <Mensual data={uxCMensualData} mostrarMoneda />
               )}
-              {reporte === 'VxC' && vista === 'Anual' && <VxC data={vxCData} />}
-              {reporte === 'VxC' && vista === 'Mensual' && (
+              {reporte === "VxC" && vista === "Anual" && <VxC data={vxCData} />}
+              {reporte === "VxC" && vista === "Mensual" && (
                 <Mensual data={vxCMensualData} mostrarMoneda={false} />
+              )}
+              {reporte === "VxM" && (
+                <Utilidad
+                  ventasArray={ventasPorMes.ventasArray}
+                  totalUtilidad={ventasPorMes.totalVentas}
+                  years={years}
+                  title='Ventas por Mes'
+                />
               )}
             </section>
           )}
