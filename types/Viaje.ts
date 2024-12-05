@@ -14,4 +14,5 @@ export interface Viaje {
     dolares: boolean;
     abonocomision: number;
     folio: number;
+    vendedor_id: string;
   }
