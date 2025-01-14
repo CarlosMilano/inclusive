@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { ViajeForm } from "@/components/ViajeProveedorForm"
+import { ViajePruebaForm } from "@/components/ViajeProveedorForm"
 import { useRouter } from "next/router"
 import supabase from "@/pages/api/supabase"
 import { v4 as uuidv4 } from "uuid"
@@ -191,7 +191,7 @@ export default function Viaje() {
         </Box>
       ) : (
         <main className='mt-[60px] min-h-screen'>
-          <ViajeForm
+          <ViajePruebaForm
             onSubmit={handleViajeSubmit}
             clientes={clientes}
             proveedores={proveedores}

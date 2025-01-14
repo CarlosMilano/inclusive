@@ -9,6 +9,8 @@ import { Cliente } from "@/types/Cliente"
 import { Proveedor } from "@/types/Proveedor"
 import VxC from "@/components/VxC"
 import Mensual from "@/components/Mensual"
+import { Vendedor } from "@/types/Vendedor"
+import ComisionMensual from "@/components/ComisionMensual"
 
 interface ClienteViajes {
   clienteId: string
@@ -29,6 +31,7 @@ export default function Reportes() {
   const [years, setYears] = useState<number[]>([])
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [proveedores, setProveedores] = useState<Proveedor[]>([])
+  const [vendedores, setVendedores] = useState<Vendedor[]>([])
   const [ventasData, setVentasData] = useState<{
     ventasArray: any[]
     totalVentas: number
@@ -48,6 +51,11 @@ export default function Reportes() {
     ventasArray: any[]
     totalVentas: number
   }>({ ventasArray: [], totalVentas: 0 })
+  const [uxVMensualData, setUxVMensualData] = useState<ClienteViajes[]>([])
+  const [uxVAnualData, setUxVAnualData] = useState<{
+    ventasArray: any[]
+    totalUtilidad: number
+  }>({ ventasArray: [], totalUtilidad: 0 })
 
   useEffect(() => {
     async function fetchUtilidadData() {
@@ -444,11 +452,100 @@ export default function Reportes() {
       }
     }
 
+    async function fetchUxVAnualData() {
+      try {
+        const { data: viajesData, error: viajesError } = await supabase
+          .from("viaje")
+          .select("*, vendedor:vendedor_id (nombre)")
+        const { data: proveedoresData, error: proveedoresError } =
+          await supabase.from("viajeproveedor").select("*")
+
+        if (viajesError) throw viajesError
+        if (proveedoresError) throw proveedoresError
+
+        const utilidadPorVendedorAnio = viajesData.reduce(
+          (acc: any, viaje: any) => {
+            if (viaje.fechafactura && viaje.fechafactura !== "") {
+              const fecha = new Date(viaje.fechafactura)
+              const anio = fecha.getFullYear()
+              const vendedorId = viaje.vendedor_id
+              let tarifaViaje = viaje.tarifa
+              if (viaje.dolares && viaje.tipodecambio) {
+                tarifaViaje *= viaje.tipodecambio
+              }
+
+              const proveedoresDelViaje = proveedoresData.filter(
+                (proveedor: any) => proveedor.viaje_id === viaje.id
+              )
+              let tarifaProveedores = 0
+              proveedoresDelViaje.forEach((proveedor: any) => {
+                let tarifaProveedor = proveedor.tarifa
+                if (proveedor.dolares && viaje.tipodecambio) {
+                  tarifaProveedor *= viaje.tipodecambio
+                }
+                tarifaProveedores += tarifaProveedor
+              })
+
+              const comision = viaje.comision
+              const utilidad = tarifaViaje - comision - tarifaProveedores
+
+              if (!acc[vendedorId]) {
+                acc[vendedorId] = { vendedor_id: vendedorId }
+              }
+
+              if (!acc[vendedorId][anio]) {
+                acc[vendedorId][anio] = utilidad
+              } else {
+                acc[vendedorId][anio] += utilidad
+              }
+            }
+            return acc
+          },
+          {}
+        )
+
+        const ventasArray = Object.keys(utilidadPorVendedorAnio).map(
+          vendedorId => ({
+            cliente_id: vendedorId,
+            ...utilidadPorVendedorAnio[vendedorId]
+          })
+        )
+
+        const totalUtilidad = ventasArray.reduce(
+          (total: number, vendedor: any) => {
+            const utilidadVendedor = Object.keys(vendedor)
+              .filter(key => !isNaN(Number(key)))
+              .reduce((sum: number, year) => sum + vendedor[year], 0)
+            return total + utilidadVendedor
+          },
+          0
+        )
+
+        setUxVAnualData({ ventasArray, totalUtilidad })
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      }
+    }
+
+    async function fetchVendedores() {
+      try {
+        const { data: vendedoresData, error: vendedoresError } = await supabase
+          .from("vendedor")
+          .select("*")
+        if (vendedoresError) throw vendedoresError
+        setVendedores(vendedoresData || [])
+      } catch (error) {
+        console.error("Error fetching vendedores:", error)
+      }
+    }
+
     fetchVentasPorMes()
     fetchProveedoresData()
     fetchVentasData()
     fetchUtilidadData()
     fetchVxCData()
+    fetchUxVAnualData()
+    fetchVendedores()
   }, [])
 
   useEffect(() => {
@@ -571,8 +668,82 @@ export default function Reportes() {
       }
     }
 
+    async function fetchUxVMensualData(year: number) {
+      try {
+        const { data: viajesData, error: viajesError } = await supabase
+          .from("viaje")
+          .select("*, vendedor:vendedor_id (nombre)")
+        const { data: proveedoresData, error: proveedoresError } =
+          await supabase.from("viajeproveedor").select("*")
+
+        if (viajesError) throw viajesError
+        if (proveedoresError) throw proveedoresError
+
+        const utilidadPorVendedorMes = viajesData.reduce(
+          (acc: any, viaje: any) => {
+            if (viaje.fechafactura && viaje.fechafactura !== "") {
+              const fecha = new Date(viaje.fechafactura)
+              const mes = fecha.getUTCMonth() + 1
+              const anio = fecha.getUTCFullYear()
+              const vendedorId = viaje.vendedor_id
+              const vendedorNombre = viaje.vendedor?.nombre || "Sin Vendedor"
+              let tarifaViaje = viaje.tarifa
+
+              if (viaje.dolares && viaje.tipodecambio) {
+                tarifaViaje *= viaje.tipodecambio
+              }
+
+              const proveedoresDelViaje = proveedoresData.filter(
+                (proveedor: any) => proveedor.viaje_id === viaje.id
+              )
+              let tarifaProveedores = 0
+              proveedoresDelViaje.forEach((proveedor: any) => {
+                let tarifaProveedor = proveedor.tarifa
+                if (proveedor.dolares && viaje.tipodecambio) {
+                  tarifaProveedor *= viaje.tipodecambio
+                }
+                tarifaProveedores += tarifaProveedor
+              })
+
+              const comision = viaje.comision
+              const utilidad = tarifaViaje - comision - tarifaProveedores
+
+              if (anio === year) {
+                if (!acc[vendedorId]) {
+                  acc[vendedorId] = { nombre: vendedorNombre, utilidad: {} }
+                }
+
+                if (!acc[vendedorId].utilidad[mes]) {
+                  acc[vendedorId].utilidad[mes] = utilidad
+                } else {
+                  acc[vendedorId].utilidad[mes] += utilidad
+                }
+              }
+            }
+            return acc
+          },
+          {}
+        )
+
+        const utilidadArray = Object.keys(utilidadPorVendedorMes).map(
+          vendedorId => ({
+            clienteId: vendedorId, // mantenemos clienteId para compatibilidad con el componente Mensual
+            nombre: utilidadPorVendedorMes[vendedorId].nombre,
+            data: utilidadPorVendedorMes[vendedorId].utilidad
+          })
+        )
+
+        setUxVMensualData(utilidadArray)
+        setLoading(false)
+      } catch (error) {
+        console.error("Error fetching data:", error)
+        setLoading(false)
+      }
+    }
+
     fetchVxCMensualData(selectedYear)
     fetchUxCMensualData(selectedYear)
+    fetchUxVMensualData(selectedYear)
   }, [selectedYear])
 
   setTimeout(() => {
@@ -608,7 +779,7 @@ export default function Reportes() {
     setLoadingReporte(false)
   }, 1000)
 
-  const verVista = reporte === "VxC" || reporte === "UxC"
+  const verVista = reporte === "VxC" || reporte === "UxC" || reporte === "UxV"
 
   return (
     <>
@@ -657,6 +828,9 @@ export default function Reportes() {
                 </SelectItem>
                 <SelectItem key='6' onClick={() => handleReporte("VxM")}>
                   Ventas x Mes
+                </SelectItem>
+                <SelectItem key='7' onClick={() => handleReporte("UxV")}>
+                  Utilidad x Vendedor
                 </SelectItem>
               </Select>
             </article>
@@ -768,6 +942,20 @@ export default function Reportes() {
                   years={years}
                   title='Ventas por Mes'
                 />
+              )}
+              {reporte === "UxV" && vista === "Anual" && (
+                <Anual
+                  ventasArray={uxVAnualData.ventasArray}
+                  years={years}
+                  clientes={vendedores} // Asegúrate de tener el estado vendedores
+                  total={uxVAnualData.totalUtilidad}
+                  isCliente={false}
+                  isVendedor
+                  title='Utilidad x Vendedor'
+                />
+              )}
+              {reporte === "UxV" && vista === "Mensual" && (
+                <ComisionMensual data={uxVMensualData} />
               )}
             </section>
           )}

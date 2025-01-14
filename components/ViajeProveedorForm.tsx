@@ -35,7 +35,7 @@ interface ViajeFormProps {
   vendedores: { id: string; nombre: string }[]
 }
 
-export const ViajeForm = (props: ViajeFormProps) => {
+export const ViajePruebaForm = (props: ViajeFormProps) => {
   const [viajeData, setViajeData] = useState<Viaje>({
     id: "",
     origen: "",
