@@ -206,8 +206,6 @@ export const ViajePruebaForm = (props: ViajeFormProps) => {
         return
       }
 
-      console.log("Proveedores del viaje eliminados con éxito:", proveedorData)
-
       const { data: viajeDataEliminado, error: viajeError } = await supabase
         .from("viaje")
         .delete()
@@ -218,8 +216,6 @@ export const ViajePruebaForm = (props: ViajeFormProps) => {
         console.error("Error al eliminar el viaje", viajeError)
         return
       }
-
-      console.log("Viaje eliminado con éxito:", viajeDataEliminado)
     } catch (error) {
       console.error("Error al eliminar el viaje", error)
     }
@@ -239,8 +235,6 @@ export const ViajePruebaForm = (props: ViajeFormProps) => {
         console.error("Error al eliminar el proveedor", error)
         return
       }
-
-      console.log("Proveedor eliminado con éxito:", data)
 
       setViajeProveedorData(prevData =>
         prevData.filter(proveedor => proveedor.id !== proveedorId)
@@ -263,7 +257,6 @@ export const ViajePruebaForm = (props: ViajeFormProps) => {
         return false
       }
 
-      console.log("Viaje actualizado con éxito:", data)
       return true
     } catch (error) {
       console.error("Error en la solicitud PUT para el viaje", error)
@@ -287,8 +280,6 @@ export const ViajePruebaForm = (props: ViajeFormProps) => {
           console.error("Error al actualizar el proveedor del viaje", error)
           return false
         }
-
-        console.log("Proveedor del viaje actualizado con éxito:", data)
       } else {
         // Si el proveedor no tiene un ID, entonces no existe y se debe crear
 
@@ -307,7 +298,6 @@ export const ViajePruebaForm = (props: ViajeFormProps) => {
           return false
         }
 
-        console.log("Proveedor del viaje creado con éxito:", data)
         if (data) {
           setViajeProveedorData([...viajeProveedorData, ...data])
         }
@@ -412,8 +402,6 @@ export const ViajePruebaForm = (props: ViajeFormProps) => {
 
     if (error) {
       console.error("Hubo un error al agregar el proveedor:", error)
-    } else {
-      console.log("Proveedor agregado exitosamente:", data)
     }
     router.reload()
   }

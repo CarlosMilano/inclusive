@@ -2,11 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 body {
   margin: 0;
   background-color: rgb(245, 248, 250);
+  min-height: 100vh;
 }
 
 .sticky-column {
@@ -18,10 +17,10 @@ body {
   /* Asegúrate de que esté encima de otras columnas */
 }
 
-.sticky-column-header{
+.sticky-column-header {
   position: sticky;
-    left: 0;
-    /* Asegúrate de que el fondo sea el mismo que el fondo de la tabla */
-    z-index: 1;
-    /* Asegúrate de que esté encima de otras columnas */
+  left: 0;
+  /* Asegúrate de que el fondo sea el mismo que el fondo de la tabla */
+  z-index: 1;
+  /* Asegúrate de que esté encima de otras columnas */
 }

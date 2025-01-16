@@ -94,7 +94,6 @@ export default function Viaje() {
 
         // Verificar nulabilidad antes de asignar al estado
         if (existeViaje !== null) {
-          console.log("Valor de existeViaje:", existeViaje)
           setExisteViaje(existeViaje)
         }
       } catch (error) {

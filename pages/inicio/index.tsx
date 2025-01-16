@@ -12,6 +12,7 @@ import { Cliente } from "@/types/Cliente"
 import { Proveedor } from "@/types/Proveedor"
 import { Viaje } from "@/types/Viaje"
 import { ViajeProveedor } from "@/types/ViajeProveedor"
+import VendedoresTable from "@/components/VendedoresTable"
 
 export default function Home() {
   const [cliente, setCliente] = useState<Cliente[]>([])
@@ -85,12 +86,12 @@ export default function Home() {
         const { data: proveedorData, error: proveedorError } = await supabase
           .from("proveedor")
           .select("*")
-        if (proveedorError) console.log(proveedorError)
+        if (proveedorError) console.error(proveedorError)
         else setProveedor(proveedorData || [])
 
         const { data: viajesProveedorData, error: viajesProveedorError } =
           await supabase.from("viajeproveedor").select("*")
-        if (viajesProveedorError) console.log(viajesProveedorError)
+        if (viajesProveedorError) console.error(viajesProveedorError)
 
         const CxC = clientesData?.map(cliente => {
           const viajesCliente = viajesData?.filter(
@@ -585,6 +586,7 @@ export default function Home() {
               router.push(`/comision/${rowData.id}`)
             }}
           />
+          <VendedoresTable viajes={viajes} loading={loading} />
         </section>
       </main>
     </>

@@ -168,16 +168,17 @@ export default function Utilitdad({
               {columnsYear.map(column => {
                 if (column.id === "año") {
                   return (
-                    <TableCell key={column.id} className='text-xs md:text-sm'>
+                    <TableCell
+                      key={column.id}
+                      className='text-xs md:text-sm w-[92px]'
+                    >
                       Total
                     </TableCell>
                   )
                 } else if (column.id === "total") {
                   const totalTodosAnios = calcularTotalTodosAnios()
                   return (
-                    <TableCell key={column.id} className='md:pr-[14px]'>
-                      {totalTodosAnios}
-                    </TableCell>
+                    <TableCell key={column.id}>{totalTodosAnios}</TableCell>
                   )
                 } else {
                   const totalAnio = calcularTotalAnio(column.id)
