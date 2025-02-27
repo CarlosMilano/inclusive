@@ -72,16 +72,16 @@ export default function Home() {
     }
     const fetchData = async () => {
       try {
+        const { data: viajesData, error: viajesError } = await supabase
+          .from("viaje")
+          .select("*")
+        if (viajesError) console.error(viajesError)
+
         const { data: clientesData, error: clientesError } = await supabase
           .from("cliente")
           .select("*")
         if (clientesError) console.error(clientesError)
         else setCliente(clientesData || [])
-
-        const { data: viajesData, error: viajesError } = await supabase
-          .from("viaje")
-          .select("*")
-        if (viajesError) console.error(viajesError)
 
         const { data: proveedorData, error: proveedorError } = await supabase
           .from("proveedor")
@@ -89,8 +89,17 @@ export default function Home() {
         if (proveedorError) console.error(proveedorError)
         else setProveedor(proveedorData || [])
 
-        const { data: viajesProveedorData, error: viajesProveedorError } =
-          await supabase.from("viajeproveedor").select("*")
+        const { data: viajesProveedorCompleto, error: viajesProveedorError } =
+          await supabase
+            .from("viajeproveedor")
+            .select(
+              `
+              *,
+              proveedor:proveedor_id (*),
+              viaje:viaje_id (*)
+            `
+            )
+            .order("proveedor_id")
         if (viajesProveedorError) console.error(viajesProveedorError)
 
         const CxC = clientesData?.map(cliente => {
@@ -139,40 +148,30 @@ export default function Home() {
         })
 
         const CxP = proveedorData?.map(proveedor => {
-          const viajesProveedor = viajesProveedorData?.filter(
-            viajeProveedor => viajeProveedor.proveedor_id === proveedor.id
-          )
-          const sumaTarifas =
-            viajesProveedor?.reduce((total, viajeProveedor) => {
-              const viajeEnViajes = viajesData?.find(
-                v => v.id === viajeProveedor.viaje_id
-              )
+          const viajesDelProveedor =
+            viajesProveedorCompleto?.filter(
+              vp => vp.proveedor_id === proveedor.id
+            ) || []
 
-              if (viajeEnViajes && viajeProveedor.dolares) {
-                return (
-                  total + viajeProveedor.tarifa * viajeEnViajes.tipodecambio
-                )
-              } else {
-                return total + viajeProveedor.tarifa
-              }
-            }, 0) || 0
-          const sumaAbonos =
-            viajesProveedor?.reduce((total, viajeProveedor) => {
-              const viajeEnViajes = viajesData?.find(
-                v => v.id === viajeProveedor.viaje_id
-              )
+          const monto = viajesDelProveedor.reduce((total, viajeProveedor) => {
+            if (!viajeProveedor.viaje) return total
 
-              if (viajeEnViajes && viajeProveedor.dolares) {
-                return (
-                  total + viajeProveedor.abonado * viajeEnViajes.tipodecambio
-                )
-              } else {
-                return total + viajeProveedor.abonado
-              }
-            }, 0) || 0
-          const monto = sumaTarifas - sumaAbonos
+            const tarifa = viajeProveedor.dolares
+              ? viajeProveedor.tarifa * viajeProveedor.viaje.tipodecambio
+              : viajeProveedor.tarifa
 
-          return { proveedor, monto }
+            const abonado = viajeProveedor.dolares
+              ? viajeProveedor.abonado * viajeProveedor.viaje.tipodecambio
+              : viajeProveedor.abonado
+
+            return total + (tarifa - abonado)
+          }, 0)
+
+          return {
+            proveedor,
+            monto,
+            cantidadViajes: viajesDelProveedor.length
+          }
         })
 
         setCuentaPorCobrar(CxC || [])
@@ -330,13 +329,20 @@ export default function Home() {
     const facturasSinFechaPorCliente: { [key: string]: number } = {}
 
     viajes.forEach(viaje => {
-      if (!viaje.fechafactura) {
+      console.log("Viaje:", {
+        id: viaje.id,
+        clienteId: viaje.cliente_id,
+        fechafactura: viaje.fechafactura
+      })
+
+      if (!viaje.fechafactura || viaje.fechafactura === null) {
         const clienteId = viaje.cliente_id
         facturasSinFechaPorCliente[clienteId] =
           (facturasSinFechaPorCliente[clienteId] || 0) + 1
       }
     })
 
+    console.log("Facturas sin fecha por cliente:", facturasSinFechaPorCliente)
     return facturasSinFechaPorCliente
   }
 
@@ -374,7 +380,10 @@ export default function Home() {
     const facturasSinFechaPorProveedor: { [key: string]: number } = {}
 
     viajesProveedor.forEach(viajeProveedor => {
-      if (!viajeProveedor.fechafactura) {
+      if (
+        !viajeProveedor.fechafactura ||
+        viajeProveedor.fechafactura === null
+      ) {
         const proveedorId = viajeProveedor.proveedor_id
         facturasSinFechaPorProveedor[proveedorId] =
           (facturasSinFechaPorProveedor[proveedorId] || 0) + 1
